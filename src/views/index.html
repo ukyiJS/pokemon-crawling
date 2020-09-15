@@ -10,8 +10,13 @@
   </head>
   <body>
     <div class="flex-container">
-      <button id="crawling" class="btn color-2">crawling</button>
+      <button id="evolutionChainByLevel" class="btn color-2">evolutionChainByLevel</button>
     </div>
-    <script></script>
+    <script>
+      const $evolutionChainByLevel = document.querySelector('#evolutionChainByLevel');
+      $evolutionChainByLevel.addEventListener('click', async e => {
+        const result = await axios.get('/pokemon/evolutionChainByLevel');
+      });
+    </script>
   </body>
 </html>
