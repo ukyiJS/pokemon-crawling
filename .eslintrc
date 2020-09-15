@@ -30,6 +30,9 @@
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": "off",
     "class-methods-use-this": "off",
-    "no-return-assign": "off"
+    "func-names": "off",
+    "no-new-func": "off",
+    "no-return-assign": "off",
+    "no-param-reassign": "off"
   }
 }
