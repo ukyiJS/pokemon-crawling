@@ -1,10 +1,10 @@
-<a href="http://nestjs.com/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/nestjs-template/typeorm/src/assets/img/nest.svg" height="160"/></a>
-<a href="https://graphql.org/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/nestjs-template/typeorm/src/assets/img/graphql.svg" height="160"></a>
-<a href="https://www.serverless.com/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/nestjs-template/typeorm/src/assets/img/serverless.svg" height="160"></a>
+<a href="http://nestjs.com/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/nestjs-crawling/master/src/assets/img/nest.svg" height="160"/></a>
+<a href="https://pptr.dev/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/nestjs-crawling/master/src/assets/img/puppeteer.png" height="160"></a>
+<a href="https://typeorm.io/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/nestjs-crawling/master/src/assets/img/typeorm.png" height="160"></a>
 
 ## Description
 
-Pokemon-crawling
+Nestjs crawling
 
 ## Installation
 
@@ -41,8 +41,8 @@ $ npm run test:cov
 ## Used Technologies and Libraries
 
 - [NestJS](https://nestjs.com/)
-- [Graphql](https://graphql.org/)
 - [Typeorm](https://typeorm.io/)
+- [Puppeteer](https://pptr.dev/)
 - [MongoDB](https://www.mongodb.com/)
 - [Typescript](https://www.typescriptlang.org/)
 - [Jest](https://jestjs.io/)
