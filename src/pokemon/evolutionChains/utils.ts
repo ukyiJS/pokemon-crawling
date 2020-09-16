@@ -4,16 +4,17 @@ import {
   AbilityConditionType,
   AreaConditionType,
   AreaType,
-  StoneType,
   ConditionType,
+  CrawlingEvolution,
+  EvolutionType,
   FormType,
   IEvolutionChain,
-  IEvolutionTo,
+  IEvolvingTo,
   IPokemon,
   ItemConditionType,
   OtherConditionType,
+  StoneType,
   TradingConditionType,
-  EvolutionType,
 } from './types';
 
 declare let window: IWindow;
@@ -29,17 +30,17 @@ export const evolutionUtil = async (page: Page): Promise<void> => {
         return { name, image, differentForm };
       });
     };
-    window.addEvolutionFrom = (acc: IEvolutionChain[], from: IPokemon, to: IEvolutionTo): IEvolutionChain[] => {
+    window.addEvolutionFrom = (acc: IEvolutionChain[], from: IPokemon, to: IEvolvingTo): IEvolutionChain[] => {
       const fromIndex = acc.findIndex(p => p.name === from.name);
-      acc[fromIndex].evolutionTo.push(to);
+      acc[fromIndex].evolvingTo.push(to);
       return acc;
     };
   });
 };
 
-export const hasText = (text: string) => (regExpString: string): boolean => new RegExp(regExpString, 'gi').test(text);
+const hasText = (text: string) => (regExpString: string): boolean => new RegExp(regExpString, 'gi').test(text);
 
-export const getDifferentForm = (differentForm: string | null): string | null => {
+const getDifferentForm = (differentForm: string | null): string | null => {
   if (!differentForm) return null;
 
   const ExclusionForm = /Male|Rockruff|Shield/.test(differentForm);
@@ -64,7 +65,7 @@ export const getDifferentForm = (differentForm: string | null): string | null =>
   return null;
 };
 
-export const getCondition = (condition: string): string => {
+const getCondition = (condition: string): string => {
   const hasCondition = hasText(condition);
   if (!condition || hasCondition('outside')) return '';
 
@@ -133,7 +134,7 @@ export const getCondition = (condition: string): string => {
   return condition;
 };
 
-export const getArea = (area: string): string => {
+const getArea = (area: string): string => {
   const hasArea = hasText(area);
   if (!area) return '';
 
@@ -149,7 +150,18 @@ export const getArea = (area: string): string => {
   return area;
 };
 
-export const getStone = (stone: string): string => {
+const getAdditionalCondition = (condition: string): string => {
+  const hasCondition = hasText(condition);
+  if (!condition || hasCondition('outside')) return '';
+
+  if (hasCondition('Alola')) return AreaConditionType.ALOLA;
+  if (hasCondition('Galar')) return AreaConditionType.GALAR;
+  if (hasCondition('Male')) return ConditionType.MALE;
+  if (hasCondition('Female')) return ConditionType.FEMALE;
+  return condition;
+};
+
+const getStone = (stone: string): string => {
   const key = Object.keys(StoneType).find(key => new RegExp(key, 'gi').test(stone)) as keyof typeof StoneType;
   return StoneType[key];
 };
@@ -159,8 +171,8 @@ const differentForm = (data: IEvolutionChain) => {
   return data;
 };
 
-const levelCondition = (to: IEvolutionTo) => {
-  differentForm(to as IEvolutionChain & IEvolutionTo);
+const levelCondition = (to: IEvolvingTo) => {
+  differentForm(to as IEvolutionChain & IEvolvingTo);
   const [level, conditions] = to.condition;
   const filteredCondition = conditions
     .split(',')
@@ -169,9 +181,22 @@ const levelCondition = (to: IEvolutionTo) => {
   to.condition = [level, filteredCondition].filter(c => c);
 };
 
+export const crawling: CrawlingEvolution = (elements, type) =>
+  elements.reduce((acc, $tr) => {
+    const [from, to] = window.getPokemons($tr.querySelectorAll('.cell-name')) as IPokemon[];
+    const level = $tr.querySelector('.cell-num')!.textContent!;
+    const condition = $tr.querySelector('.cell-med-text')?.textContent ?? '';
+    const evolvingTo = { ...to, type, condition: [level, condition] } as IEvolvingTo;
+
+    const isDuplicatePokemon = acc.some(p => p.name === from.name && !from.differentForm);
+    if (isDuplicatePokemon) return window.addEvolutionFrom(acc, from, evolvingTo);
+
+    return [...acc, { ...from, evolvingTo: [evolvingTo] }];
+  }, [] as IEvolutionChain[]);
+
 export const convertEngToKor = (type: string, crawlingData: IEvolutionChain[]): IEvolutionChain[] => {
   return crawlingData.map(data => {
-    differentForm(data).evolutionTo.forEach(to => {
+    differentForm(data).evolvingTo.forEach(to => {
       switch (type) {
         case EvolutionType.LEVEL:
           return levelCondition(to);
