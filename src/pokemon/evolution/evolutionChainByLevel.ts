@@ -1,16 +1,15 @@
 import { IWindow } from '@/utils';
 import { Page } from 'puppeteer';
-import { IEvolutionChain, EvolutionType } from './types';
+import { IEvolutionChain, EvolutionType, CrawlingEvolution } from './types';
 import { convertEngToKor, evolutionUtil } from './utils';
 
 declare let window: IWindow;
 
 export const getEvolutionChainByLevel = async (page: Page): Promise<IEvolutionChain[]> => {
-  const type = EvolutionType.LEVEL;
   await evolutionUtil(page);
 
-  const crawlingData = await page.$$eval('#evolution > tbody > tr', el =>
-    el.reduce((acc, $tr) => {
+  const crawling: CrawlingEvolution = (elements, type) =>
+    elements.reduce((acc, $tr) => {
       const [from, to] = window.getPokemons($tr.querySelectorAll('.cell-name'));
       const level = $tr.querySelector('.cell-num')!.textContent!;
       const condition = $tr.querySelector('.cell-med-text')?.textContent ?? '';
@@ -20,7 +19,9 @@ export const getEvolutionChainByLevel = async (page: Page): Promise<IEvolutionCh
       if (isDuplicatePokemon) return window.addEvolutionFrom(acc, from, evolutionTo);
 
       return [...acc, { ...from, evolutionTo: [evolutionTo] }];
-    }, [] as IEvolutionChain[]),
-  );
+    }, [] as IEvolutionChain[]);
+  const type = EvolutionType.LEVEL;
+  const crawlingData = await page.$$eval('#evolution > tbody > tr', crawling, type);
+
   return convertEngToKor(type, crawlingData);
 };
