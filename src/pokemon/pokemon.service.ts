@@ -1,10 +1,10 @@
 import { getBrowserAndPage } from '@/utils';
 import { Injectable } from '@nestjs/common';
-import { getEvolutionChainByLevel, IEvolutionChain } from './evolution';
+import { getEvolutionChainByLevel, IEvolutionChain } from './evolutionChains';
 
 @Injectable()
 export class PokemonService {
-  public async getEvolutionChanByLevel(): Promise<IEvolutionChain[]> {
+  public async getEvolutionChainByLevel(): Promise<IEvolutionChain[]> {
     const url = 'https://pokemondb.net/evolution/level';
     const waitForSelector = '#evolution > tbody';
     const { browser, page } = await getBrowserAndPage(url, waitForSelector);
