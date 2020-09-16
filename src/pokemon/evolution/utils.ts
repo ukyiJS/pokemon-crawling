@@ -165,7 +165,7 @@ const levelCondition = (to: IEvolutionTo) => {
   const filteredCondition = conditions
     .split(',')
     .reverse()
-    .reduce((acc: string, text: string, i: number) => `${acc},${i > 0 ? getCondition(text) : getArea(text)}`, '');
+    .reduce((acc: string, text: string, i: number) => `${acc} ${i > 0 ? getCondition(text) : getArea(text)}`, '');
   to.condition = [level, filteredCondition].filter(c => c);
 };
 
