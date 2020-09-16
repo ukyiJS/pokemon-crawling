@@ -9,14 +9,41 @@
     <title>pokemon-crawling</title>
   </head>
   <body>
-    <div class="flex-container">
-      <button id="evolutionChainByLevel" class="btn color-2">evolutionChainByLevel</button>
+    <div class="flex-container buttons">
+      <button id="evolutionChainByLevel" data-url="/pokemon/evolutionChainByLevel" class="btn color-2">
+        evolutionChainByLevel
+      </button>
     </div>
     <script>
-      const $evolutionChainByLevel = document.querySelector('#evolutionChainByLevel');
-      $evolutionChainByLevel.addEventListener('click', async e => {
-        const result = await axios.get('/pokemon/evolutionChainByLevel');
-      });
+      (() => {
+        let isLoading = false;
+        const { interceptors, get } = axios;
+        const toggleDisable = flag => $buttons.forEach(el => (el.disabled = flag));
+        const $get = url =>
+          get(url)
+            .then(({ data }) => data)
+            .catch(error => {
+              toggleDisable(false);
+              throw error;
+            });
+
+        const $buttons = Array.from(document.querySelector('.buttons').children);
+        $buttons.forEach(el => el.addEventListener('click', e => $get(e.target.dataset.url)));
+
+        let reqTime;
+        const toggleLoading = interceptor => {
+          isLoading = !isLoading;
+          toggleDisable(isLoading);
+
+          if (isLoading) reqTime = Date.now();
+          else console.log(interceptor.data, `+${Date.now() - reqTime}ms`);
+
+          return interceptor;
+        };
+
+        interceptors.request.use(toggleLoading);
+        interceptors.response.use(toggleLoading);
+      })();
     </script>
   </body>
 </html>
