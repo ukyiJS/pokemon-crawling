@@ -4,19 +4,13 @@ export interface IPokemon {
   differentForm: string | null;
 }
 
-export interface IEvolutionTo extends IPokemon {
+export interface IEvolvingTo extends IPokemon {
   type: string;
   condition: string[];
 }
 
 export interface IEvolutionChain extends IPokemon {
-  evolutionTo: {
-    differentForm: string | null;
-    type: string;
-    condition: string[];
-    name: string;
-    image: string;
-  }[];
+  evolvingTo: IEvolvingTo[];
   name: string;
   image: string;
   differentForm: string | null;
