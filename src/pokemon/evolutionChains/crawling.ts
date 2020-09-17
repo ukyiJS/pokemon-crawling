@@ -4,7 +4,6 @@ import {
   AreaConditionType,
   AreaType,
   ConditionType,
-  CrawlingEvolution,
   EvolutionType,
   FormType,
   IEvolutionChain,
@@ -19,14 +18,38 @@ declare let window: IWindow;
 
 const hasText = (text: string) => (regExpString: string): boolean => new RegExp(regExpString, 'gi').test(text);
 const evolutionUtil = async (page: Page): Promise<void> => {
-  await page.evaluate(() => {
-    window.getPokemons = (el: NodeListOf<Element>) => {
+  await page.evaluate((formType: typeof FormType) => {
+    const convertDifferentForm = (differentForm: string | null): string | null => {
+      if (!differentForm) return null;
+
+      const ExclusionForm = /Male|Rockruff|Shield/.test(differentForm);
+      if (ExclusionForm) return null;
+
+      const hasDifferentForm = (regExpString: string) => new RegExp(regExpString, 'gi').test(differentForm);
+      if (hasDifferentForm('Galarian Standard')) return formType.ALOLA_DARMANITAN_STANDARD;
+      if (hasDifferentForm('Alola')) return formType.ALOLA;
+      if (hasDifferentForm('Galar')) return formType.GALAR;
+      if (hasDifferentForm('Plant')) return formType.WORMADAM_GRASS;
+      if (hasDifferentForm('Sandy')) return formType.WORMADAM_CAVES;
+      if (hasDifferentForm('Trash')) return formType.WORMADAM_BUILDINGS;
+      if (hasDifferentForm('Low')) return formType.TOXTRICITY_LOW;
+      if (hasDifferentForm('Amped')) return formType.TOXTRICITY_HIGH;
+      if (hasDifferentForm('Standard')) return formType.DARMANITAN_STANDARD;
+      if (hasDifferentForm('Midday')) return formType.ROCKRUFF_MID_DAY;
+      if (hasDifferentForm('Midnight')) return formType.ROCKRUFF_MID_NIGHT;
+      if (hasDifferentForm('Dusk')) return formType.ROCKRUFF_DUSK;
+      if (hasDifferentForm('Single')) return formType.URSHIFU_SINGLE;
+      if (hasDifferentForm('Rapid')) return formType.URSHIFU_RAPID;
+      return null;
+    };
+
+    window.getPokemons = (el: NodeListOf<Element>): IPokemon[] => {
       return Array.from(el).map($td => {
         const name = $td.querySelector('.ent-name')!.textContent!;
         const image = $td.querySelector('.icon-pkmn')!.getAttribute('data-src')!;
         const differentForm = $td.querySelector('.text-muted')?.textContent ?? null;
 
-        return { name, image, differentForm };
+        return { name, image, differentForm: convertDifferentForm(differentForm) };
       });
     };
     window.addEvolutionFrom = (acc: IEvolutionChain[], from: IPokemon, to: IEvolvingTo): IEvolutionChain[] => {
@@ -34,32 +57,7 @@ const evolutionUtil = async (page: Page): Promise<void> => {
       acc[fromIndex].evolvingTo.push(to);
       return acc;
     };
-  });
-};
-
-const getDifferentForm = (differentForm: string | null): string | null => {
-  if (!differentForm) return null;
-
-  const ExclusionForm = /Male|Rockruff|Shield/.test(differentForm);
-  if (ExclusionForm) return null;
-
-  const hasDifferentForm = hasText(differentForm);
-
-  if (hasDifferentForm('Galarian Standard')) return FormType.ALOLA_DARMANITAN_STANDARD;
-  if (hasDifferentForm('Alola')) return FormType.ALOLA;
-  if (hasDifferentForm('Galar')) return FormType.GALAR;
-  if (hasDifferentForm('Plant')) return FormType.WORMADAM_GRASS;
-  if (hasDifferentForm('Sandy')) return FormType.WORMADAM_CAVES;
-  if (hasDifferentForm('Trash')) return FormType.WORMADAM_BUILDINGS;
-  if (hasDifferentForm('Low')) return FormType.TOXTRICITY_LOW;
-  if (hasDifferentForm('Amped')) return FormType.TOXTRICITY_HIGH;
-  if (hasDifferentForm('Standard')) return FormType.DARMANITAN_STANDARD;
-  if (hasDifferentForm('Midday')) return FormType.ROCKRUFF_MID_DAY;
-  if (hasDifferentForm('Midnight')) return FormType.ROCKRUFF_MID_NIGHT;
-  if (hasDifferentForm('Dusk')) return FormType.ROCKRUFF_DUSK;
-  if (hasDifferentForm('Single')) return FormType.URSHIFU_SINGLE;
-  if (hasDifferentForm('Rapid')) return FormType.URSHIFU_RAPID;
-  return null;
+  }, FormType);
 };
 
 const getLevelCondition = (condition: string): string => {
@@ -91,15 +89,15 @@ const getLevelAdditionalCondition = (area: string): string => {
   const hasArea = hasText(area);
   if (!area) return '';
 
-  if (hasArea('Alola')) return `${AreaType.ALOLA}에서`;
-  if (hasArea('galar')) return `${AreaType.GALAR}에서`;
-  if (hasArea('grass')) return `${AreaType.GRASS}애서`;
-  if (hasArea('caves')) return `${AreaType.CAVES}애서`;
-  if (hasArea('buildings')) return `${AreaType.BUILDINGS}애서`;
-  if (hasArea('Sun or Ultra Sun')) return `${AreaType.SUN_OR_ULTRA_SUN}에서`;
-  if (hasArea('Moon or Ultra Moon')) return `${AreaType.MOON_OR_ULTRA_MOON}에서`;
-  if (hasArea('Ultra Sun/Moon')) return `${AreaType.ULTRA_SUN_OR_ULTRA_MOON}에서`;
-  if (hasArea('Pokéball in bag')) return `가방에 ${AreaType.POKEBALL}을 가지고 있고`;
+  if (hasArea('Alola')) return ` ${AreaType.ALOLA}에서`;
+  if (hasArea('galar')) return ` ${AreaType.GALAR}에서`;
+  if (hasArea('grass')) return ` ${AreaType.GRASS}애서`;
+  if (hasArea('caves')) return ` ${AreaType.CAVES}애서`;
+  if (hasArea('buildings')) return ` ${AreaType.BUILDINGS}애서`;
+  if (hasArea('Sun or Ultra Sun')) return ` ${AreaType.SUN_OR_ULTRA_SUN}에서`;
+  if (hasArea('Moon or Ultra Moon')) return ` ${AreaType.MOON_OR_ULTRA_MOON}에서`;
+  if (hasArea('Ultra Sun/Moon')) return ` ${AreaType.ULTRA_SUN_OR_ULTRA_MOON}에서`;
+  if (hasArea('Pokéball in bag')) return ` 가방에 ${AreaType.POKEBALL}을 가지고 있고`;
   return area;
 };
 
@@ -131,18 +129,19 @@ const getStoneCondition = (stone: string): string => {
   const key = Object.keys(StoneType).find(key => new RegExp(key, 'gi').test(stone)) as keyof typeof StoneType;
   return StoneType[key];
 };
-const getStoneAdditionalCondition = (condition: string) => {
+const getStoneAdditionalCondition = (condition: string): string => {
   const hasCondition = hasText(condition);
   if (!condition || hasCondition('outside')) return '';
 
   if (hasCondition('Alola')) return `${AreaType.ALOLA}에서`;
   if (hasCondition('Female')) return `${ConditionType.FEMALE}`;
   if (hasCondition('Male')) return `${ConditionType.FEMALE}`;
+  if (hasCondition('level up in a Magnetic Field area')) return '또는 포니대협곡 또는 화끈산 에서 레벨업';
 
   return condition;
 };
 
-const getFriendshipCondition = (condition: string) => {
+const getFriendshipCondition = (condition: string): string => {
   const hasCondition = hasText(condition);
   const friendshipText = '친밀도가 220 이상';
   if (!condition) return `${friendshipText}일 때 레벨업`;
@@ -153,45 +152,29 @@ const getFriendshipCondition = (condition: string) => {
   return condition;
 };
 
-const differentForm = (data: IEvolutionChain) => {
-  data.differentForm = getDifferentForm(data.differentForm);
-  return data;
+const levelCondition = (conditions: string): string[] => {
+  const [c1, c2] = conditions.split(',');
+  const condition = getLevelCondition(c1);
+  const additionalCondition = getLevelAdditionalCondition(c2);
+
+  return [`${condition}${additionalCondition}`].filter(c => c);
 };
 
-const levelCondition = (to: IEvolvingTo) => {
-  const [level, conditions] = to.condition;
-  const filteredCondition = conditions
-    .split(',')
-    .reverse()
-    .reduce((acc: string, text: string, i: number) => {
-      return `${acc} ${i > 0 ? getLevelCondition(text) : getLevelAdditionalCondition(text)}`;
-    }, '');
-  to.condition = [level, filteredCondition].filter(c => c);
+const elementalStoneCondition = (conditions: string): string[] => {
+  const [c1, ...c] = conditions.split(',');
+  const condition = `${getStoneCondition(c1)} 사용`;
+  const additionalCondition = getStoneAdditionalCondition(c.join(','));
+
+  return [condition, additionalCondition].filter(c => c);
 };
 
-const elementalStoneCondition = (to: IEvolvingTo) => {
-  const [, conditions] = to.condition;
-  const [item, ...items] = conditions.split(',');
-  const stone = `${getStoneCondition(item)} 사용`;
-  const additionalCondition = getStoneAdditionalCondition(items.join(','));
+const tradingCondition = (condition: string): string[] => [getTradingCondition(condition)];
 
-  if (to.name === 'Vikavolt') to.condition = ['포니대협곡 또는 화끈산 에서 레벨업 또는 천둥의돌 사용'];
-  else to.condition = [stone, additionalCondition].filter(c => c);
-};
+const friendshipCondition = (condition: string): string[] => [getFriendshipCondition(condition)];
 
-const tradingCondition = (to: IEvolvingTo) => {
-  const [, condition] = to.condition;
-  to.condition = [getTradingCondition(condition)];
-};
-
-const friendshipCondition = (to: IEvolvingTo) => {
-  const [, condition] = to.condition;
-  to.condition = [getFriendshipCondition(condition)];
-};
-
-const crawling: CrawlingEvolution = (elements, type) =>
-  elements.reduce((acc, $tr) => {
-    const [from, to] = window.getPokemons($tr.querySelectorAll('.cell-name')) as IPokemon[];
+const crawling = (elements: Element[], type: string): IEvolutionChain[] =>
+  elements.reduce<IEvolutionChain[]>((acc, $tr) => {
+    const [from, to] = window.getPokemons($tr.querySelectorAll('.cell-name'));
     const level = $tr.querySelector('.cell-num')?.textContent ?? null;
     const condition = $tr.querySelector('.cell-med-text')?.textContent ?? '';
     const evolvingTo = { ...to, type, condition: [level, condition] } as IEvolvingTo;
@@ -200,27 +183,27 @@ const crawling: CrawlingEvolution = (elements, type) =>
     if (isDuplicatePokemon) return window.addEvolutionFrom(acc, from, evolvingTo);
 
     return [...acc, { ...from, evolvingTo: [evolvingTo] }];
-  }, [] as IEvolutionChain[]);
+  }, []);
 
-const convertEngToKor = (type: string, crawlingData: IEvolutionChain[]): IEvolutionChain[] => {
-  return crawlingData.map(data => {
-    differentForm(data).evolvingTo.forEach(to => {
-      differentForm(to as IEvolutionChain & IEvolvingTo);
+const convertEvolutionCondition = (type: string, crawlingData: IEvolutionChain[]): IEvolutionChain[] => {
+  return crawlingData.map(data => ({
+    ...data,
+    evolvingTo: data.evolvingTo.map(to => {
+      const [level, condition] = to.condition;
       switch (type) {
         case EvolutionType.LEVEL:
-          return levelCondition(to);
+          return { ...to, condition: [level, ...levelCondition(condition)] };
         case EvolutionType.STONE:
-          return elementalStoneCondition(to);
+          return { ...to, condition: elementalStoneCondition(condition) };
         case EvolutionType.TRADE:
-          return tradingCondition(to);
+          return { ...to, condition: tradingCondition(condition) };
         case EvolutionType.FRIENDSHIP:
-          return friendshipCondition(to);
+          return { ...to, condition: friendshipCondition(condition) };
         default:
-          return null;
+          return to;
       }
-    });
-    return data;
-  });
+    }),
+  }));
 };
 
 export const getEvolutionChains = async (type: string): Promise<IEvolutionChain[]> => {
@@ -233,5 +216,5 @@ export const getEvolutionChains = async (type: string): Promise<IEvolutionChain[
   const crawlingData = await page.$$eval('#evolution > tbody > tr', crawling, type);
   await browser.close();
 
-  return convertEngToKor(type, crawlingData);
+  return convertEvolutionCondition(type, crawlingData);
 };
