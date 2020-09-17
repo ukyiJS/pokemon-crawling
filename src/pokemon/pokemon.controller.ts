@@ -10,4 +10,9 @@ export class PokemonController {
   public getEvolutionChainByLevel(): Promise<IEvolutionChain[]> {
     return this.pokemonService.getEvolutionChainByLevel();
   }
+
+  @Get('evolutionChainByElementalStone')
+  public getEvolutionChainByElementalStone(): Promise<IEvolutionChain[]> {
+    return this.pokemonService.getEvolutionChainByElementalStone();
+  }
 }
