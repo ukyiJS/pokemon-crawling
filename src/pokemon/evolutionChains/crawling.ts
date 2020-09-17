@@ -139,7 +139,18 @@ const getStoneAdditionalCondition = (condition: string) => {
   if (hasCondition('Female')) return `${ConditionType.FEMALE}`;
   if (hasCondition('Male')) return `${ConditionType.FEMALE}`;
 
-  return '';
+  return condition;
+};
+
+const getFriendshipCondition = (condition: string) => {
+  const hasCondition = hasText(condition);
+  const friendshipText = '친밀도가 220 이상';
+  if (!condition) return `${friendshipText}일 때 레벨업`;
+
+  if (hasCondition('Day')) return `${friendshipText}이고 ${ConditionType.DAY}`;
+  if (hasCondition('Night')) return `${friendshipText}이고 ${ConditionType.NIGHT}`;
+
+  return condition;
 };
 
 const differentForm = (data: IEvolutionChain) => {
@@ -197,6 +208,8 @@ const convertEngToKor = (type: string, crawlingData: IEvolutionChain[]): IEvolut
           return elementalStoneCondition(to);
         case EvolutionType.TRADE:
           return tradingCondition(to);
+        case EvolutionType.FRIENDSHIP:
+          return friendshipCondition(to);
         default:
           return null;
       }
