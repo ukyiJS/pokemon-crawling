@@ -22,6 +22,7 @@ export const EvolutionType = {
   TRADE: 'trade',
   FRIENDSHIP: 'friendship',
   STATUS: 'status',
+  NONE: 'none',
 };
 
 export const FormType = {
