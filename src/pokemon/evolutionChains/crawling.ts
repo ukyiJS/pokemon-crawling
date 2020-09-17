@@ -166,7 +166,7 @@ const getAdditionalCondition = (condition: string): string => {
   return condition;
 };
 
-const getStone = (stone: string): string => {
+const getStoneCondition = (stone: string): string => {
   const key = Object.keys(StoneType).find(key => new RegExp(key, 'gi').test(stone)) as keyof typeof StoneType;
   return StoneType[key];
 };
@@ -185,7 +185,7 @@ const levelCondition = (to: IEvolvingTo) => {
   to.condition = [level, filteredCondition].filter(c => c);
 };
 
-const elementalStoneAdditionalCondition = (condition: string) => {
+const getStoneAdditionalCondition = (condition: string) => {
   const hasCondition = hasText(condition);
   if (!condition || hasCondition('outside')) return '';
 
@@ -199,8 +199,8 @@ const elementalStoneAdditionalCondition = (condition: string) => {
 const elementalStoneCondition = (to: IEvolvingTo) => {
   const [, conditions] = to.condition;
   const [item, ...items] = conditions.split(',');
-  const stone = `${getStone(item)} 사용`;
-  const additionalCondition = elementalStoneAdditionalCondition(items.join(','));
+  const stone = `${getStoneCondition(item)} 사용`;
+  const additionalCondition = getStoneAdditionalCondition(items.join(','));
 
   if (to.name === 'Vikavolt') to.condition = ['포니대협곡 또는 화끈산 에서 레벨업 또는 천둥의돌 사용'];
   else to.condition = [stone, additionalCondition].filter(c => c);
