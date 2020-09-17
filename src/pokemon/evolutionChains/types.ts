@@ -21,6 +21,7 @@ export type CrawlingEvolution = (elements: Element[], type: string) => IEvolutio
 export const EvolutionType = {
   LEVEL: 'level',
   STONE: 'stone',
+  TRADE: 'trade',
 };
 
 export const FormType = {
