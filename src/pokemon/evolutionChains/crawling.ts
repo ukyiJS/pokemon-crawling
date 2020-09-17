@@ -1,4 +1,4 @@
-import { IWindow } from '@/utils';
+import { getBrowserAndPage, IWindow } from '@/utils';
 import { Page } from 'puppeteer';
 import {
   AbilityConditionType,
@@ -19,7 +19,7 @@ import {
 
 declare let window: IWindow;
 
-export const evolutionUtil = async (page: Page): Promise<void> => {
+const evolutionUtil = async (page: Page): Promise<void> => {
   await page.evaluate(() => {
     window.getPokemons = (el: NodeListOf<Element>) => {
       return Array.from(el).map($td => {
@@ -172,7 +172,6 @@ const differentForm = (data: IEvolutionChain) => {
 };
 
 const levelCondition = (to: IEvolvingTo) => {
-  differentForm(to as IEvolutionChain & IEvolvingTo);
   const [level, conditions] = to.condition;
   const filteredCondition = conditions
     .split(',')
@@ -181,7 +180,28 @@ const levelCondition = (to: IEvolvingTo) => {
   to.condition = [level, filteredCondition].filter(c => c);
 };
 
-export const crawling: CrawlingEvolution = (elements, type) =>
+const elementalStoneAdditionalCondition = (condition: string) => {
+  const hasCondition = hasText(condition);
+  if (!condition || hasCondition('outside')) return '';
+
+  if (hasCondition('Alola')) return `${AreaType.ALOLA}에서`;
+  if (hasCondition('Female')) return `${ConditionType.FEMALE}`;
+  if (hasCondition('Male')) return `${ConditionType.FEMALE}`;
+
+  return '';
+};
+
+const elementalStoneCondition = (to: IEvolvingTo) => {
+  const [, conditions] = to.condition;
+  const [item, ...items] = conditions.split(',');
+  const stone = `${getStone(item)} 사용`;
+  const additionalCondition = elementalStoneAdditionalCondition(items.join(','));
+
+  if (to.name === 'Vikavolt') to.condition = ['포니대협곡 또는 화끈산 에서 레벨업 또는 천둥의돌 사용'];
+  else to.condition = [stone, additionalCondition].filter(c => c);
+};
+
+const crawling: CrawlingEvolution = (elements, type) =>
   elements.reduce((acc, $tr) => {
     const [from, to] = window.getPokemons($tr.querySelectorAll('.cell-name')) as IPokemon[];
     const level = $tr.querySelector('.cell-num')!.textContent!;
@@ -194,16 +214,32 @@ export const crawling: CrawlingEvolution = (elements, type) =>
     return [...acc, { ...from, evolvingTo: [evolvingTo] }];
   }, [] as IEvolutionChain[]);
 
-export const convertEngToKor = (type: string, crawlingData: IEvolutionChain[]): IEvolutionChain[] => {
+const convertEngToKor = (type: string, crawlingData: IEvolutionChain[]): IEvolutionChain[] => {
   return crawlingData.map(data => {
     differentForm(data).evolvingTo.forEach(to => {
+      differentForm(to as IEvolutionChain & IEvolvingTo);
       switch (type) {
         case EvolutionType.LEVEL:
           return levelCondition(to);
+        case EvolutionType.STONE:
+          return elementalStoneCondition(to);
         default:
           return null;
       }
     });
     return data;
   });
+};
+
+export const getEvolutionChains = async (type: string): Promise<IEvolutionChain[]> => {
+  const url = `https://pokemondb.net/evolution/${type}`;
+  const waitForSelector = '#evolution > tbody';
+
+  const { browser, page } = await getBrowserAndPage(url, waitForSelector);
+  await evolutionUtil(page);
+
+  const crawlingData = await page.$$eval('#evolution > tbody > tr', crawling, type);
+  await browser.close();
+
+  return convertEngToKor(type, crawlingData);
 };
