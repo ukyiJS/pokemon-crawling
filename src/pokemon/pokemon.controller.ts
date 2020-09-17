@@ -15,4 +15,9 @@ export class PokemonController {
   public getEvolutionChainByElementalStone(): Promise<IEvolutionChain[]> {
     return this.pokemonService.getEvolutionChainByElementalStone();
   }
+
+  @Get('evolutionChainByTrading')
+  public getEvolutionChainByTrading(): Promise<IEvolutionChain[]> {
+    return this.pokemonService.getEvolutionChainByTrading();
+  }
 }
