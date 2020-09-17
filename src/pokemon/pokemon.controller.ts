@@ -25,4 +25,9 @@ export class PokemonController {
   public getEvolutionChainByFriendship(): Promise<IEvolutionChain[]> {
     return this.pokemonService.getEvolutionChainByFriendship();
   }
+
+  @Get('evolutionChainByOtherCondition')
+  public getEvolutionChainByOtherCondition(): Promise<IEvolutionChain[]> {
+    return this.pokemonService.getEvolutionChainByOtherCondition();
+  }
 }
