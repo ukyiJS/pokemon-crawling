@@ -14,4 +14,8 @@ export class PokemonService {
   public async getEvolutionChainByTrading(): Promise<IEvolutionChain[]> {
     return getEvolutionChains(EvolutionType.TRADE);
   }
+
+  public async getEvolutionChainByFriendship(): Promise<IEvolutionChain[]> {
+    return getEvolutionChains(EvolutionType.FRIENDSHIP);
+  }
 }
