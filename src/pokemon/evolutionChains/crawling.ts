@@ -206,6 +206,11 @@ const elementalStoneCondition = (to: IEvolvingTo) => {
   else to.condition = [stone, additionalCondition].filter(c => c);
 };
 
+const tradingCondition = (to: IEvolvingTo) => {
+  const [, condition] = to.condition;
+  to.condition = [getTradingCondition(condition)];
+};
+
 const crawling: CrawlingEvolution = (elements, type) =>
   elements.reduce((acc, $tr) => {
     const [from, to] = window.getPokemons($tr.querySelectorAll('.cell-name')) as IPokemon[];
