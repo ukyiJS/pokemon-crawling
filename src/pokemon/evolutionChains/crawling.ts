@@ -204,7 +204,7 @@ const elementalStoneCondition = (to: IEvolvingTo) => {
 const crawling: CrawlingEvolution = (elements, type) =>
   elements.reduce((acc, $tr) => {
     const [from, to] = window.getPokemons($tr.querySelectorAll('.cell-name')) as IPokemon[];
-    const level = $tr.querySelector('.cell-num')!.textContent!;
+    const level = $tr.querySelector('.cell-num')?.textContent ?? null;
     const condition = $tr.querySelector('.cell-med-text')?.textContent ?? '';
     const evolvingTo = { ...to, type, condition: [level, condition] } as IEvolvingTo;
 
