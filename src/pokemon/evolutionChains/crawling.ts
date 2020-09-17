@@ -87,26 +87,7 @@ const getCondition = (condition: string): string => {
   if (hasCondition('Attack > Defense')) return OtherConditionType.HIGH_ATTACK;
   if (hasCondition('Attack < Defense')) return OtherConditionType.LOW_ATTACK;
   if (hasCondition('Attack = Defense')) return OtherConditionType.SAME_ATTACK;
-  /* trading */
-  if (hasCondition('Kings Rock')) return AreaConditionType.ALOLA;
-  if (hasCondition('Galar')) return AreaConditionType.GALAR;
-  if (hasCondition('Male')) return ConditionType.MALE;
-  if (hasCondition('Kings Rock')) return TradingConditionType.KINGS_ROCK;
-  if (hasCondition('Metal Coat')) return TradingConditionType.METAL_COAT;
-  if (hasCondition('Protector')) return TradingConditionType.PROTECTOR;
-  if (hasCondition('Dragon Scale')) return TradingConditionType.DRAGON_SCALE;
-  if (hasCondition('Electirizer')) return TradingConditionType.ELECTIRIZER;
-  if (hasCondition('Magmarizer')) return TradingConditionType.MAGMARIZER;
-  if (hasCondition('Upgrade')) return TradingConditionType.UPGRADE;
-  if (hasCondition('Dubious Disc')) return TradingConditionType.DUBIOUS_DISC;
-  if (hasCondition('Prism Scale')) return TradingConditionType.PRISM_SCALE;
-  if (hasCondition('Reaper Cloth')) return TradingConditionType.REAPER_CLOTH;
-  if (hasCondition('Deep Sea Tooth')) return TradingConditionType.DEEP_SEA_TOOTH;
-  if (hasCondition('Deep Sea Scale')) return TradingConditionType.DEEP_SEA_SCALE;
-  if (hasCondition('with Shelmet')) return TradingConditionType.WITH_SHELMET;
-  if (hasCondition('with Karrablast')) return TradingConditionType.WITH_KARRABLAST;
-  if (hasCondition('Sachet')) return TradingConditionType.SACHET;
-  if (hasCondition('Whipped Dream')) return TradingConditionType.WHIPPED_DREAM;
+
   /* otherCondition */
   if (hasCondition('Magnetic Field')) return AreaConditionType.MAGNETIC_FIELD;
   if (hasCondition('Rollout')) return AbilityConditionType.ROLLOUT;
@@ -130,6 +111,30 @@ const getCondition = (condition: string): string => {
   if (hasCondition('Taunt')) return AbilityConditionType.TAUNT;
   if (hasCondition('in Tower of Darkness')) return OtherConditionType.IN_TOWER_OF_DARKNESS;
   if (hasCondition('in Tower of Water')) return OtherConditionType.IN_TOWER_OF_WATER;
+
+  return condition;
+};
+
+const getTradingCondition = (condition: string): string => {
+  if (!condition) return '통신교환';
+
+  const hasCondition = hasText(condition);
+  if (hasCondition('Kings Rock')) return TradingConditionType.KINGS_ROCK;
+  if (hasCondition('Metal Coat')) return TradingConditionType.METAL_COAT;
+  if (hasCondition('Protector')) return TradingConditionType.PROTECTOR;
+  if (hasCondition('Dragon Scale')) return TradingConditionType.DRAGON_SCALE;
+  if (hasCondition('Electirizer')) return TradingConditionType.ELECTIRIZER;
+  if (hasCondition('Magmarizer')) return TradingConditionType.MAGMARIZER;
+  if (hasCondition('Upgrade')) return TradingConditionType.UPGRADE;
+  if (hasCondition('Dubious Disc')) return TradingConditionType.DUBIOUS_DISC;
+  if (hasCondition('Prism Scale')) return TradingConditionType.PRISM_SCALE;
+  if (hasCondition('Reaper Cloth')) return TradingConditionType.REAPER_CLOTH;
+  if (hasCondition('Deep Sea Tooth')) return TradingConditionType.DEEP_SEA_TOOTH;
+  if (hasCondition('Deep Sea Scale')) return TradingConditionType.DEEP_SEA_SCALE;
+  if (hasCondition('with Shelmet')) return TradingConditionType.WITH_SHELMET;
+  if (hasCondition('with Karrablast')) return TradingConditionType.WITH_KARRABLAST;
+  if (hasCondition('Sachet')) return TradingConditionType.SACHET;
+  if (hasCondition('Whipped Dream')) return TradingConditionType.WHIPPED_DREAM;
 
   return condition;
 };
@@ -223,6 +228,8 @@ const convertEngToKor = (type: string, crawlingData: IEvolutionChain[]): IEvolut
           return levelCondition(to);
         case EvolutionType.STONE:
           return elementalStoneCondition(to);
+        case EvolutionType.TRADE:
+          return tradingCondition(to);
         default:
           return null;
       }
