@@ -22,6 +22,7 @@ export const EvolutionType = {
   LEVEL: 'level',
   STONE: 'stone',
   TRADE: 'trade',
+  FRIENDSHIP: 'friendship',
 };
 
 export const FormType = {
