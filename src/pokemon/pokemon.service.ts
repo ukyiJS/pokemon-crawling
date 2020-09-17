@@ -18,4 +18,8 @@ export class PokemonService {
   public async getEvolutionChainByFriendship(): Promise<IEvolutionChain[]> {
     return getEvolutionChains(EvolutionType.FRIENDSHIP);
   }
+
+  public async getEvolutionChainByOtherCondition(): Promise<IEvolutionChain[]> {
+    return getEvolutionChains(EvolutionType.STATUS);
+  }
 }
