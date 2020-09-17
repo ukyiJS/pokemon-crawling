@@ -7,6 +7,7 @@ export interface IWindow extends Window {
   [key: string]: any;
   getPokemons: (el: NodeListOf<Element>) => IPokemon[];
   addEvolutionFrom: (acc: IEvolutionChain[], from: IPokemon, to: IEvolvingTo) => IEvolutionChain[];
+  hasExclusionPokemon: (level: string | null, condition: string) => boolean;
 }
 
 export type Entries<T> = {
