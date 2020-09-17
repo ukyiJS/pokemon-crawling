@@ -1,7 +1,6 @@
 import { getBrowserAndPage, IWindow } from '@/utils';
 import { Page } from 'puppeteer';
 import {
-  AbilityConditionType,
   AreaConditionType,
   AreaType,
   ConditionType,
@@ -11,7 +10,6 @@ import {
   IEvolutionChain,
   IEvolvingTo,
   IPokemon,
-  ItemConditionType,
   OtherConditionType,
   StoneType,
   TradingConditionType,
@@ -19,6 +17,7 @@ import {
 
 declare let window: IWindow;
 
+const hasText = (text: string) => (regExpString: string): boolean => new RegExp(regExpString, 'gi').test(text);
 const evolutionUtil = async (page: Page): Promise<void> => {
   await page.evaluate(() => {
     window.getPokemons = (el: NodeListOf<Element>) => {
@@ -37,8 +36,6 @@ const evolutionUtil = async (page: Page): Promise<void> => {
     };
   });
 };
-
-const hasText = (text: string) => (regExpString: string): boolean => new RegExp(regExpString, 'gi').test(text);
 
 const getDifferentForm = (differentForm: string | null): string | null => {
   if (!differentForm) return null;
@@ -65,7 +62,7 @@ const getDifferentForm = (differentForm: string | null): string | null => {
   return null;
 };
 
-const getCondition = (condition: string): string => {
+const getLevelCondition = (condition: string): string => {
   const hasCondition = hasText(condition);
   if (!condition || hasCondition('outside')) return '';
 
@@ -88,37 +85,28 @@ const getCondition = (condition: string): string => {
   if (hasCondition('Attack < Defense')) return OtherConditionType.LOW_ATTACK;
   if (hasCondition('Attack = Defense')) return OtherConditionType.SAME_ATTACK;
 
-  /* otherCondition */
-  if (hasCondition('Magnetic Field')) return AreaConditionType.MAGNETIC_FIELD;
-  if (hasCondition('Rollout')) return AbilityConditionType.ROLLOUT;
-  if (hasCondition('Oval Stone')) return ItemConditionType.OVAL_STONE;
-  if (hasCondition('Ancient Power')) return AbilityConditionType.ANCIENT_POWER;
-  if (hasCondition('Mimic')) return AbilityConditionType.MIMIC;
-  if (hasCondition('Mossy Rock')) return AreaConditionType.MOSSY_ROCK;
-  if (hasCondition('Icy Rock')) return AreaConditionType.ICY_ROCK;
-  if (hasCondition('Affection')) return OtherConditionType.AFFECTION;
-  if (hasCondition('Double Hit')) return AbilityConditionType.DOUBLE_HIT;
-  if (hasCondition('Razor Fang')) return ItemConditionType.RAZOR_FANG;
-  if (hasCondition('Razor Claw')) return ItemConditionType.RAZOR_CLAW;
-  if (hasCondition('Remoraid')) return OtherConditionType.WITH_REMORAID;
-  if (hasCondition('Dusty Bowl')) return AreaConditionType.NEAR_DUSTY_BOWL;
-  if (hasCondition('Mount Lanakila')) return AreaConditionType.MOUNT_LANAKILA;
-  if (hasCondition('Stomp')) return AbilityConditionType.STOMP;
-  if (hasCondition('Dragon Pulse')) return AbilityConditionType.DRAGON_PULSE;
-  if (hasCondition('Meltan')) return OtherConditionType.MELMETAL;
-  if (hasCondition('Sweet')) return ItemConditionType.SWEET;
-  if (hasCondition('critical')) return OtherConditionType.CRITICAL_HITS;
-  if (hasCondition('Taunt')) return AbilityConditionType.TAUNT;
-  if (hasCondition('in Tower of Darkness')) return OtherConditionType.IN_TOWER_OF_DARKNESS;
-  if (hasCondition('in Tower of Water')) return OtherConditionType.IN_TOWER_OF_WATER;
-
   return condition;
+};
+const getLevelAdditionalCondition = (area: string): string => {
+  const hasArea = hasText(area);
+  if (!area) return '';
+
+  if (hasArea('Alola')) return `${AreaType.ALOLA}에서`;
+  if (hasArea('galar')) return `${AreaType.GALAR}에서`;
+  if (hasArea('grass')) return `${AreaType.GRASS}애서`;
+  if (hasArea('caves')) return `${AreaType.CAVES}애서`;
+  if (hasArea('buildings')) return `${AreaType.BUILDINGS}애서`;
+  if (hasArea('Sun or Ultra Sun')) return `${AreaType.SUN_OR_ULTRA_SUN}에서`;
+  if (hasArea('Moon or Ultra Moon')) return `${AreaType.MOON_OR_ULTRA_MOON}에서`;
+  if (hasArea('Ultra Sun/Moon')) return `${AreaType.ULTRA_SUN_OR_ULTRA_MOON}에서`;
+  if (hasArea('Pokéball in bag')) return `가방에 ${AreaType.POKEBALL}을 가지고 있고`;
+  return area;
 };
 
 const getTradingCondition = (condition: string): string => {
+  const hasCondition = hasText(condition);
   if (!condition) return '통신교환';
 
-  const hasCondition = hasText(condition);
   if (hasCondition('Kings Rock')) return TradingConditionType.KINGS_ROCK;
   if (hasCondition('Metal Coat')) return TradingConditionType.METAL_COAT;
   if (hasCondition('Protector')) return TradingConditionType.PROTECTOR;
@@ -139,36 +127,19 @@ const getTradingCondition = (condition: string): string => {
   return condition;
 };
 
-const getArea = (area: string): string => {
-  const hasArea = hasText(area);
-  if (!area) return '';
-
-  if (hasArea('Alola')) return `${AreaType.ALOLA}에서`;
-  if (hasArea('galar')) return `${AreaType.GALAR}에서`;
-  if (hasArea('grass')) return `${AreaType.GRASS}애서`;
-  if (hasArea('caves')) return `${AreaType.CAVES}애서`;
-  if (hasArea('buildings')) return `${AreaType.BUILDINGS}애서`;
-  if (hasArea('Sun or Ultra Sun')) return `${AreaType.SUN_OR_ULTRA_SUN}에서`;
-  if (hasArea('Moon or Ultra Moon')) return `${AreaType.MOON_OR_ULTRA_MOON}에서`;
-  if (hasArea('Ultra Sun/Moon')) return `${AreaType.ULTRA_SUN_OR_ULTRA_MOON}에서`;
-  if (hasArea('Pokéball in bag')) return `가방에 ${AreaType.POKEBALL}을 가지고 있고`;
-  return area;
-};
-
-const getAdditionalCondition = (condition: string): string => {
-  const hasCondition = hasText(condition);
-  if (!condition || hasCondition('outside')) return '';
-
-  if (hasCondition('Alola')) return AreaConditionType.ALOLA;
-  if (hasCondition('Galar')) return AreaConditionType.GALAR;
-  if (hasCondition('Male')) return ConditionType.MALE;
-  if (hasCondition('Female')) return ConditionType.FEMALE;
-  return condition;
-};
-
 const getStoneCondition = (stone: string): string => {
   const key = Object.keys(StoneType).find(key => new RegExp(key, 'gi').test(stone)) as keyof typeof StoneType;
   return StoneType[key];
+};
+const getStoneAdditionalCondition = (condition: string) => {
+  const hasCondition = hasText(condition);
+  if (!condition || hasCondition('outside')) return '';
+
+  if (hasCondition('Alola')) return `${AreaType.ALOLA}에서`;
+  if (hasCondition('Female')) return `${ConditionType.FEMALE}`;
+  if (hasCondition('Male')) return `${ConditionType.FEMALE}`;
+
+  return '';
 };
 
 const differentForm = (data: IEvolutionChain) => {
@@ -181,19 +152,10 @@ const levelCondition = (to: IEvolvingTo) => {
   const filteredCondition = conditions
     .split(',')
     .reverse()
-    .reduce((acc: string, text: string, i: number) => `${acc} ${i > 0 ? getCondition(text) : getArea(text)}`, '');
+    .reduce((acc: string, text: string, i: number) => {
+      return `${acc} ${i > 0 ? getLevelCondition(text) : getLevelAdditionalCondition(text)}`;
+    }, '');
   to.condition = [level, filteredCondition].filter(c => c);
-};
-
-const getStoneAdditionalCondition = (condition: string) => {
-  const hasCondition = hasText(condition);
-  if (!condition || hasCondition('outside')) return '';
-
-  if (hasCondition('Alola')) return `${AreaType.ALOLA}에서`;
-  if (hasCondition('Female')) return `${ConditionType.FEMALE}`;
-  if (hasCondition('Male')) return `${ConditionType.FEMALE}`;
-
-  return '';
 };
 
 const elementalStoneCondition = (to: IEvolvingTo) => {
