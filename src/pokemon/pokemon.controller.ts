@@ -20,4 +20,9 @@ export class PokemonController {
   public getEvolutionChainByTrading(): Promise<IEvolutionChain[]> {
     return this.pokemonService.getEvolutionChainByTrading();
   }
+
+  @Get('evolutionChainByFriendship')
+  public getEvolutionChainByFriendship(): Promise<IEvolutionChain[]> {
+    return this.pokemonService.getEvolutionChainByFriendship();
+  }
 }
