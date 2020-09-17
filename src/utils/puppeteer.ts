@@ -1,9 +1,12 @@
 import { Browser, launch, Page } from 'puppeteer';
 import { Logger } from '@nestjs/common';
+import { IEvolutionChain, IEvolvingTo, IPokemon } from '@/pokemon/evolutionChains';
 
 declare let window: IWindow;
 export interface IWindow extends Window {
   [key: string]: any;
+  getPokemons: (el: NodeListOf<Element>) => IPokemon[];
+  addEvolutionFrom: (acc: IEvolutionChain[], from: IPokemon, to: IEvolvingTo) => IEvolutionChain[];
 }
 
 export type Entries<T> = {
