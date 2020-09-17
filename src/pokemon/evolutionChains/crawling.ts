@@ -184,6 +184,11 @@ const tradingCondition = (to: IEvolvingTo) => {
   to.condition = [getTradingCondition(condition)];
 };
 
+const friendshipCondition = (to: IEvolvingTo) => {
+  const [, condition] = to.condition;
+  to.condition = [getFriendshipCondition(condition)];
+};
+
 const crawling: CrawlingEvolution = (elements, type) =>
   elements.reduce((acc, $tr) => {
     const [from, to] = window.getPokemons($tr.querySelectorAll('.cell-name')) as IPokemon[];
