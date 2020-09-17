@@ -19,7 +19,8 @@ export interface IEvolutionChain extends IPokemon {
 export type CrawlingEvolution = (elements: Element[], type: string) => IEvolutionChain[];
 
 export const EvolutionType = {
-  LEVEL: 'levelUp',
+  LEVEL: 'level',
+  STONE: 'stone',
 };
 
 export const FormType = {
