@@ -9,6 +9,8 @@ import {
   IEvolutionChain,
   IEvolvingTo,
   IPokemon,
+  AbilityConditionType,
+  ItemConditionType,
   OtherConditionType,
   StoneType,
   TradingConditionType,
@@ -52,6 +54,8 @@ const evolutionUtil = async (page: Page): Promise<void> => {
         return { name, image, differentForm: convertDifferentForm(differentForm) };
       });
     };
+    window.hasExclusionPokemon = (level: string | null, condition: string): boolean =>
+      /use|random|trade|empty/.test(condition) || !!level;
     window.addEvolutionFrom = (acc: IEvolutionChain[], from: IPokemon, to: IEvolvingTo): IEvolutionChain[] => {
       const fromIndex = acc.findIndex(p => p.name === from.name);
       acc[fromIndex].evolvingTo.push(to);
@@ -152,6 +156,36 @@ const getFriendshipCondition = (condition: string): string => {
   return condition;
 };
 
+const getOtherCondition = (condition: string): string => {
+  const hasCondition = hasText(condition);
+  if (!condition || hasCondition('outside')) return '';
+
+  if (hasCondition('Magnetic Field')) return AreaConditionType.MAGNETIC_FIELD;
+  if (hasCondition('Rollout')) return AbilityConditionType.ROLLOUT;
+  if (hasCondition('Oval Stone')) return ItemConditionType.OVAL_STONE;
+  if (hasCondition('Ancient Power')) return AbilityConditionType.ANCIENT_POWER;
+  if (hasCondition('Mimic')) return AbilityConditionType.MIMIC;
+  if (hasCondition('Mossy Rock')) return AreaConditionType.MOSSY_ROCK;
+  if (hasCondition('Icy Rock')) return AreaConditionType.ICY_ROCK;
+  if (hasCondition('Affection')) return OtherConditionType.AFFECTION;
+  if (hasCondition('Double Hit')) return AbilityConditionType.DOUBLE_HIT;
+  if (hasCondition('Razor Fang')) return ItemConditionType.RAZOR_FANG;
+  if (hasCondition('Razor Claw')) return ItemConditionType.RAZOR_CLAW;
+  if (hasCondition('Remoraid')) return OtherConditionType.WITH_REMORAID;
+  if (hasCondition('Dusty Bowl')) return AreaConditionType.NEAR_DUSTY_BOWL;
+  if (hasCondition('Mount Lanakila')) return AreaConditionType.MOUNT_LANAKILA;
+  if (hasCondition('Stomp')) return AbilityConditionType.STOMP;
+  if (hasCondition('Dragon Pulse')) return AbilityConditionType.DRAGON_PULSE;
+  if (hasCondition('Meltan')) return OtherConditionType.MELMETAL;
+  if (hasCondition('Sweet')) return ItemConditionType.SWEET;
+  if (hasCondition('critical')) return OtherConditionType.CRITICAL_HITS;
+  if (hasCondition('Taunt')) return AbilityConditionType.TAUNT;
+  if (hasCondition('in Tower of Darkness')) return OtherConditionType.IN_TOWER_OF_DARKNESS;
+  if (hasCondition('in Tower of Water')) return OtherConditionType.IN_TOWER_OF_WATER;
+
+  return condition;
+};
+
 const levelCondition = (conditions: string): string[] => {
   const [c1, c2] = conditions.split(',');
   const condition = getLevelCondition(c1);
@@ -172,11 +206,16 @@ const tradingCondition = (condition: string): string[] => [getTradingCondition(c
 
 const friendshipCondition = (condition: string): string[] => [getFriendshipCondition(condition)];
 
+const otherCondition = (condition: string): string[] => [getOtherCondition(condition)];
+
 const crawling = (elements: Element[], type: string): IEvolutionChain[] =>
   elements.reduce<IEvolutionChain[]>((acc, $tr) => {
     const [from, to] = window.getPokemons($tr.querySelectorAll('.cell-name'));
     const level = $tr.querySelector('.cell-num')?.textContent ?? null;
     const condition = $tr.querySelector('.cell-med-text')?.textContent ?? '';
+
+    if (type === 'status' && window.hasExclusionPokemon(level, condition)) return acc;
+
     const evolvingTo = { ...to, type, condition: [level, condition] } as IEvolvingTo;
 
     const isDuplicatePokemon = acc.some(p => p.name === from.name && !from.differentForm);
@@ -199,6 +238,8 @@ const convertEvolutionCondition = (type: string, crawlingData: IEvolutionChain[]
           return { ...to, condition: tradingCondition(condition) };
         case EvolutionType.FRIENDSHIP:
           return { ...to, condition: friendshipCondition(condition) };
+        case EvolutionType.STATUS:
+          return { ...to, condition: otherCondition(condition) };
         default:
           return to;
       }
