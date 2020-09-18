@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { IEvolutionChain } from './evolutionChains';
+import { IEvolutionChain } from './pokemon.interface';
 import { PokemonService } from './pokemon.service';
 
 @Controller('pokemon')
