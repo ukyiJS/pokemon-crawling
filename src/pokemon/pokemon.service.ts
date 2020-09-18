@@ -1,7 +1,7 @@
-import { writeJson } from '@/utils';
+import { getJson, mergeJson, writeJson } from '@/utils';
 import { Injectable } from '@nestjs/common';
 import { EvolutionType, getEvolutionChains } from './evolutionChains';
-import { IEvolutionChain } from './pokemon.interface';
+import { IEvolutionChain, IPokemonNames } from './pokemon.interface';
 
 @Injectable()
 export class PokemonService {
@@ -46,5 +46,33 @@ export class PokemonService {
     });
 
     return evolutionChainByOtherCondition;
+  }
+
+  public mergeEvolutionChainJson(): IEvolutionChain[] {
+    const mergedJson = mergeJson<IEvolutionChain>({
+      fileNames: [
+        'evolutionChainByElementalStone.json',
+        'evolutionChainByFriendship.json',
+        'evolutionChainByLevel.json',
+        'evolutionChainByOtherCondition.json',
+        'evolutionChainByTrading.json',
+      ],
+    });
+    const pokemons = getJson<IPokemonNames[]>({ fileName: 'pokemonWiki.json' }).map(({ no, name, engName, types }) => ({
+      no,
+      name,
+      engName,
+      types,
+    }));
+    const getPokemon = (evolution: IEvolutionChain): IEvolutionChain => ({
+      ...evolution,
+      ...pokemons.find(p => new RegExp(p.engName).test(evolution.name)),
+      evolvingTo: evolution.evolvingTo?.map(e => getPokemon(e as IEvolutionChain)),
+    });
+
+    return mergedJson
+      .flat()
+      .map(getPokemon)
+      .sort((a, b) => +a.no! + +!!a.differentForm - (+b.no! + +!!b.differentForm));
   }
 }
