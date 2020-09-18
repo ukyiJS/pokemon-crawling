@@ -1,6 +1,6 @@
-import { Browser, launch, Page } from 'puppeteer';
+import { IEvolutionChain, IEvolvingTo, IPokemon } from '@/pokemon/pokemon.interface';
 import { Logger } from '@nestjs/common';
-import { IEvolutionChain, IEvolvingTo, IPokemon } from '@/pokemon/evolutionChains';
+import { Browser, launch, Page } from 'puppeteer';
 
 declare let window: IWindow;
 export interface IWindow extends Window {
