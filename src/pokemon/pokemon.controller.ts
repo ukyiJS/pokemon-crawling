@@ -30,4 +30,9 @@ export class PokemonController {
   public getEvolutionChainByOtherCondition(): Promise<IEvolutionChain[]> {
     return this.pokemonService.getEvolutionChainByOtherCondition();
   }
+
+  @Get('mergeEvolutionChainJson')
+  public mergeEvolutionChainJson(): IEvolutionChain[] {
+    return this.pokemonService.mergeEvolutionChainJson();
+  }
 }
