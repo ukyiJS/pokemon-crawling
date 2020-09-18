@@ -1,15 +1,13 @@
 import { getBrowserAndPage, IWindow } from '@/utils';
 import { Page } from 'puppeteer';
+import { IEvolutionChain, IEvolvingTo, IPokemon } from '../pokemon.interface';
 import {
+  AbilityConditionType,
   AreaConditionType,
   AreaType,
   ConditionType,
   EvolutionType,
   FormType,
-  IEvolutionChain,
-  IEvolvingTo,
-  IPokemon,
-  AbilityConditionType,
   ItemConditionType,
   OtherConditionType,
   StoneType,
@@ -47,7 +45,7 @@ const evolutionUtil = async (page: Page): Promise<void> => {
 
     window.getPokemons = (el: NodeListOf<Element>): IPokemon[] => {
       return Array.from(el).map($td => {
-        const name = $td.querySelector('.ent-name')!.textContent!;
+        const name = $td.querySelector('.ent-name')!.textContent!.replace(/\s/g, '');
         const image = $td.querySelector('.icon-pkmn')!.getAttribute('data-src')!;
         const differentForm = $td.querySelector('.text-muted')?.textContent ?? null;
 
@@ -228,7 +226,7 @@ const convertEvolutionCondition = (type: string, crawlingData: IEvolutionChain[]
   return crawlingData.map(data => ({
     ...data,
     evolvingTo: data.evolvingTo.map(to => {
-      const [level, condition] = to.condition;
+      const [level, condition] = to.condition!;
       switch (type) {
         case EvolutionType.LEVEL:
           return { ...to, condition: [level, ...levelCondition(condition)] };
