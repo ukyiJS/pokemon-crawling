@@ -41,3 +41,6 @@ yarn.lock
 .env
 .env.*
 env*.json
+
+# json file
+**/json/*.json
