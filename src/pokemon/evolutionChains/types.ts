@@ -1,21 +1,3 @@
-export interface IPokemon {
-  name: string;
-  image: string;
-  differentForm: string | null;
-}
-
-export interface IEvolvingTo extends IPokemon {
-  type: string;
-  condition: string[];
-}
-
-export interface IEvolutionChain extends IPokemon {
-  evolvingTo: IEvolvingTo[];
-  name: string;
-  image: string;
-  differentForm: string | null;
-}
-
 export const EvolutionType = {
   LEVEL: 'level',
   STONE: 'stone',
