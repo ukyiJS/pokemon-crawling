@@ -17,4 +17,9 @@ describe('PokemonService', () => {
     const evolutionChainByLevel = await service.getEvolutionChainByLevel();
     expect(evolutionChainByLevel).not.toBeUndefined();
   });
+
+  it('evolutionChainByElementalStone', async () => {
+    const evolutionChainByElementalStone = await service.getEvolutionChainByElementalStone();
+    expect(evolutionChainByElementalStone).not.toBeUndefined();
+  });
 });
