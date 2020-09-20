@@ -27,6 +27,10 @@ export class PokemonService {
     return getEvolutionChains(EvolutionType.STATUS);
   }
 
+  public getPokemonWithoutEvolutions(): Promise<IEvolutionChain[]> {
+    return getEvolutionChains(EvolutionType.NONE);
+  }
+
   public mergeEvolutionChains(): IEvolutionChain[] {
     const dir = join(process.cwd(), 'src/assets/json');
     const fileNames = readdirSync(dir).filter(name => /^evolutionChainBy/gi.test(name));
