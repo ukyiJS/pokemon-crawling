@@ -27,4 +27,9 @@ describe('PokemonService', () => {
     const evolutionChainByTrading = await service.getEvolutionChainByTrading();
     expect(evolutionChainByTrading).not.toBeUndefined();
   });
+
+  it('evolutionChainByFriendship', async () => {
+    const evolutionChainByFriendship = await service.getEvolutionChainByFriendship();
+    expect(evolutionChainByFriendship).not.toBeUndefined();
+  });
 });
