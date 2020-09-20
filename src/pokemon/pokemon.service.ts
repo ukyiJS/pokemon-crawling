@@ -1,72 +1,43 @@
-import { getJson, mergeJson, writeJson } from '@/utils';
+import { getJson, mergeJson } from '@/utils';
 import { Injectable } from '@nestjs/common';
+import { readdirSync } from 'fs';
+import { join } from 'path';
 import { EvolutionType, getEvolutionChains } from './evolutionChains';
 import { IEvolutionChain, IPokemonNames } from './pokemon.interface';
 
 @Injectable()
 export class PokemonService {
-  public async getEvolutionChainByLevel(): Promise<IEvolutionChain[]> {
-    const evolutionChainByLevel = await getEvolutionChains(EvolutionType.LEVEL);
-    writeJson({ data: evolutionChainByLevel, fileName: 'evolutionChainByLevel', dirName: 'src/assets/json' });
-
-    return evolutionChainByLevel;
+  public getEvolutionChainByLevel(): Promise<IEvolutionChain[]> {
+    return getEvolutionChains(EvolutionType.LEVEL);
   }
 
-  public async getEvolutionChainByElementalStone(): Promise<IEvolutionChain[]> {
-    const evolutionChainByElementalStone = await getEvolutionChains(EvolutionType.STONE);
-    writeJson({
-      data: evolutionChainByElementalStone,
-      fileName: 'evolutionChainByElementalStone',
-      dirName: 'src/assets/json',
-    });
-
-    return evolutionChainByElementalStone;
+  public getEvolutionChainByElementalStone(): Promise<IEvolutionChain[]> {
+    return getEvolutionChains(EvolutionType.STONE);
   }
 
-  public async getEvolutionChainByTrading(): Promise<IEvolutionChain[]> {
-    const evolutionChainByTrading = await getEvolutionChains(EvolutionType.TRADE);
-    writeJson({ data: evolutionChainByTrading, fileName: 'evolutionChainByTrading', dirName: 'src/assets/json' });
-
-    return evolutionChainByTrading;
+  public getEvolutionChainByTrading(): Promise<IEvolutionChain[]> {
+    return getEvolutionChains(EvolutionType.TRADE);
   }
 
-  public async getEvolutionChainByFriendship(): Promise<IEvolutionChain[]> {
-    const evolutionChainByFriendship = await getEvolutionChains(EvolutionType.FRIENDSHIP);
-    writeJson({ data: evolutionChainByFriendship, fileName: 'evolutionChainByFriendship', dirName: 'src/assets/json' });
-
-    return evolutionChainByFriendship;
+  public getEvolutionChainByFriendship(): Promise<IEvolutionChain[]> {
+    return getEvolutionChains(EvolutionType.FRIENDSHIP);
   }
 
-  public async getEvolutionChainByOtherCondition(): Promise<IEvolutionChain[]> {
-    const evolutionChainByOtherCondition = await getEvolutionChains(EvolutionType.STATUS);
-    writeJson({
-      data: evolutionChainByOtherCondition,
-      fileName: 'evolutionChainByOtherCondition',
-      dirName: 'src/assets/json',
-    });
-
-    return evolutionChainByOtherCondition;
+  public getEvolutionChainByOtherCondition(): Promise<IEvolutionChain[]> {
+    return getEvolutionChains(EvolutionType.STATUS);
   }
 
-  public mergeEvolutionChainJson(): IEvolutionChain[] {
-    const mergedJson = mergeJson<IEvolutionChain>({
-      fileNames: [
-        'evolutionChainByElementalStone.json',
-        'evolutionChainByFriendship.json',
-        'evolutionChainByLevel.json',
-        'evolutionChainByOtherCondition.json',
-        'evolutionChainByTrading.json',
-      ],
-    });
-    const pokemons = getJson<IPokemonNames[]>({ fileName: 'pokemonWiki.json' }).map(({ no, name, engName, types }) => ({
-      no,
-      name,
-      engName,
-      types,
-    }));
+  public mergeEvolutionChains(): IEvolutionChain[] {
+    const dir = join(process.cwd(), 'src/assets/json');
+    const fileNames = readdirSync(dir).filter(name => /^evolutionChainBy/gi.test(name));
+    const mergedJson = mergeJson<IEvolutionChain>({ fileNames });
+
+    const pokemons = getJson<IPokemonNames[]>({ fileName: 'pokemonWiki.json' });
     const getPokemon = (evolution: IEvolutionChain): IEvolutionChain => ({
       ...evolution,
-      ...pokemons.find(p => new RegExp(p.engName).test(evolution.name)),
+      ...pokemons
+        .map(({ no, name, engName, types }) => ({ no, name, engName, types }))
+        .find(p => new RegExp(p.engName).test(evolution.name)),
       evolvingTo: evolution.evolvingTo?.map(e => getPokemon(e as IEvolutionChain)),
     });
 
