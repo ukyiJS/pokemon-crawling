@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PokemonService } from './pokemon.service';
 
+jest.setTimeout(100000);
 describe('PokemonService', () => {
   let service: PokemonService;
 
@@ -12,7 +13,8 @@ describe('PokemonService', () => {
     service = module.get<PokemonService>(PokemonService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it('evolutionChainByLevel', async () => {
+    const evolutionChainByLevel = await service.getEvolutionChainByLevel();
+    expect(evolutionChainByLevel).not.toBeUndefined();
   });
 });
