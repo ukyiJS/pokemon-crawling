@@ -32,4 +32,9 @@ describe('PokemonService', () => {
     const evolutionChainByFriendship = await service.getEvolutionChainByFriendship();
     expect(evolutionChainByFriendship).not.toBeUndefined();
   });
+
+  it('evolutionChainByOtherCondition', async () => {
+    const evolutionChainByOtherCondition = await service.getEvolutionChainByOtherCondition();
+    expect(evolutionChainByOtherCondition).not.toBeUndefined();
+  });
 });
