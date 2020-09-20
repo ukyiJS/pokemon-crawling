@@ -1,8 +1,3 @@
-export interface ISessionPokemon {
-  [key: string]: any;
-  pokemons: IPokemonNames[];
-}
-
 export interface IPokemonNames {
   no: string;
   name: string;
