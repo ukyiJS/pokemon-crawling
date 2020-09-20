@@ -27,8 +27,7 @@ export const getJson = <T>({ fileName, dirName = 'src/assets/json' }: GetJson): 
 
 export const mergeJson = <T>({ fileNames, dirName = 'src/assets/json' }: MergedJson): T[] => {
   const dir = join(process.cwd(), dirName);
-  const jsonNames = readdirSync(dir).filter(name => fileNames.includes(name));
-  return jsonNames.map<T>(json => JSON.parse(readFileSync(join(dir, json), fileOptions)));
+  return fileNames.map<T>(json => JSON.parse(readFileSync(join(dir, json), fileOptions)));
 };
 
 export const writeJson = ({ data, fileName, dirName = '' }: WriteJson): void => {
