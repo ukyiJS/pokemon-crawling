@@ -33,6 +33,11 @@ export class PokemonController {
     return this.pokemonService.getEvolutionChainByOtherCondition();
   }
 
+  @Get('pokemonWithoutEvolutions')
+  public getPokemonWithoutEvolutions(): Promise<IEvolutionChain[]> {
+    return this.pokemonService.getPokemonWithoutEvolutions();
+  }
+
   @Get('mergedEvolutionChains')
   public mergeEvolutionChains(): IEvolutionChain[] {
     return this.pokemonService.mergeEvolutionChains();
