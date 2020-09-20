@@ -245,15 +245,42 @@ const convertEvolutionCondition = (type: string, crawlingData: IEvolutionChain[]
   }));
 };
 
-export const getEvolutionChains = async (type: string): Promise<IEvolutionChain[]> => {
+const evolutionCrawling = async (type: string): Promise<IEvolutionChain[]> => {
   const url = `https://pokemondb.net/evolution/${type}`;
   const waitForSelector = '#evolution > tbody';
-
   const { browser, page } = await getBrowserAndPage(url, waitForSelector);
   await evolutionUtil(page);
 
   const crawlingData = await page.$$eval('#evolution > tbody > tr', crawling, type);
   await browser.close();
-
   return convertEvolutionCondition(type, crawlingData);
+};
+const withoutEvolutionCrawling = async (): Promise<IEvolutionChain[]> => {
+  const url = 'https://pokemondb.net/evolution/none';
+  const waitForSelector = '#main';
+  const { browser, page } = await getBrowserAndPage(url, waitForSelector);
+
+  const crawlingData = await page.$$eval('#main > .infocard-list-pkmn-lg', (el: Element[]) => {
+    return el.reduce<IEvolutionChain[]>((acc, $infoCardList) => {
+      const pokemons = Array.from($infoCardList.children).map($infoCard => {
+        const name = $infoCard.querySelector('.ent-name')!.textContent!.replace(/\s/g, '');
+        const image = `https://img.pokemondb.net/sprites/sword-shield/icon/${name.toLowerCase()}.png`;
+        return { name, image, differentForm: null, evolvingTo: [] };
+      });
+      return [...acc, ...pokemons];
+    }, []);
+  });
+
+  await browser.close();
+
+  return crawlingData;
+};
+
+export const getEvolutionChains = async (type: string): Promise<IEvolutionChain[]> => {
+  switch (type) {
+    case EvolutionType.NONE:
+      return withoutEvolutionCrawling();
+    default:
+      return evolutionCrawling(type);
+  }
 };
