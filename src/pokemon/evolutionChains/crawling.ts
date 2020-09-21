@@ -46,10 +46,10 @@ const evolutionUtil = async (page: Page): Promise<void> => {
     window.getPokemons = (el: NodeListOf<Element>): IPokemon[] => {
       return Array.from(el).map($td => {
         const name = $td.querySelector('.ent-name')!.textContent!.replace(/\s/g, '');
-        const image = $td.querySelector('.icon-pkmn')!.getAttribute('data-src')!;
+        const $image = $td.querySelector('.icon-pkmn');
+        const image = $image!.getAttribute('data-src') ?? ($image as HTMLImageElement).src;
         const differentForm = $td.querySelector('.text-muted')?.textContent ?? null;
-
-        return { name, image, differentForm: convertDifferentForm(differentForm) };
+        return { name, image, differentForm };
       });
     };
     window.hasExclusionPokemon = (level: string | null, condition: string): boolean =>
@@ -219,30 +219,43 @@ const crawling = (elements: Element[], type: string): IEvolutionChain[] =>
     const isDuplicatePokemon = acc.some(p => p.name === from.name && !from.differentForm);
     if (isDuplicatePokemon) return window.addEvolutionFrom(acc, from, evolvingTo);
 
+    const preIndex = acc.findIndex(({ evolvingTo }) => evolvingTo.some(({ name }) => name === from.name));
+    if (preIndex > -1) {
+      acc[preIndex].evolvingTo = acc[preIndex].evolvingTo.map(e => ({ ...e, evolvingTo: [evolvingTo] }));
+      return acc;
+    }
     return [...acc, { ...from, evolvingTo: [evolvingTo] }];
   }, []);
 
 const convertEvolutionCondition = (type: string, crawlingData: IEvolutionChain[]): IEvolutionChain[] => {
-  return crawlingData.map(data => ({
-    ...data,
-    evolvingTo: data.evolvingTo.map(to => {
+  const getEvolvingTo = (evolvingTo: IEvolvingTo[]): IEvolvingTo[] => {
+    return evolvingTo.map(to => {
       const [level, condition] = to.condition!;
       switch (type) {
         case EvolutionType.LEVEL:
-          return { ...to, condition: [level, ...levelCondition(condition)] };
+          to.condition = [level, ...levelCondition(condition)];
+          break;
         case EvolutionType.STONE:
-          return { ...to, condition: elementalStoneCondition(condition) };
+          to.condition = elementalStoneCondition(condition);
+          break;
         case EvolutionType.TRADE:
-          return { ...to, condition: tradingCondition(condition) };
+          to.condition = tradingCondition(condition);
+          break;
         case EvolutionType.FRIENDSHIP:
-          return { ...to, condition: friendshipCondition(condition) };
+          to.condition = friendshipCondition(condition);
+          break;
         case EvolutionType.STATUS:
-          return { ...to, condition: otherCondition(condition) };
+          to.condition = otherCondition(condition);
+          break;
         default:
-          return to;
+          break;
       }
-    }),
-  }));
+      to.evolvingTo = to.evolvingTo ? getEvolvingTo(to.evolvingTo) : [];
+      return to;
+    });
+  };
+
+  return crawlingData.map(data => ({ ...data, evolvingTo: getEvolvingTo(data.evolvingTo) }));
 };
 
 const evolutionCrawling = async (type: string): Promise<IEvolutionChain[]> => {
