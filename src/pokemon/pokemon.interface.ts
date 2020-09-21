@@ -1,10 +1,3 @@
-export interface IPokemonNames {
-  no: string;
-  name: string;
-  engName: string;
-  types: string[];
-}
-
 export interface IDifferentForm {
   name: string;
   image: string;
