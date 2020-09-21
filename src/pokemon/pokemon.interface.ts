@@ -14,6 +14,7 @@ export interface IPokemon {
 export interface IEvolvingTo extends IPokemon {
   type?: string;
   condition?: string[];
+  evolvingTo: IEvolvingTo[];
 }
 
 export interface IEvolutionChain extends IPokemon {
