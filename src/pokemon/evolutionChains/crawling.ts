@@ -1,6 +1,6 @@
 import { getBrowserAndPage, IWindow } from '@/utils';
 import { Page } from 'puppeteer';
-import { IEvolutionChain, IEvolvingTo, IPokemon } from '../pokemon.interface';
+import { IDifferentForm, IEvolutionChain, IEvolvingTo, IPokemon } from '../pokemon.interface';
 import {
   AbilityConditionType,
   AreaConditionType,
@@ -45,11 +45,12 @@ const evolutionUtil = async (page: Page): Promise<void> => {
 
     window.getPokemons = (el: NodeListOf<Element>): IPokemon[] => {
       return Array.from(el).map($td => {
-        const name = $td.querySelector('.ent-name')!.textContent!.replace(/\s/g, '');
+        const name = $td.querySelector('.ent-name')!.textContent!;
         const $image = $td.querySelector('.icon-pkmn');
-        const image = $image!.getAttribute('data-src') ?? ($image as HTMLImageElement).src;
-        const differentForm = $td.querySelector('.text-muted')?.textContent ?? null;
-        return { name, image, differentForm };
+        const image = $image?.getAttribute('data-src') ?? ($image as HTMLImageElement).src;
+        const form = $td.querySelector('.text-muted')?.textContent ?? null;
+
+        return { name, image, form: convertDifferentForm(form) };
       });
     };
     window.hasExclusionPokemon = (level: string | null, condition: string): boolean =>
@@ -211,20 +212,15 @@ const crawling = (elements: Element[], type: string): IEvolutionChain[] =>
     const [from, to] = window.getPokemons($tr.querySelectorAll('.cell-name'));
     const level = $tr.querySelector('.cell-num')?.textContent ?? null;
     const condition = $tr.querySelector('.cell-med-text')?.textContent ?? '';
-
-    if (type === 'status' && window.hasExclusionPokemon(level, condition)) return acc;
-
     const evolvingTo = { ...to, type, condition: [level, condition] } as IEvolvingTo;
 
-    const isDuplicatePokemon = acc.some(p => p.name === from.name && !from.differentForm);
-    if (isDuplicatePokemon) return window.addEvolutionFrom(acc, from, evolvingTo);
-
-    const preIndex = acc.findIndex(({ evolvingTo }) => evolvingTo.some(({ name }) => name === from.name));
-    if (preIndex > -1) {
-      acc[preIndex].evolvingTo = acc[preIndex].evolvingTo.map(e => ({ ...e, evolvingTo: [evolvingTo] }));
+    const index = acc.findIndex(p => p.name === from.name);
+    if (index > -1 && (from.form || to.form)) {
+      acc[index].differentForm = [...acc[index].differentForm!, { ...from, evolvingTo: [evolvingTo] }];
       return acc;
     }
-    return [...acc, { ...from, evolvingTo: [evolvingTo] }];
+
+    return [...acc, { ...from, evolvingTo: [evolvingTo], differentForm: [] as IDifferentForm[] }];
   }, []);
 
 const convertEvolutionCondition = (type: string, crawlingData: IEvolutionChain[]): IEvolutionChain[] => {
@@ -255,7 +251,14 @@ const convertEvolutionCondition = (type: string, crawlingData: IEvolutionChain[]
     });
   };
 
-  return crawlingData.map(data => ({ ...data, evolvingTo: getEvolvingTo(data.evolvingTo) }));
+  return crawlingData.map(pokemon => ({
+    ...pokemon,
+    differentForm: pokemon.differentForm?.map(form => ({
+      ...form,
+      evolvingTo: getEvolvingTo(form.evolvingTo),
+    })),
+    evolvingTo: getEvolvingTo(pokemon.evolvingTo),
+  }));
 };
 
 const evolutionCrawling = async (type: string): Promise<IEvolutionChain[]> => {
@@ -278,7 +281,7 @@ const withoutEvolutionCrawling = async (): Promise<IEvolutionChain[]> => {
       const pokemons = Array.from($infoCardList.children).map($infoCard => {
         const name = $infoCard.querySelector('.ent-name')!.textContent!.replace(/\s/g, '');
         const image = `https://img.pokemondb.net/sprites/sword-shield/icon/${name.toLowerCase()}.png`;
-        return { name, image, differentForm: null, evolvingTo: [] };
+        return { name, image, form: null, evolvingTo: [] };
       });
       return [...acc, ...pokemons];
     }, []);
