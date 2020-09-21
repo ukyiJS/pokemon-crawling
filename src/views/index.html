@@ -26,7 +26,7 @@
         <button id="status" data-url="/pokemon/evolutionChainByOtherCondition" class="btn color-5">
           OtherCondition
         </button>
-        <button id="none" data-url="/pokemon/pokemonWithoutEvolutions" class="btn color-5">
+        <button id="none" data-url="/pokemon/pokemonWithoutEvolutions" class="btn color-6">
           pokemonWithoutEvolutions
         </button>
         <button id="merge" data-url="/pokemon/mergedEvolutionChains" class="btn color-7">
@@ -56,7 +56,18 @@
           toggleDisable(isLoading);
 
           if (isLoading) reqTime = Date.now();
-          else console.log(interceptor.data, `+${Date.now() - reqTime}ms`);
+          else {
+            const evolution = interceptor.data.reduce((acc, { evolvingTo }) => [...acc, ...evolvingTo], []);
+            console.log(
+              evolution.map(p => {
+                const findEvolution = interceptor.data.find(e => e.name === p.name);
+                console.log(findEvolution);
+                return findEvolution ? findEvolution : p;
+              }),
+            );
+            console.log(interceptor.data);
+            // console.log(interceptor.data, `+${Date.now() - reqTime}ms`);
+          }
 
           return interceptor;
         };
