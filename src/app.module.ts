@@ -10,7 +10,7 @@ import { PokemonModule } from './pokemon/pokemon.module';
 
 @Module({
   imports: [
-    CacheModule.registerAsync({ useClass: CacheService }),
+    // CacheModule.registerAsync({ useClass: CacheService }),
     GraphQLModule.forRootAsync({ useClass: GraphqlService }),
     TypeOrmModule.forRootAsync({ useClass: TypeormService }),
     PokemonModule,
