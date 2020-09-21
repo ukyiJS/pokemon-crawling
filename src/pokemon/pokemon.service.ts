@@ -36,12 +36,16 @@ export class PokemonService {
     const fileNames = readdirSync(dir).filter(name => /^evolutionChainBy/gi.test(name));
     const mergedJson = mergeJson<IEvolutionChain>({ fileNames });
 
-    const pokemons = getJson<IPokemonNames[]>({ fileName: 'pokemonWiki.json' });
+    const removeSpecialChar = (char: string) => char?.replace(/[^a-z]/, '') ?? char;
+    const pokemons = getJson<IPokemonNames[]>({ fileName: 'pokemonWiki.json' }).map(({ no, name, engName, types }) => ({
+      no,
+      name,
+      engName,
+      types,
+    }));
     const getPokemon = (evolution: IEvolutionChain): IEvolutionChain => ({
       ...evolution,
-      ...pokemons
-        .map(({ no, name, engName, types }) => ({ no, name, engName, types }))
-        .find(p => new RegExp(p.engName).test(evolution.name)),
+      ...pokemons.find(p => new RegExp(removeSpecialChar(p.engName), 'gi').test(removeSpecialChar(evolution.name))),
       evolvingTo: evolution.evolvingTo?.map(e => getPokemon(e as IEvolutionChain)),
     });
 
