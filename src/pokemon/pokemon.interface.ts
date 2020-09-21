@@ -5,10 +5,18 @@ export interface IPokemonNames {
   types: string[];
 }
 
+export interface IDifferentForm {
+  name: string;
+  image: string;
+  form: string | null;
+  evolvingTo: IEvolvingTo[];
+}
+
 export interface IPokemon {
   name: string;
   image: string;
-  differentForm: string | null;
+  form: string | null;
+  differentForm?: IDifferentForm[];
 }
 
 export interface IEvolvingTo extends IPokemon {
@@ -18,10 +26,5 @@ export interface IEvolvingTo extends IPokemon {
 }
 
 export interface IEvolutionChain extends IPokemon {
-  no?: string;
-  engName?: string;
-  types?: string[];
-  image: string;
-  differentForm: string | null;
   evolvingTo: IEvolvingTo[];
 }
