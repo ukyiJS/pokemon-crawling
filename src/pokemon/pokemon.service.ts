@@ -1,9 +1,9 @@
-import { getJson, mergeJson } from '@/utils';
+import { mergeJson } from '@/utils';
 import { Injectable } from '@nestjs/common';
 import { readdirSync } from 'fs';
 import { join } from 'path';
 import { EvolutionType, getEvolutionChains } from './evolutionChains';
-import { IEvolutionChain, IPokemonNames } from './pokemon.interface';
+import { IEvolutionChain } from './pokemon.interface';
 
 @Injectable()
 export class PokemonService {
@@ -34,24 +34,32 @@ export class PokemonService {
   public mergeEvolutionChains(): IEvolutionChain[] {
     const dir = join(process.cwd(), 'src/assets/json');
     const fileNames = readdirSync(dir).filter(name => /^evolutionChainBy/gi.test(name));
-    const mergedJson = mergeJson<IEvolutionChain>({ fileNames });
-
-    const removeSpecialChar = (char: string) => char?.replace(/[^a-z]/, '') ?? char;
-    const pokemons = getJson<IPokemonNames[]>({ fileName: 'pokemonWiki.json' }).map(({ no, name, engName, types }) => ({
-      no,
-      name,
-      engName,
-      types,
-    }));
-    const getPokemon = (evolution: IEvolutionChain): IEvolutionChain => ({
-      ...evolution,
-      ...pokemons.find(p => new RegExp(removeSpecialChar(p.engName), 'gi').test(removeSpecialChar(evolution.name))),
-      evolvingTo: evolution.evolvingTo?.map(e => getPokemon(e as IEvolutionChain)),
-    });
-
-    return mergedJson
+    const mergedJson = mergeJson<IEvolutionChain>({ fileNames })
       .flat()
-      .map(getPokemon)
-      .sort((a, b) => +a.no! + +!!a.differentForm - (+b.no! + +!!b.differentForm));
+      .reduce<IEvolutionChain[]>((acc, pokemon, i, arr) => {
+        const hasPokemons = arr.filter(({ name }) => name === pokemon.name);
+        if (hasPokemons.length > 1) {
+          pokemon.evolvingTo = hasPokemons.map(({ evolvingTo }) => evolvingTo).flat();
+
+          const uniqueNames = Array.from(new Set(pokemon.evolvingTo.map(({ name }) => name)));
+          pokemon.evolvingTo = uniqueNames.map(name => ({ ...pokemon.evolvingTo.find(p => p.name === name)! }));
+        }
+
+        const preIndex = arr.findIndex(({ evolvingTo }) => evolvingTo.some(({ name }) => name === pokemon.name));
+        if (preIndex > -1) {
+          arr[preIndex].evolvingTo = arr[preIndex].evolvingTo.map(e => ({ ...e, evolvingTo: pokemon.evolvingTo }));
+          return acc;
+        }
+        return [...acc, pokemon];
+      }, []);
+
+    const uniqueNames = Array.from(new Set(mergedJson.map(({ name }) => name)));
+    return uniqueNames
+      .map(name => ({ ...mergedJson.find(p => p.name === name && p.differentForm)! }))
+      .sort((a, b) => {
+        if (a.name < b.name) return -1;
+        if (a.name > b.name) return 1;
+        return 0;
+      });
   }
 }
