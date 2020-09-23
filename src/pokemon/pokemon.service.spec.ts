@@ -12,29 +12,4 @@ describe('PokemonService', () => {
 
     service = module.get<PokemonService>(PokemonService);
   });
-
-  it('evolutionChainByLevel', async () => {
-    const evolutionChainByLevel = await service.getEvolutionChainByLevel();
-    expect(evolutionChainByLevel).not.toBeUndefined();
-  });
-
-  it('evolutionChainByElementalStone', async () => {
-    const evolutionChainByElementalStone = await service.getEvolutionChainByElementalStone();
-    expect(evolutionChainByElementalStone).not.toBeUndefined();
-  });
-
-  it('evolutionChainByTrading', async () => {
-    const evolutionChainByTrading = await service.getEvolutionChainByTrading();
-    expect(evolutionChainByTrading).not.toBeUndefined();
-  });
-
-  it('evolutionChainByFriendship', async () => {
-    const evolutionChainByFriendship = await service.getEvolutionChainByFriendship();
-    expect(evolutionChainByFriendship).not.toBeUndefined();
-  });
-
-  it('evolutionChainByOtherCondition', async () => {
-    const evolutionChainByOtherCondition = await service.getEvolutionChainByOtherCondition();
-    expect(evolutionChainByOtherCondition).not.toBeUndefined();
-  });
 });
