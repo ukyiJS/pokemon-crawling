@@ -1,5 +1,6 @@
 import { WriteJsonInterceptor } from '@/common';
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
+import { IPokedex } from './common/type';
 import { IEvolutionChain } from './pokemon.interface';
 import { PokemonService } from './pokemon.service';
 
@@ -41,5 +42,10 @@ export class PokemonController {
   @Get('mergedEvolutionChains')
   public mergeEvolutionChains(): IEvolutionChain[] {
     return this.pokemonService.mergeEvolutionChains();
+  }
+
+  @Get('pokedex')
+  public getPokedex(): Promise<IPokedex[]> {
+    return this.pokemonService.getPokedex();
   }
 }
