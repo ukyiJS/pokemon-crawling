@@ -1,0 +1,87 @@
+import { DifferentForm } from './type';
+
+export const convertDifferentForm = (form: string): DifferentForm | null => {
+  if (!form) return null;
+
+  const hasForm = (_form: string | RegExp) => new RegExp(_form, 'i').test(form);
+
+  if (hasForm(/striped|male|female|own tempo rockruff/)) return null;
+
+  if (hasForm(/galar.*standard mode/)) return DifferentForm.GALARIAN_STANDARD_MODE;
+  if (hasForm(/galar.*zen mode/)) return DifferentForm.GALARIAN_ZEN_MODE;
+
+  if (hasForm(/mega.*x$/)) return DifferentForm.MEGA_X;
+  if (hasForm(/mega.*y$/)) return DifferentForm.MEGA_Y;
+  if (hasForm(/mega/)) return DifferentForm.MEGA;
+  if (hasForm(/alola/)) return DifferentForm.ALOLA;
+  if (hasForm(/galar/)) return DifferentForm.GALAR;
+  if (hasForm(/sunny form/)) return DifferentForm.SUNNY_FORM;
+  if (hasForm(/rainy form/)) return DifferentForm.RAINY_FORM;
+  if (hasForm(/snowy form/)) return DifferentForm.SNOWY_FORM;
+  if (hasForm(/primal/)) return DifferentForm.PRIMAL;
+  if (hasForm(/normal forme|standard mode/)) return DifferentForm.NORMAL_FORM;
+  if (hasForm(/attack forme/)) return DifferentForm.ATTACK_FORM;
+  if (hasForm(/defense forme/)) return DifferentForm.DEFENSE_FORM;
+  if (hasForm(/speed forme/)) return DifferentForm.SPEED_FORM;
+  if (hasForm(/plant cloak/)) return DifferentForm.PLANT_CLOAK;
+  if (hasForm(/sandy cloak/)) return DifferentForm.SANDY_CLOAK;
+  if (hasForm(/trash cloak/)) return DifferentForm.TRASH_CLOAK;
+  if (hasForm(/heat rotom/)) return DifferentForm.HEAT_ROTOM;
+  if (hasForm(/wash rotom/)) return DifferentForm.WASH_ROTOM;
+  if (hasForm(/frost rotom/)) return DifferentForm.FROST_ROTOM;
+  if (hasForm(/fan rotom/)) return DifferentForm.FAN_ROTOM;
+  if (hasForm(/mow rotom/)) return DifferentForm.MOW_ROTOM;
+  if (hasForm(/altered forme/)) return DifferentForm.ALTERED_FORM;
+  if (hasForm(/origin forme/)) return DifferentForm.ORIGIN_FORM;
+  if (hasForm(/land forme/)) return DifferentForm.LAND_FORM;
+  if (hasForm(/sky forme/)) return DifferentForm.SKY_FORM;
+  if (hasForm(/zen mode/)) return DifferentForm.ZEN_MODE;
+  if (hasForm(/incarnate forme/)) return DifferentForm.INCARNATE_FORM;
+  if (hasForm(/therian forme/)) return DifferentForm.THERIAN_FORM;
+  if (hasForm(/black kyurem/)) return DifferentForm.BLACK_KYUREM;
+  if (hasForm(/white kyurem/)) return DifferentForm.WHITE_KYUREM;
+  if (hasForm(/ordinary form/)) return DifferentForm.ORDINARY_FORM;
+  if (hasForm(/resolute form/)) return DifferentForm.RESOLUTE_FORM;
+  if (hasForm(/aria forme/)) return DifferentForm.ARIA_FORM;
+  if (hasForm(/pirouette forme/)) return DifferentForm.PIROUETTE_FORM;
+  if (hasForm(/ash-greninja/)) return DifferentForm.ASH_GRENINJA;
+  if (hasForm(/shield forme/)) return DifferentForm.SHIELD_FORM;
+  if (hasForm(/blade forme/)) return DifferentForm.BLADE_FORM;
+  if (hasForm(/average size/)) return DifferentForm.AVERAGE_SIZE;
+  if (hasForm(/small size/)) return DifferentForm.SMALL_SIZE;
+  if (hasForm(/large size/)) return DifferentForm.LARGE_SIZE;
+  if (hasForm(/super size/)) return DifferentForm.SUPER_SIZE;
+  if (hasForm(/50% forme/)) return DifferentForm.FIFTY_PERCENT_FORM;
+  if (hasForm(/10% forme/)) return DifferentForm.TEN_PERCENT_FORM;
+  if (hasForm(/complete forme/)) return DifferentForm.COMPLETE_FORM;
+  if (hasForm(/hoopa confined/)) return DifferentForm.HOOPA_CONFINED;
+  if (hasForm(/hoopa unbound/)) return DifferentForm.HOOPA_UNBOUND;
+  if (hasForm(/baile style/)) return DifferentForm.BAILE_STYLE;
+  if (hasForm(/pom-pom style/)) return DifferentForm.POM_POM_STYLE;
+  if (hasForm(/pa'u style/)) return DifferentForm.PA_U_STYLE;
+  if (hasForm(/sensu style/)) return DifferentForm.SENSU_STYLE;
+  if (hasForm(/midday form/)) return DifferentForm.MIDDAY_FORM;
+  if (hasForm(/midnight form/)) return DifferentForm.MIDNIGHT_FORM;
+  if (hasForm(/dusk form/)) return DifferentForm.DUSK_FORM;
+  if (hasForm(/solo form/)) return DifferentForm.SOLO_FORM;
+  if (hasForm(/school form/)) return DifferentForm.SCHOOL_FORM;
+  if (hasForm(/meteor form/)) return DifferentForm.METEOR_FORM;
+  if (hasForm(/core form/)) return DifferentForm.CORE_FORM;
+  if (hasForm(/dusk mane necrozma/)) return DifferentForm.DUSK_MANE_NECROZMA;
+  if (hasForm(/dawn wings necrozma/)) return DifferentForm.DAWN_WINGS_NECROZMA;
+  if (hasForm(/ultra necrozma/)) return DifferentForm.ULTRA_NECROZMA;
+  if (hasForm(/low key form/)) return DifferentForm.LOW_KEY_FORM;
+  if (hasForm(/amped form/)) return DifferentForm.AMPED_FORM;
+  if (hasForm(/ice face/)) return DifferentForm.ICE_FACE;
+  if (hasForm(/noice face/)) return DifferentForm.NOICE_FACE;
+  if (hasForm(/full belly mode/)) return DifferentForm.FULL_BELLY_MODE;
+  if (hasForm(/hangry mode|hungry mode/)) return DifferentForm.HUNGRY_MODE;
+  if (hasForm(/crowned sword/)) return DifferentForm.CROWNED_SWORD;
+  if (hasForm(/hero of many battles/)) return DifferentForm.HERO_OF_MANY_BATTLES;
+  if (hasForm(/crowned shield/)) return DifferentForm.CROWNED_SHIELD;
+  if (hasForm(/eternamax/)) return DifferentForm.ETERNAMAX;
+  if (hasForm(/single strike style/)) return DifferentForm.SINGLE_STRIKE_STYLE;
+  if (hasForm(/rapid strike style/)) return DifferentForm.RAPID_STRIKE_STYLE;
+
+  return null;
+};
