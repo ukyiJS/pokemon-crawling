@@ -2,7 +2,7 @@ import { getBrowserAndPage, mergeJson } from '@/utils';
 import { Injectable } from '@nestjs/common';
 import { readdirSync } from 'fs';
 import { join } from 'path';
-import { IPokedex } from './common/type';
+import { IPokedex } from './pokedex/type';
 import { EvolutionType, getEvolutionChains } from './evolutionChains';
 import { IEvolutionChain } from './pokemon.interface';
 

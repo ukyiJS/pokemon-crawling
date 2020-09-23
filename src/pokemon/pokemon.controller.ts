@@ -1,6 +1,6 @@
 import { WriteJsonInterceptor } from '@/common';
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
-import { IPokedex } from './common/type';
+import { IPokedex } from './pokedex/type';
 import { IEvolutionChain } from './pokemon.interface';
 import { PokemonService } from './pokemon.service';
 
