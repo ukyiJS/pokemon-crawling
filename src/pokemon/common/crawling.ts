@@ -111,3 +111,10 @@ export const convertForm = (form: string | null): string | null => {
   const key = Object.keys(DifferentForm).find(key => hasForm(getRegexp(key)));
   return key ? DifferentForm[key as keyof typeof DifferentForm] : null;
 };
+
+const getCondition = (condition: string | null, ConditionEnum: Condition): string | null => {
+  if (!condition) return null;
+
+  const key = Object.keys(ConditionEnum).find(key => hasText(condition)(key.replace(/_/, '')));
+  return key ? ConditionEnum[key as keyof typeof ConditionEnum] : null;
+};
