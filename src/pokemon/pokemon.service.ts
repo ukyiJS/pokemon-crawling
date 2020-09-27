@@ -77,4 +77,8 @@ export class PokemonService {
   public async getEvolutionChainByElementalStone(): Promise<IEvolutionChain[]> {
     return this.getEvolutionChains(EvolutionType.STONE);
   }
+
+  public async getEvolutionChainByTrading(): Promise<IEvolutionChain[]> {
+    return this.getEvolutionChains(EvolutionType.TRADE);
+  }
 }
