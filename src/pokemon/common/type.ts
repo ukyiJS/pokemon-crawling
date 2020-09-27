@@ -85,7 +85,7 @@ export enum EvolutionType {
   NONE = 'none',
 }
 
-export enum StoneType {
+export enum ElementalStone {
   FIRE = '불꽃의돌',
   WATER = '물의돌',
   THUNDER = '천둥의돌',
@@ -96,6 +96,7 @@ export enum StoneType {
   DUSK = '어둠의돌',
   DAWN = '각성의돌',
   ICE = '얼음의돌',
+  TART_APPLE = '새콤한 사과',
 }
 
 export enum ConditionType {
