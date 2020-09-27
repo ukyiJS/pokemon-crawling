@@ -101,6 +101,20 @@ export enum ElementalStone {
   CRACKED_POT = '깨진 포트 or 이빠진 포트',
 }
 
+export enum LevelCondition {
+  NIGHT = '밤에 레벨업',
+  DAY = '낮에 레벨업',
+  MALE = '수컷일 때 레벨업',
+  FEMALE = '암컷일 때 레벨업',
+  IN_ALOLA = '알로라지방에서 레벨업',
+  IN_GALAR = '가라르지방에서 레벨업',
+  HIGH_ATTACK = '공격 > 방어일 때 레벨업',
+  LOW_ATTACK = '공격 < 방어일 때 레벨업',
+  SAME_ATTACK = '공격 = 방어일 때 레벨업',
+  RANDOM = '랜덤',
+  EMPTY_PARTY = '파티에 빈 공간이 있을 때 레벨업',
+}
+
 export enum TradingCondition {
   NONE = '통신교환',
   KINGS_ROCK = '왕의징표석을 지니게 한 뒤 통신교환',
