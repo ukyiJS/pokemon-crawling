@@ -1,22 +1,33 @@
 export interface IWindow extends Window {
   [key: string]: any;
-  getPokemonInfo: (element: Element) => IEvolutionChain;
-  getEvolvingTo: (element: Element, to: IEvolutionChain, type: string) => IEvolvingTo;
-  addFromEvolvingTo: (acc: IEvolutionChain[], index: number, chain: IEvolutionChain) => IEvolutionChain[];
-  addMultipleEvolvingTo: (acc: IEvolutionChain[], index: number, evolvingTo: IEvolvingTo) => IEvolutionChain[];
-  addFromDifferentForm: (acc: IEvolutionChain[], index: number, chain: IEvolutionChain) => IEvolutionChain[];
+  getText: ($element: Element) => string;
+  getTexts: ($elements: NodeListOf<Element> | Element[]) => string[];
+  getPokemonInfo: (element: Element) => IPokemon;
+  getEvolvingTo: (element: Element, to: IPokemon, type: string) => IEvolvingTo;
+  addFromEvolvingTo: (acc: IPokemon[], index: number, chain: IPokemon) => IPokemon[];
+  addMultipleEvolvingTo: (acc: IPokemon[], index: number, evolvingTo: IEvolvingTo) => IPokemon[];
+  addFromDifferentForm: (acc: IPokemon[], index: number, chain: IPokemon) => IPokemon[];
+  getStats: ($element: Element) => IStats[];
 }
 
-export interface IEvolvingTo extends IEvolutionChain {
+export interface IPokemon {
+  no?: string;
+  name: string;
+  image: string;
+  form: string | null;
+  types?: string[];
+  evolvingTo: IEvolvingTo[];
+  differentForm: IPokemon[];
+  stats?: IStats[];
+}
+
+export interface IEvolvingTo extends IPokemon {
   type: string;
   level: string | null;
   condition: string | null;
 }
 
-export interface IEvolutionChain {
+export interface IStats {
   name: string;
-  image: string;
-  form: string | null;
-  evolvingTo: IEvolvingTo[];
-  differentForm: IEvolutionChain[];
+  value: number;
 }
