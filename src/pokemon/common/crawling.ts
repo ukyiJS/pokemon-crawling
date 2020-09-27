@@ -1,5 +1,15 @@
 import { Page } from 'puppeteer';
 import { IEvolutionChain, IEvolvingTo, IWindow } from '../pokemon.interface';
+import {
+  AdditionalCondition,
+  Condition,
+  DifferentForm,
+  ElementalStone,
+  EvolutionType,
+  LevelCondition,
+  TradingCondition,
+  ExceptionalFormKey,
+} from './type';
 
 declare let window: IWindow;
 
@@ -64,3 +74,30 @@ export const initCrawlingUtils = async (page: Page): Promise<void> => {
 };
 
 const hasText = (textCompare: string) => (regExp: string | RegExp) => new RegExp(regExp, 'i').test(textCompare);
+
+const getRegexp = (key: string): RegExp => {
+  switch (key) {
+    case ExceptionalFormKey.MEGA_X:
+      return /mega.*x$/;
+    case ExceptionalFormKey.MEGA_Y:
+      return /mega.*y$/;
+    case ExceptionalFormKey.GALARIAN_STANDARD_MODE:
+      return /galar.*standard mode/;
+    case ExceptionalFormKey.GALARIAN_ZEN_MODE:
+      return /galar.*zen mode/;
+    case ExceptionalFormKey.ASH_GRENINJA:
+      return /ash-greninja/;
+    case ExceptionalFormKey.FIFTY_PERCENT:
+      return /50% forme/;
+    case ExceptionalFormKey.TEN_PERCENT:
+      return /10% forme/;
+    case ExceptionalFormKey.PA_U_STYLE:
+      return /pa'u style/;
+    case ExceptionalFormKey.POM_POM_STYLE:
+      return /pom-pom style/;
+    case ExceptionalFormKey.HUNGRY_MODE:
+      return /hangry mode|hungry mode/;
+    default:
+      return new RegExp(key.replace(/_/, ''));
+  }
+};
