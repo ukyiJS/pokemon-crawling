@@ -10,13 +10,23 @@ export const initCrawlingUtils = async (page: Page): Promise<void> => {
       $elements.length ? Array.from($elements).map(({ textContent }) => textContent!) : [];
 
     window.getPokemonInfo = ($element: Element): IPokemon => {
-      const $image = $element.querySelector('.icon-pkmn')!;
+      const stats = (($totalStat = $element.querySelector('.cell-total')): IStats[] | undefined => {
+        if (!$totalStat) return undefined;
+
+        const statNames = ['HP', '공격', '방어', '특수공격', '특수방어', '스피드'];
+        const $stats = $element.querySelectorAll('.cell-num:not(.cell-fixed)');
+        const stats = window.getTexts($stats).map<IStats>((value, i) => ({ name: statNames[i], value: +value }));
+        const totalStat = { name: '총합', value: +window.getText($totalStat) };
+
+        return [...stats, totalStat];
+      })();
 
       const name = $element.querySelector('.ent-name')!.textContent!;
+      const $image = $element.querySelector('.icon-pkmn')!;
       const image = $image.getAttribute('data-src') ?? ($image as HTMLImageElement).src;
       const form = $element.querySelector('.text-muted')?.textContent ?? null;
 
-      return { name, image, form, differentForm: [], evolvingTo: [] };
+      return { name, image, form, stats, differentForm: [], evolvingTo: [] };
     };
 
     window.getEvolvingTo = ($element: Element, to: IPokemon, type: string): IEvolvingTo => ({
