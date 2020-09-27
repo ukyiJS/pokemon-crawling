@@ -1,6 +1,6 @@
 import { getBrowserAndPage } from '@/utils';
 import { Injectable } from '@nestjs/common';
-import { EvolutionChain } from './crawling';
+import { EvolutionChain, initCrawlingUtils } from './crawling';
 import { IPokedex } from './pokedex/type';
 import { IEvolutionChain } from './pokemon.interface';
 import { EvolutionType } from './pokemon.type';
@@ -49,7 +49,9 @@ export class PokemonService {
     const url = `https://pokemondb.net/evolution/${type}`;
     const selector = '#evolution > tbody > tr';
     const { browser, page } = await getBrowserAndPage(url, selector);
-    const { crawling, convertIntoKor } = new EvolutionChain(page, type);
+
+    const { crawling, convertIntoKor } = new EvolutionChain(type);
+    await initCrawlingUtils(page);
 
     const evolutionChains = await page.$$eval(selector, crawling, type);
     await browser.close();
