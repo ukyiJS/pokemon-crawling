@@ -24,6 +24,11 @@ export class PokemonController {
     return this.pokemonService.getEvolutionChainByTrading();
   }
 
+  @Get('evolutionChainByFriendship')
+  public getEvolutionChainByFriendship(): Promise<IEvolutionChain[]> {
+    return this.pokemonService.getEvolutionChainByFriendship();
+  }
+
   @Get('pokedex')
   public getPokedex(): Promise<IPokedex[]> {
     return this.pokemonService.getPokedex();
