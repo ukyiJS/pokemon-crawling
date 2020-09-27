@@ -1,11 +1,11 @@
 import { Page } from 'puppeteer';
-import { IEvolutionChain, IEvolvingTo, IWindow } from '../pokemon.interface';
+import { IEvolvingTo, IPokemon, IWindow } from '../pokemon.interface';
 
 declare let window: IWindow;
 
 export const initCrawlingUtils = async (page: Page): Promise<void> => {
   await page.evaluate(() => {
-    window.getPokemonInfo = ($element: Element): IEvolutionChain => {
+    window.getPokemonInfo = ($element: Element): IPokemon => {
       const $image = $element.querySelector('.icon-pkmn')!;
 
       const name = $element.querySelector('.ent-name')!.textContent!;
@@ -15,29 +15,24 @@ export const initCrawlingUtils = async (page: Page): Promise<void> => {
       return { name, image, form, differentForm: [], evolvingTo: [] };
     };
 
-    window.getEvolvingTo = ($element: Element, to: IEvolutionChain, type: string): IEvolvingTo => ({
+    window.getEvolvingTo = ($element: Element, to: IPokemon, type: string): IEvolvingTo => ({
       ...to,
       type,
       level: $element.querySelector('.cell-num')?.textContent ?? null,
       condition: $element.querySelector('.cell-med-text')?.textContent || null,
     });
 
-    window.addFromEvolvingTo = (acc: IEvolutionChain[], index: number, chain: IEvolutionChain): IEvolutionChain[] => {
+    window.addFromEvolvingTo = (acc: IPokemon[], index: number, chain: IPokemon): IPokemon[] => {
       acc[index].evolvingTo = [chain] as IEvolvingTo[];
       return acc;
     };
 
-    window.addMultipleEvolvingTo = (acc: IEvolutionChain[], index: number, to: IEvolvingTo): IEvolutionChain[] => {
+    window.addMultipleEvolvingTo = (acc: IPokemon[], index: number, to: IEvolvingTo): IPokemon[] => {
       acc[index].evolvingTo = [...acc[index].evolvingTo, to];
       return acc;
     };
-
-    window.addFromDifferentForm = (
-      acc: IEvolutionChain[],
-      index: number,
-      chain: IEvolutionChain,
-    ): IEvolutionChain[] => {
-      acc[index].differentForm = [...acc[index].differentForm, chain] as IEvolutionChain[];
+    window.addFromDifferentForm = (acc: IPokemon[], index: number, chain: IPokemon): IPokemon[] => {
+      acc[index].differentForm = [...acc[index].differentForm, chain];
       return acc;
     };
   });
