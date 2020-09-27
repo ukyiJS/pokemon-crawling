@@ -101,6 +101,26 @@ export enum ElementalStone {
   CRACKED_POT = '깨진 포트 or 이빠진 포트',
 }
 
+export enum TradingCondition {
+  NONE = '통신교환',
+  KINGS_ROCK = '왕의징표석을 지니게 한 뒤 통신교환',
+  METAL_COAT = '금속코트를 지니게 한 뒤 통신교환',
+  PROTECTOR = '프로텍터를 지니게 한 뒤 통신교환',
+  DRAGON_SCALE = '용의비늘을 지니게 한 뒤 통신교환',
+  ELECTIRIZER = '에레키부스터를 지니게 한 뒤 통신교환',
+  MAGMARIZER = '마그마부스터를 지니게 한 뒤 통신교환',
+  UPGRADE = '업그레이드를 지니게 한 뒤 통신교환',
+  DUBIOUS_DISC = '괴상한패치를 지니게 한 뒤 통신교환',
+  PRISM_SCALE = '고운비늘을 지니게 한 뒤 통신교환 또는 아름다움 컨디션이 170 이상일 때 레벨업',
+  REAPER_CLOTH = '영계의천을 지니게 한 뒤 통신교환',
+  DEEP_SEA_TOOTH = '심해의이빨을 지니게 한 뒤 통신교환',
+  DEEP_SEA_SCALE = '심해의비늘을 지니게 한 뒤 통신교환',
+  WITH_SHELMET = '쪼마리와 통신교환',
+  WITH_KARRABLAST = '딱정곤과 통신교환',
+  SACHET = '향기주머니를 지니게 한 뒤 통신교환',
+  WHIPPED_DREAM = '휘핑팝을 지니게 한 뒤 통신교환',
+}
+
 export enum ConditionType {
   NIGHT = '밤에 레벨업',
   DAY = '낮에 레벨업',
@@ -136,26 +156,6 @@ export enum AreaConditionType {
   MOUNT_LANAKILA = '라나키라마운틴에서 레벨업',
   NEAR_DUSTY_BOWL = '49 이상의 누적 대미지를 입은 후 와일드에리어 모래먼지구덩이에 존재하는 고인돌 아래를 지나감',
 }
-
-export enum TradingConditionType {
-  KINGS_ROCK = '왕의징표석을 지니게 한 뒤 통신교환',
-  METAL_COAT = '금속코트를 지니게 한 뒤 통신교환',
-  PROTECTOR = '프로텍터를 지니게 한 뒤 통신교환',
-  DRAGON_SCALE = '용의비늘을 지니게 한 뒤 통신교환',
-  ELECTIRIZER = '에레키부스터를 지니게 한 뒤 통신교환',
-  MAGMARIZER = '마그마부스터를 지니게 한 뒤 통신교환',
-  UPGRADE = '업그레이드를 지니게 한 뒤 통신교환',
-  DUBIOUS_DISC = '괴상한패치를 지니게 한 뒤 통신교환',
-  PRISM_SCALE = '고운비늘을 지니게 한 뒤 통신교환 또는 아름다움 컨디션이 170 이상일 때 레벨업',
-  REAPER_CLOTH = '영계의천을 지니게 한 뒤 통신교환',
-  DEEP_SEA_TOOTH = '심해의이빨을 지니게 한 뒤 통신교환',
-  DEEP_SEA_SCALE = '심해의비늘을 지니게 한 뒤 통신교환',
-  WITH_SHELMET = '쪼마리와 통신교환',
-  WITH_KARRABLAST = '딱정곤과 통신교환',
-  SACHET = '향기주머니를 지니게 한 뒤 통신교환',
-  WHIPPED_DREAM = '휘핑팝을 지니게 한 뒤 통신교환',
-}
-
 export enum OtherConditionType {
   RAIN = '비오는 날씨일때',
   DUSK = '특성이 마이페이스이고 황혼 5시~6시일 때 레벨업',
