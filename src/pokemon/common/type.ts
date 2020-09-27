@@ -97,6 +97,7 @@ export enum ElementalStone {
   DAWN = '각성의돌',
   ICE = '얼음의돌',
   TART_APPLE = '새콤한 사과',
+  SWEET_APPLE = '달콤한 사과',
 }
 
 export enum ConditionType {
