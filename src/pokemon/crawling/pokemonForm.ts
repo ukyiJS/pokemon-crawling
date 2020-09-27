@@ -7,7 +7,7 @@ export class PokemonForm extends PokemonCondition {
     super(evolutionType);
   }
 
-  private convertKeyToRegExp(key: string): RegExp {
+  private convertKeyToRegExp = (key: string): RegExp => {
     switch (key) {
       case ExceptionalFormKey.MEGA_X:
         return /mega.*x$/;
@@ -32,9 +32,9 @@ export class PokemonForm extends PokemonCondition {
       default:
         return new RegExp(key.replace(/_/, ''));
     }
-  }
+  };
 
-  private getForm(form: string | null): string | null {
+  private getForm = (form: string | null): string | null => {
     if (!form) return null;
 
     const hasForm = (regExp: string | RegExp): boolean => new RegExp(regExp, 'i').test(form);
@@ -42,18 +42,18 @@ export class PokemonForm extends PokemonCondition {
 
     const key = Object.keys(DifferentForm).find(key => hasForm(this.convertKeyToRegExp(key)));
     return key ? DifferentForm[key as keyof typeof DifferentForm] : null;
-  }
+  };
 
-  private deepConvertForm(chain: IEvolutionChain): IEvolutionChain | IEvolvingTo {
+  private deepConvertForm = (chain: IEvolutionChain): IEvolutionChain | IEvolvingTo => {
     return {
       ...chain,
       form: this.getForm(chain.form),
       differentForm: chain.differentForm.map(this.deepConvertForm),
       evolvingTo: chain.evolvingTo.map(to => this.deepConvertForm(this.convertConditionIntoKor(to)) as IEvolvingTo),
     };
-  }
+  };
 
-  public convertFormIntoKor(chain: IEvolutionChain): IEvolutionChain {
+  public convertFormIntoKor = (chain: IEvolutionChain): IEvolutionChain => {
     return this.deepConvertForm(chain);
-  }
+  };
 }
