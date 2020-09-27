@@ -1,5 +1,5 @@
 import { DifferentForm, EvolutionType, ExceptionalFormKey } from '../pokemon.enum';
-import { IEvolutionChain, IEvolvingTo } from '../pokemon.interface';
+import { IPokemon, IEvolvingTo } from '../pokemon.interface';
 import { PokemonCondition } from './pokemonCondition';
 
 export class PokemonForm extends PokemonCondition {
@@ -44,7 +44,7 @@ export class PokemonForm extends PokemonCondition {
     return key ? DifferentForm[key as keyof typeof DifferentForm] : null;
   };
 
-  private deepConvertForm = (chain: IEvolutionChain): IEvolutionChain | IEvolvingTo => {
+  private deepConvertForm = (chain: IPokemon): IPokemon | IEvolvingTo => {
     return {
       ...chain,
       form: this.getForm(chain.form),
@@ -53,7 +53,7 @@ export class PokemonForm extends PokemonCondition {
     };
   };
 
-  public convertFormIntoKor = (chain: IEvolutionChain): IEvolutionChain => {
+  public convertFormIntoKor = (chain: IPokemon): IPokemon => {
     return this.deepConvertForm(chain);
   };
 }
