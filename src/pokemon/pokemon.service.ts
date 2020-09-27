@@ -69,4 +69,8 @@ export class PokemonService {
 
     return crawlingData.map(deppConvertForm);
   }
+
+  public getEvolutionChainByLevel(): Promise<IEvolutionChain[]> {
+    return this.getEvolutionChains(EvolutionType.LEVEL);
+  }
 }
