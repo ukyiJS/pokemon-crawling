@@ -5,6 +5,10 @@ declare let window: IWindow;
 
 export const initCrawlingUtils = async (page: Page): Promise<void> => {
   await page.evaluate(() => {
+    window.getText = ($element: Element): string => $element.textContent!;
+    window.getTexts = ($elements: NodeListOf<Element> | Element[]): string[] =>
+      $elements.length ? Array.from($elements).map(({ textContent }) => textContent!) : [];
+
     window.getPokemonInfo = ($element: Element): IPokemon => {
       const $image = $element.querySelector('.icon-pkmn')!;
 
