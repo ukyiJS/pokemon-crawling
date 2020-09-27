@@ -121,6 +121,19 @@ export enum TradingCondition {
   WHIPPED_DREAM = '휘핑팝을 지니게 한 뒤 통신교환',
 }
 
+export enum AdditionalCondition {
+  NIGHT = '밤일 때',
+  DAY = '낮일 때',
+  MALE = '수컷일 때',
+  FEMALE = '암컷일 때',
+  IN_ALOLA = '알로라지방에서',
+  IN_GALAR = '가라르지방에서',
+  IN_GRASS = '풀숲에서',
+  IN_CAVES = '동굴•사막•해안가에서',
+  IN_BUILDINGS = '건물에서',
+  MAGNETIC_FIELD = '신오지방(DPPt): 천관산, 하나지방(BW/BW2): 전기돌동굴, 칼로스지방(XY): 13번도로(발전소가 있는 곳), 호연지방(ORAS): 뉴보라, 알로라지방(SM): 포니대협곡/화끈산(USUM), 가라르지방(SWSH): 천둥의돌 사용',
+}
+
 export enum ConditionType {
   NIGHT = '밤에 레벨업',
   DAY = '낮에 레벨업',
