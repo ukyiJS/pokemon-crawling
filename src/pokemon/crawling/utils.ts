@@ -21,12 +21,16 @@ export const initCrawlingUtils = async (page: Page): Promise<void> => {
         return [...stats, totalStat];
       })();
 
+      const types = (($types = $element.querySelectorAll('.cell-icon a')): string[] | undefined => {
+        return $types.length ? window.getTexts($types) : undefined;
+      })();
+
       const name = $element.querySelector('.ent-name')!.textContent!;
       const $image = $element.querySelector('.icon-pkmn')!;
       const image = $image.getAttribute('data-src') ?? ($image as HTMLImageElement).src;
       const form = $element.querySelector('.text-muted')?.textContent ?? null;
 
-      return { name, image, form, stats, differentForm: [], evolvingTo: [] };
+      return { name, image, form, types, stats, differentForm: [], evolvingTo: [] };
     };
 
     window.getEvolvingTo = ($element: Element, to: IPokemon, type: string): IEvolvingTo => ({
