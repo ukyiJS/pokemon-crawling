@@ -1,5 +1,5 @@
 import { EvolutionType } from '../pokemon.enum';
-import { IEvolutionChain, IWindow } from '../pokemon.interface';
+import { IPokemon, IWindow } from '../pokemon.interface';
 import { PokemonForm } from './pokemonForm';
 
 declare let window: IWindow;
@@ -11,8 +11,8 @@ export class EvolutionChain {
     this.evolutionType = evolutionType;
   }
 
-  public crawling = ($elements: Element[], type: string): IEvolutionChain[] =>
-    $elements.reduce<IEvolutionChain[]>((acc, $tr) => {
+  public crawling = ($elements: Element[], type: string): IPokemon[] =>
+    $elements.reduce<IPokemon[]>((acc, $tr) => {
       const $cellNames = Array.from($tr.querySelectorAll('.cell-name'));
       const [from, to] = $cellNames.map(window.getPokemonInfo);
       const evolvingTo = window.getEvolvingTo($tr, to, type);
@@ -27,10 +27,10 @@ export class EvolutionChain {
         return window.addMultipleEvolvingTo(acc, fromNameIndex, evolvingTo);
       }
 
-      return [...acc, chain] as IEvolutionChain[];
+      return [...acc, chain] as IPokemon[];
     }, []);
 
-  public convertIntoKor = (evolutionChains: IEvolutionChain[]): IEvolutionChain[] => {
+  public convertIntoKor = (evolutionChains: IPokemon[]): IPokemon[] => {
     const { convertFormIntoKor } = new PokemonForm(this.evolutionType);
     return evolutionChains.map(convertFormIntoKor);
   };
