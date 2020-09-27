@@ -183,6 +183,7 @@ export enum AreaConditionType {
   MOUNT_LANAKILA = '라나키라마운틴에서 레벨업',
   NEAR_DUSTY_BOWL = '49 이상의 누적 대미지를 입은 후 와일드에리어 모래먼지구덩이에 존재하는 고인돌 아래를 지나감',
 }
+
 export enum OtherConditionType {
   RAIN = '비오는 날씨일때',
   DUSK = '특성이 마이페이스이고 황혼 5시~6시일 때 레벨업',
@@ -202,12 +203,6 @@ export enum OtherConditionType {
   IN_TOWER_OF_DARKNESS = '악의탑 제패',
   IN_TOWER_OF_WATER = '물의탑 제패',
 }
-
-export type Condition =
-  | typeof LevelCondition
-  | typeof ElementalStone
-  | typeof TradingCondition
-  | typeof AdditionalCondition;
 
 export enum ExceptionalFormKey {
   MEGA_X = 'MEGA_X',
