@@ -73,4 +73,8 @@ export class PokemonService {
   public getEvolutionChainByLevel(): Promise<IEvolutionChain[]> {
     return this.getEvolutionChains(EvolutionType.LEVEL);
   }
+
+  public async getEvolutionChainByElementalStone(): Promise<IEvolutionChain[]> {
+    return this.getEvolutionChains(EvolutionType.STONE);
+  }
 }
