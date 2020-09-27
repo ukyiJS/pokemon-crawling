@@ -1,7 +1,6 @@
 import { WriteJsonInterceptor } from '@/common';
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
-import { IPokedex } from './pokedex/type';
-import { IEvolutionChain } from './pokemon.interface';
+import { IPokemon } from './pokemon.interface';
 import { PokemonService } from './pokemon.service';
 
 @UseInterceptors(WriteJsonInterceptor)
@@ -10,32 +9,32 @@ export class PokemonController {
   constructor(private readonly pokemonService: PokemonService) {}
 
   @Get('evolutionChainByLevel')
-  public getEvolutionChainByLevel(): Promise<IEvolutionChain[]> {
+  public getEvolutionChainByLevel(): Promise<IPokemon[]> {
     return this.pokemonService.getEvolutionChainByLevel();
   }
 
   @Get('evolutionChainByElementalStone')
-  public getEvolutionChainByElementalStone(): Promise<IEvolutionChain[]> {
+  public getEvolutionChainByElementalStone(): Promise<IPokemon[]> {
     return this.pokemonService.getEvolutionChainByElementalStone();
   }
 
   @Get('evolutionChainByTrading')
-  public getEvolutionChainByTrading(): Promise<IEvolutionChain[]> {
+  public getEvolutionChainByTrading(): Promise<IPokemon[]> {
     return this.pokemonService.getEvolutionChainByTrading();
   }
 
   @Get('evolutionChainByFriendship')
-  public getEvolutionChainByFriendship(): Promise<IEvolutionChain[]> {
+  public getEvolutionChainByFriendship(): Promise<IPokemon[]> {
     return this.pokemonService.getEvolutionChainByFriendship();
   }
 
   @Get('evolutionChainByOtherCondition')
-  public getEvolutionChainByOtherCondition(): Promise<IEvolutionChain[]> {
+  public getEvolutionChainByOtherCondition(): Promise<IPokemon[]> {
     return this.pokemonService.getEvolutionChainByOtherCondition();
   }
 
   @Get('pokedex')
-  public getPokedex(): Promise<IPokedex[]> {
+  public getPokedex(): Promise<IPokemon[]> {
     return this.pokemonService.getPokedex();
   }
 }
