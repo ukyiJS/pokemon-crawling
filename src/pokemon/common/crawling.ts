@@ -101,3 +101,13 @@ const getRegexp = (key: string): RegExp => {
       return new RegExp(key.replace(/_/, ''));
   }
 };
+
+export const convertForm = (form: string | null): string | null => {
+  if (!form) return null;
+
+  const hasForm = hasText(form);
+  if (hasForm(/striped|male|female|own tempo rockruff/)) return null;
+
+  const key = Object.keys(DifferentForm).find(key => hasForm(getRegexp(key)));
+  return key ? DifferentForm[key as keyof typeof DifferentForm] : null;
+};
