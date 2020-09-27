@@ -1,5 +1,5 @@
 import { Page } from 'puppeteer';
-import { IEvolvingTo, IPokemon, IWindow } from '../pokemon.interface';
+import { IPokemon, IEvolvingTo, IStats, IWindow } from '../pokemon.interface';
 
 declare let window: IWindow;
 
@@ -34,6 +34,16 @@ export const initCrawlingUtils = async (page: Page): Promise<void> => {
     window.addFromDifferentForm = (acc: IPokemon[], index: number, chain: IPokemon): IPokemon[] => {
       acc[index].differentForm = [...acc[index].differentForm, chain];
       return acc;
+    };
+
+    window.getStats = ($element: Element): IStats[] => {
+      const totalStat = { name: '총합', value: +$element.querySelector('.cell-total')!.textContent! };
+      const statNames = ['HP', '공격', '방어', '특수공격', '특수방어', '스피드'];
+      const stats = Array.from($element.querySelectorAll('.cell-num:not(.cell-fixed)')).map((stat, i) => ({
+        name: statNames[i],
+        value: +stat.textContent!,
+      }));
+      return [...stats, totalStat];
     };
   });
 };
