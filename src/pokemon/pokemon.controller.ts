@@ -1,9 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import { WriteJsonInterceptor } from '@/common';
+import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { IPokedex } from './pokedex/type';
 import { IEvolutionChain } from './pokemon.interface';
 import { PokemonService } from './pokemon.service';
 
-// @UseInterceptors(WriteJsonInterceptor)
+@UseInterceptors(WriteJsonInterceptor)
 @Controller('pokemon')
 export class PokemonController {
   constructor(private readonly pokemonService: PokemonService) {}
@@ -11,6 +12,11 @@ export class PokemonController {
   @Get('evolutionChainByLevel')
   public getEvolutionChainByLevel(): Promise<IEvolutionChain[]> {
     return this.pokemonService.getEvolutionChainByLevel();
+  }
+
+  @Get('evolutionChainByElementalStone')
+  public getEvolutionChainByElementalStone(): Promise<IEvolutionChain[]> {
+    return this.pokemonService.getEvolutionChainByElementalStone();
   }
 
   @Get('pokedex')
