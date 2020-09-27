@@ -62,3 +62,5 @@ export const initCrawlingUtils = async (page: Page): Promise<void> => {
     };
   });
 };
+
+const hasText = (textCompare: string) => (regExp: string | RegExp) => new RegExp(regExp, 'i').test(textCompare);
