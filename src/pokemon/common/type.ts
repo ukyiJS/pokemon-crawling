@@ -202,3 +202,9 @@ export enum OtherConditionType {
   IN_TOWER_OF_DARKNESS = '악의탑 제패',
   IN_TOWER_OF_WATER = '물의탑 제패',
 }
+
+export type Condition =
+  | typeof LevelCondition
+  | typeof ElementalStone
+  | typeof TradingCondition
+  | typeof AdditionalCondition;
