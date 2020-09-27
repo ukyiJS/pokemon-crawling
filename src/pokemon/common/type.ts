@@ -208,3 +208,16 @@ export type Condition =
   | typeof ElementalStone
   | typeof TradingCondition
   | typeof AdditionalCondition;
+
+export enum ExceptionalFormKey {
+  MEGA_X = 'MEGA_X',
+  MEGA_Y = 'MEGA_Y',
+  GALARIAN_STANDARD_MODE = 'GALARIAN_STANDARD_MODE',
+  GALARIAN_ZEN_MODE = 'GALARIAN_ZEN_MODE',
+  ASH_GRENINJA = 'ASH_GRENINJA',
+  FIFTY_PERCENT = 'FIFTY_PERCENT',
+  TEN_PERCENT = 'TEN_PERCENT',
+  PA_U_STYLE = 'PA_U_STYLE',
+  POM_POM_STYLE = 'POM_POM_STYLE',
+  HUNGRY_MODE = 'HUNGRY_MODE',
+}
