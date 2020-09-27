@@ -129,3 +129,13 @@ const getConditionEnum = (type: EvolutionType) => {
       return TradingCondition;
   }
 };
+
+export const convertCondition = (conditions: string | null, type: EvolutionType): string | null => {
+  if (!conditions) return null;
+
+  const [c1, c2] = conditions.split(',');
+  const additionalCondition = getCondition(c2, AdditionalCondition) ?? '';
+
+  const convertedCondition = getCondition(c1, getConditionEnum(type));
+  return additionalCondition ? `${convertedCondition}, ${additionalCondition}` : convertedCondition;
+};
