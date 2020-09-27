@@ -118,3 +118,14 @@ const getCondition = (condition: string | null, ConditionEnum: Condition): strin
   const key = Object.keys(ConditionEnum).find(key => hasText(condition)(key.replace(/_/, '')));
   return key ? ConditionEnum[key as keyof typeof ConditionEnum] : null;
 };
+
+const getConditionEnum = (type: EvolutionType) => {
+  switch (type) {
+    case EvolutionType.LEVEL:
+      return LevelCondition;
+    case EvolutionType.STONE:
+      return ElementalStone;
+    default:
+      return TradingCondition;
+  }
+};
