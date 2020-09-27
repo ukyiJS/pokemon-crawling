@@ -1,8 +1,8 @@
 import { getBrowserAndPage } from '@/utils';
 import { Injectable } from '@nestjs/common';
-import { getEvolutionChains, initCrawlingUtils } from './common/crawling';
+import { convertCondition, convertForm, getEvolutionChains, initCrawlingUtils } from './common/crawling';
 import { IPokedex } from './pokedex/type';
-import { IEvolutionChain } from './pokemon.interface';
+import { IEvolutionChain, IEvolvingTo } from './pokemon.interface';
 import { EvolutionType } from './pokemon.type';
 
 @Injectable()
@@ -45,15 +45,28 @@ export class PokemonService {
     return crawlingData;
   }
 
-  public async getEvolutionChainByLevel(): Promise<IEvolutionChain[]> {
-    const url = `https://pokemondb.net/evolution/${EvolutionType.LEVEL}`;
+  public async getEvolutionChains(type: EvolutionType): Promise<IEvolutionChain[]> {
+    const url = `https://pokemondb.net/evolution/${type}`;
     const selector = '#evolution > tbody > tr';
     const { browser, page } = await getBrowserAndPage(url, selector);
     await initCrawlingUtils(page);
 
-    const crawlingData = await page.$$eval(selector, getEvolutionChains, EvolutionType.LEVEL);
+    const crawlingData = await page.$$eval(selector, getEvolutionChains, type);
     await browser.close();
 
-    return crawlingData;
+    const deepConvertCondition = (to: IEvolvingTo): IEvolvingTo => ({
+      ...to,
+      condition: convertCondition(to.condition, type),
+      evolvingTo: to.evolvingTo.map(deepConvertCondition),
+    });
+
+    const deppConvertForm = (chain: IEvolutionChain): IEvolutionChain | IEvolvingTo => ({
+      ...chain,
+      form: convertForm(chain.form),
+      differentForm: chain.differentForm.map(deppConvertForm),
+      evolvingTo: chain.evolvingTo.map(to => deppConvertForm(deepConvertCondition(to))) as IEvolvingTo[],
+    });
+
+    return crawlingData.map(deppConvertForm);
   }
 }
