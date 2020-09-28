@@ -31,7 +31,7 @@ export class EvolutionChain {
     }, []);
 
   public convertIntoKor = (evolutionChains: IPokemon[]): IPokemon[] => {
-    const { convertFormIntoKor } = new PokemonForm(this.evolutionType);
-    return evolutionChains.map(convertFormIntoKor);
+    const { convertFormIntoKor } = new PokemonForm();
+    return evolutionChains.map(chain => convertFormIntoKor(chain, this.evolutionType));
   };
 }
