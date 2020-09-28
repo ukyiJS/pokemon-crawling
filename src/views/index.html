@@ -64,12 +64,10 @@
             console.log(
               evolution.map(p => {
                 const findEvolution = interceptor.data.find(e => e.name === p.name);
-                console.log(findEvolution);
                 return findEvolution ? findEvolution : p;
               }),
             );
-            console.log(interceptor.data);
-            // console.log(interceptor.data, `+${Date.now() - reqTime}ms`);
+            console.log(interceptor.data, `+${Date.now() - reqTime}ms`);
           }
 
           return interceptor;
