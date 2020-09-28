@@ -224,6 +224,28 @@ export const EXCEPTIONAL_FORM_KEY = {
 } as const;
 export type EXCEPTIONAL_FORM_KEY = typeof EXCEPTIONAL_FORM_KEY[keyof typeof EXCEPTIONAL_FORM_KEY];
 
+export const POKEMON_TYPE = {
+  NORMAL: '노말',
+  FIRE: '불',
+  WATER: '물',
+  ELECTRIC: '전기',
+  GRASS: '풀',
+  ICE: '얼음',
+  FIGHTING: '비행',
+  POISON: '독',
+  GROUND: '땅',
+  FLYING: '비행',
+  PSYCHIC: '에스퍼',
+  BUG: '벌레',
+  ROCK: '바위',
+  GHOST: '고스트',
+  DRAGON: '드래곤',
+  DARK: '악',
+  STEEL: '강철',
+  FAIRY: '페어리',
+} as const;
+export type POKEMON_TYPE = typeof POKEMON_TYPE[keyof typeof POKEMON_TYPE];
+
 export type Condition =
   | typeof LEVEL_CONDITION
   | typeof ELEMENTAL_STONE
