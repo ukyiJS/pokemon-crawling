@@ -38,7 +38,7 @@ export const initCrawlingUtils = async (page: Page): Promise<void> => {
     window.getEvolvingTo = ($element: Element, to: IPokemon, type: string): IEvolvingTo => ({
       ...to,
       type,
-      level: $element.querySelector('.cell-num')?.textContent ?? null,
+      level: $element.querySelector('.cell-num')?.textContent || null,
       condition: $element.querySelector('.cell-med-text')?.textContent || null,
     });
 
