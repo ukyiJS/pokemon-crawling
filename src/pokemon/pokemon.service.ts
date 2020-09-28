@@ -1,5 +1,5 @@
 import { getBrowserAndPage, getJson, mergeJson } from '@/utils';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { EvolutionChain, initCrawlingUtils, Pokedex } from './crawling';
@@ -86,7 +86,7 @@ export class PokemonService {
       });
   }
 
-  public mergePokedexAndEvolutionChains(): any {
+  public mergePokedexAndEvolutionChains(): IPokemon[] {
     const dir = join(process.cwd(), 'src/assets/json');
     const fileName = `mergedEvolutionChains.json`;
     const isFile = existsSync(`${dir}/${fileName}`);
