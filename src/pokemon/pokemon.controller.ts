@@ -44,7 +44,7 @@ export class PokemonController {
   }
 
   @Get('mergedPokedexAndEvolutionChains')
-  public mergePokedexAndEvolutionChains(): any {
+  public mergePokedexAndEvolutionChains(): IPokemon[] {
     return this.pokemonService.mergePokedexAndEvolutionChains();
   }
 }
