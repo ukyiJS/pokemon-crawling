@@ -1,5 +1,5 @@
 import { getBrowserAndPage, getJson, mergeJson } from '@/utils';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { EvolutionChain, initCrawlingUtils, Pokedex } from './crawling';
@@ -84,5 +84,25 @@ export class PokemonService {
         if (a.name > b.name) return 1;
         return 0;
       });
+  }
+
+  public mergePokedexAndEvolutionChains(): any {
+    const dir = join(process.cwd(), 'src/assets/json');
+    const fileName = `mergedEvolutionChains.json`;
+    const isFile = existsSync(`${dir}/${fileName}`);
+    if (!isFile) throw new Error(`${fileName} does not exist!`);
+
+    const evolutionChains = getJson({ fileName }) as IPokemon[];
+    const pokedex = getJson({ fileName: 'pokedex.json' }) as IPokemon[];
+
+    const hasPokemon = (chain: IPokemon, name: string): boolean => {
+      const isName = chain.name === name || chain.evolvingTo.some(p => hasPokemon(p, name));
+      return isName;
+    };
+
+    return pokedex.reduce<IPokemon[]>((acc, pokemon) => {
+      const evolvingTo = evolutionChains.filter(p => hasPokemon(p, pokemon.name)) as IEvolvingTo[];
+      return [...acc, { ...pokemon, evolvingTo }];
+    }, []);
   }
 }
