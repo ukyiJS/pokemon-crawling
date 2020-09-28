@@ -1,13 +1,13 @@
-import { EvolutionType } from '../pokemon.enum';
+import { EVOLUTION_TYPE } from '../pokemon.type';
 import { IPokemon, IWindow } from '../pokemon.interface';
 import { PokemonForm } from './pokemonForm';
 
 declare let window: IWindow;
 
 export class EvolutionChain {
-  evolutionType: EvolutionType;
+  evolutionType: EVOLUTION_TYPE;
 
-  constructor(evolutionType: EvolutionType) {
+  constructor(evolutionType: EVOLUTION_TYPE) {
     this.evolutionType = evolutionType;
   }
 
