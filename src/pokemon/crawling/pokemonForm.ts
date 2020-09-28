@@ -2,10 +2,8 @@ import { IEvolvingTo, IPokemon } from '../pokemon.interface';
 import { DIFFERENT_FORM, EVOLUTION_TYPE, EXCEPTIONAL_FORM_KEY } from '../pokemon.type';
 import { PokemonCondition } from './pokemonCondition';
 
-export class PokemonForm extends PokemonCondition {
-  constructor(evolutionType: EVOLUTION_TYPE) {
-    super(evolutionType);
-  }
+export class PokemonForm {
+  evolutionType?: EVOLUTION_TYPE;
 
   private convertKeyToRegExp = (key: string): RegExp => {
     switch (key) {
@@ -30,7 +28,7 @@ export class PokemonForm extends PokemonCondition {
       case EXCEPTIONAL_FORM_KEY.HUNGRY_MODE:
         return /hangry mode|hungry mode/;
       default:
-        return new RegExp(key.replace(/_/, ''));
+        return new RegExp(key.replace(/_/g, ' '));
     }
   };
 
@@ -44,16 +42,19 @@ export class PokemonForm extends PokemonCondition {
     return key ? DIFFERENT_FORM[key as keyof typeof DIFFERENT_FORM] : null;
   };
 
-  private deepConvertForm = (chain: IPokemon): IPokemon | IEvolvingTo => {
-    return {
-      ...chain,
-      form: this.getForm(chain.form),
-      differentForm: chain.differentForm.map(this.deepConvertForm),
-      evolvingTo: chain.evolvingTo.map(to => this.deepConvertForm(this.convertConditionIntoKor(to)) as IEvolvingTo),
-    };
-  };
+  private deepConvertForm = (chain: IPokemon): IPokemon | IEvolvingTo => ({
+    ...chain,
+    form: this.getForm(chain.form),
+    differentForm: chain.differentForm.map(this.deepConvertForm),
+    evolvingTo: chain.evolvingTo.map(to => {
+      const { convertConditionIntoKor } = new PokemonCondition();
+      const evolvingTo = this.evolutionType ? convertConditionIntoKor(to, this.evolutionType) : to;
+      return this.deepConvertForm(evolvingTo) as IEvolvingTo;
+    }),
+  });
 
-  public convertFormIntoKor = (chain: IPokemon): IPokemon => {
+  public convertFormIntoKor = (chain: IPokemon, evolutionType?: EVOLUTION_TYPE): IPokemon => {
+    this.evolutionType = evolutionType;
     return this.deepConvertForm(chain);
   };
 }
