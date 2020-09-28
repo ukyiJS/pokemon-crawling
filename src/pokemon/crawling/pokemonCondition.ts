@@ -1,42 +1,58 @@
-import { AdditionalCondition, ElementalStone, EvolutionType, LevelCondition, TradingCondition } from '../pokemon.enum';
 import { IEvolvingTo } from '../pokemon.interface';
-
-type Condition = typeof LevelCondition | typeof ElementalStone | typeof TradingCondition | typeof AdditionalCondition;
+import {
+  ADDITIONAL_CONDITION,
+  ELEMENTAL_STONE,
+  EVOLUTION_TYPE,
+  FRIENDSHIP,
+  LEVEL_CONDITION,
+  TRADING_CONDITION,
+} from '../pokemon.type';
 
 export class PokemonCondition {
-  evolutionType: EvolutionType;
+  evolutionType: EVOLUTION_TYPE;
 
-  constructor(evolutionType: EvolutionType) {
+  constructor(evolutionType: EVOLUTION_TYPE) {
     this.evolutionType = evolutionType;
   }
 
-  private getConditionEnum = (type: EvolutionType): Condition => {
-    switch (type) {
-      case EvolutionType.LEVEL:
-        return LevelCondition;
-      case EvolutionType.STONE:
-        return ElementalStone;
-      default:
-        return TradingCondition;
-    }
-  };
-
-  private getCondition = (condition: string | null, ConditionEnum: Condition): string | null => {
+  private getCondition = (condition: string | null, type?: EVOLUTION_TYPE): string | null => {
     if (!condition) return null;
 
     const hasForm = (regExp: string | RegExp): boolean => new RegExp(regExp, 'i').test(condition);
-    const key = Object.keys(ConditionEnum).find(key => hasForm(key.replace(/_/, '')));
-    return key ? ConditionEnum[key as keyof typeof ConditionEnum] : null;
+    if (hasForm(/outside/)) return null;
+
+    const CONDITION = (() => {
+      if (!type) return ADDITIONAL_CONDITION;
+      switch (type) {
+        case EVOLUTION_TYPE.LEVEL:
+          return LEVEL_CONDITION;
+        case EVOLUTION_TYPE.STONE:
+          return ELEMENTAL_STONE;
+        case EVOLUTION_TYPE.FRIENDSHIP:
+          return FRIENDSHIP;
+        case EVOLUTION_TYPE.TRADE:
+          return TRADING_CONDITION;
+        default:
+          return LEVEL_CONDITION;
+      }
+    })();
+
+    const key = Object.keys(CONDITION).find(key => hasForm(key.replace(/_/, '')));
+    const convertedCondition = CONDITION[key as keyof typeof CONDITION] ?? null;
+
+    return convertedCondition;
   };
 
-  private convertCondition = (conditions: string | null, type: EvolutionType): string | null => {
+  private convertCondition = (conditions: string | null, type: EVOLUTION_TYPE): string | null => {
     if (!conditions) return null;
 
     const [c1, c2] = conditions.split(',');
-    const additionalCondition = this.getCondition(c2, AdditionalCondition) ?? '';
+    const additionalCondition = this.getCondition(c2)?.concat(', ') ?? '';
+    const convertedCondition = this.getCondition(c1, type);
 
-    const convertedCondition = this.getCondition(c1, this.getConditionEnum(type));
-    return additionalCondition ? `${convertedCondition}, ${additionalCondition}` : convertedCondition;
+    if (type === EVOLUTION_TYPE.FRIENDSHIP) return `${convertedCondition?.concat(' ') ?? ''}${FRIENDSHIP.NONE} 레벨업`;
+
+    return additionalCondition ? `${additionalCondition}${convertedCondition}` : convertedCondition;
   };
 
   private deepConvertCondition = (to: IEvolvingTo): IEvolvingTo => ({
