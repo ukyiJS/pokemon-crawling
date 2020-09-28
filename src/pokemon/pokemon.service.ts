@@ -1,7 +1,9 @@
-import { getBrowserAndPage } from '@/utils';
+import { getBrowserAndPage, getJson, mergeJson } from '@/utils';
 import { Injectable } from '@nestjs/common';
+import { existsSync, readdirSync } from 'fs';
+import { join } from 'path';
 import { EvolutionChain, initCrawlingUtils, Pokedex } from './crawling';
-import { IPokemon } from './pokemon.interface';
+import { IEvolvingTo, IPokemon } from './pokemon.interface';
 import { EVOLUTION_TYPE } from './pokemon.type';
 
 @Injectable()
@@ -50,5 +52,37 @@ export class PokemonService {
 
   public async getEvolutionChainByOtherCondition(): Promise<IPokemon[]> {
     return this.getEvolutionChains(EVOLUTION_TYPE.STATUS);
+  }
+
+  public mergeEvolutionChains(): IPokemon[] {
+    const dir = join(process.cwd(), 'src/assets/json');
+    const fileNames = readdirSync(dir).filter(name => /^evolutionChainBy/gi.test(name));
+    const mergedJson = mergeJson<IPokemon>({ fileNames })
+      .flat()
+      .reduce<IPokemon[]>((acc, pokemon, i, arr) => {
+        const overlappingPokemons = arr.filter(({ name }) => name === pokemon.name);
+        if (overlappingPokemons.length) {
+          pokemon.evolvingTo = overlappingPokemons.map(({ evolvingTo }) => evolvingTo).flat();
+
+          const uniqueNames = Array.from(new Set(pokemon.evolvingTo.map(({ name }) => name)));
+          pokemon.evolvingTo = uniqueNames.map(name => ({ ...pokemon.evolvingTo.find(p => p.name === name)! }));
+        }
+
+        const preIndex = arr.findIndex(({ evolvingTo }) => evolvingTo.some(({ name }) => name === pokemon.name));
+        if (preIndex > -1) {
+          arr[preIndex].evolvingTo = arr[preIndex].evolvingTo.map(e => ({ ...e, evolvingTo: pokemon.evolvingTo }));
+          return acc;
+        }
+        return [...acc, pokemon];
+      }, []);
+
+    const uniqueNames = Array.from(new Set(mergedJson.map(({ name }) => name)));
+    return uniqueNames
+      .map(name => ({ ...mergedJson.find(p => p.name === name && p.differentForm)! }))
+      .sort((a, b) => {
+        if (a.name < b.name) return -1;
+        if (a.name > b.name) return 1;
+        return 0;
+      });
   }
 }
