@@ -59,16 +59,7 @@
           toggleDisable(isLoading);
 
           if (isLoading) reqTime = Date.now();
-          else {
-            const evolution = interceptor.data.reduce((acc, { evolvingTo }) => [...acc, ...evolvingTo], []);
-            console.log(
-              evolution.map(p => {
-                const findEvolution = interceptor.data.find(e => e.name === p.name);
-                return findEvolution ? findEvolution : p;
-              }),
-            );
-            console.log(interceptor.data, `+${Date.now() - reqTime}ms`);
-          }
+          else console.log(interceptor.data, `+${Date.now() - reqTime}ms`);
 
           return interceptor;
         };
