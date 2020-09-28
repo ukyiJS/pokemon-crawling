@@ -1,4 +1,5 @@
 import { IPokemon, IWindow } from '../pokemon.interface';
+import { PokemonForm } from './pokemonForm';
 
 declare let window: IWindow;
 
@@ -17,4 +18,9 @@ export class Pokedex {
       return isFromPokemonWithForm ? window.addFromDifferentForm(acc, fromIndex, pokemon) : [...acc, { ...pokemon }];
     }, []);
   };
+
+  public convertIntoKor(pokemons: IPokemon[]): IPokemon[] {
+    const { convertFormIntoKor } = new PokemonForm();
+    return pokemons.map(pokemon => convertFormIntoKor(pokemon));
+  }
 }
