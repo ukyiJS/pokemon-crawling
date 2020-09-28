@@ -25,7 +25,8 @@ export const initCrawlingUtils = async (page: Page): Promise<void> => {
         return $types.length ? window.getTexts($types) : undefined;
       })();
 
-      const no = $element.querySelector('.infocard-cell-data')?.textContent ?? undefined;
+      const noText = $element.querySelector('.infocard-cell-data')?.textContent ?? undefined;
+      const no = Number(noText) ? noText : undefined;
       const name = $element.querySelector('.ent-name')!.textContent!;
       const $image = $element.querySelector('.icon-pkmn')!;
       const image = $image.getAttribute('data-src') ?? ($image as HTMLImageElement).src;
