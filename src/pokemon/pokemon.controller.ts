@@ -37,4 +37,9 @@ export class PokemonController {
   public getPokedex(): Promise<IPokemon[]> {
     return this.pokemonService.getPokedex();
   }
+
+  @Get('mergedEvolutionChains')
+  public mergeEvolutionChains(): IPokemon[] {
+    return this.pokemonService.mergeEvolutionChains();
+  }
 }
