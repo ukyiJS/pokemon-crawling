@@ -1,33 +1,33 @@
-import { DifferentForm, EvolutionType, ExceptionalFormKey } from '../pokemon.enum';
-import { IPokemon, IEvolvingTo } from '../pokemon.interface';
+import { IEvolvingTo, IPokemon } from '../pokemon.interface';
+import { DIFFERENT_FORM, EVOLUTION_TYPE, EXCEPTIONAL_FORM_KEY } from '../pokemon.type';
 import { PokemonCondition } from './pokemonCondition';
 
 export class PokemonForm extends PokemonCondition {
-  constructor(evolutionType: EvolutionType) {
+  constructor(evolutionType: EVOLUTION_TYPE) {
     super(evolutionType);
   }
 
   private convertKeyToRegExp = (key: string): RegExp => {
     switch (key) {
-      case ExceptionalFormKey.MEGA_X:
+      case EXCEPTIONAL_FORM_KEY.MEGA_X:
         return /mega.*x$/;
-      case ExceptionalFormKey.MEGA_Y:
+      case EXCEPTIONAL_FORM_KEY.MEGA_Y:
         return /mega.*y$/;
-      case ExceptionalFormKey.GALARIAN_STANDARD_MODE:
+      case EXCEPTIONAL_FORM_KEY.GALARIAN_STANDARD_MODE:
         return /galar.*standard mode/;
-      case ExceptionalFormKey.GALARIAN_ZEN_MODE:
+      case EXCEPTIONAL_FORM_KEY.GALARIAN_ZEN_MODE:
         return /galar.*zen mode/;
-      case ExceptionalFormKey.ASH_GRENINJA:
+      case EXCEPTIONAL_FORM_KEY.ASH_GRENINJA:
         return /ash-greninja/;
-      case ExceptionalFormKey.FIFTY_PERCENT:
+      case EXCEPTIONAL_FORM_KEY.FIFTY_PERCENT:
         return /50% forme/;
-      case ExceptionalFormKey.TEN_PERCENT:
+      case EXCEPTIONAL_FORM_KEY.TEN_PERCENT:
         return /10% forme/;
-      case ExceptionalFormKey.PA_U_STYLE:
+      case EXCEPTIONAL_FORM_KEY.PA_U_STYLE:
         return /pa'u style/;
-      case ExceptionalFormKey.POM_POM_STYLE:
+      case EXCEPTIONAL_FORM_KEY.POM_POM_STYLE:
         return /pom-pom style/;
-      case ExceptionalFormKey.HUNGRY_MODE:
+      case EXCEPTIONAL_FORM_KEY.HUNGRY_MODE:
         return /hangry mode|hungry mode/;
       default:
         return new RegExp(key.replace(/_/, ''));
@@ -40,8 +40,8 @@ export class PokemonForm extends PokemonCondition {
     const hasForm = (regExp: string | RegExp): boolean => new RegExp(regExp, 'i').test(form);
     if (hasForm(/striped|male|female|own tempo rockruff/)) return null;
 
-    const key = Object.keys(DifferentForm).find(key => hasForm(this.convertKeyToRegExp(key)));
-    return key ? DifferentForm[key as keyof typeof DifferentForm] : null;
+    const key = Object.keys(DIFFERENT_FORM).find(key => hasForm(this.convertKeyToRegExp(key)));
+    return key ? DIFFERENT_FORM[key as keyof typeof DIFFERENT_FORM] : null;
   };
 
   private deepConvertForm = (chain: IPokemon): IPokemon | IEvolvingTo => {
