@@ -2,7 +2,7 @@ import { getBrowserAndPage } from '@/utils';
 import { Injectable } from '@nestjs/common';
 import { EvolutionChain, initCrawlingUtils, Pokedex } from './crawling';
 import { IPokemon } from './pokemon.interface';
-import { EvolutionType } from './pokemon.type';
+import { EVOLUTION_TYPE } from './pokemon.type';
 
 @Injectable()
 export class PokemonService {
@@ -19,7 +19,7 @@ export class PokemonService {
     return pokemons;
   }
 
-  private async getEvolutionChains(type: EvolutionType): Promise<IPokemon[]> {
+  private async getEvolutionChains(type: EVOLUTION_TYPE): Promise<IPokemon[]> {
     const url = `https://pokemondb.net/evolution/${type}`;
     const selector = '#evolution > tbody > tr';
     const { browser, page } = await getBrowserAndPage(url, selector);
@@ -33,22 +33,22 @@ export class PokemonService {
   }
 
   public getEvolutionChainByLevel(): Promise<IPokemon[]> {
-    return this.getEvolutionChains(EvolutionType.LEVEL);
+    return this.getEvolutionChains(EVOLUTION_TYPE.LEVEL);
   }
 
   public async getEvolutionChainByElementalStone(): Promise<IPokemon[]> {
-    return this.getEvolutionChains(EvolutionType.STONE);
+    return this.getEvolutionChains(EVOLUTION_TYPE.STONE);
   }
 
   public async getEvolutionChainByTrading(): Promise<IPokemon[]> {
-    return this.getEvolutionChains(EvolutionType.TRADE);
+    return this.getEvolutionChains(EVOLUTION_TYPE.TRADE);
   }
 
   public async getEvolutionChainByFriendship(): Promise<IPokemon[]> {
-    return this.getEvolutionChains(EvolutionType.FRIENDSHIP);
+    return this.getEvolutionChains(EVOLUTION_TYPE.FRIENDSHIP);
   }
 
   public async getEvolutionChainByOtherCondition(): Promise<IPokemon[]> {
-    return this.getEvolutionChains(EvolutionType.STATUS);
+    return this.getEvolutionChains(EVOLUTION_TYPE.STATUS);
   }
 }
