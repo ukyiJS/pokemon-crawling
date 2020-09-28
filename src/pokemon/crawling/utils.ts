@@ -1,5 +1,5 @@
 import { Page } from 'puppeteer';
-import { IPokemon, IEvolvingTo, IStats, IWindow } from '../pokemon.interface';
+import { IEvolvingTo, IPokemon, IStats, IWindow } from '../pokemon.interface';
 
 declare let window: IWindow;
 
