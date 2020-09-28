@@ -1,7 +1,7 @@
 export const DIFFERENT_FORM = {
-  MEGA: '메가진화',
   MEGA_X: '메가진화 X',
   MEGA_Y: '메가진화 Y',
+  MEGA: '메가진화',
   GALARIAN_STANDARD_MODE: '리전 폼',
   GALARIAN_ZEN_MODE: '리전 폼 달마모드',
   ALOLA: '알로라 폼',
