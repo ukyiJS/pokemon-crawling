@@ -12,11 +12,11 @@ export class PokemonService {
     const { browser, page } = await getBrowserAndPage(url, selector);
     await initCrawlingUtils(page);
 
-    const { crawling } = new Pokedex();
+    const { crawling, convertIntoKor } = new Pokedex();
     const pokemons = await page.$$eval(selector, crawling);
     await browser.close();
 
-    return pokemons;
+    return convertIntoKor(pokemons);
   }
 
   private async getEvolutionChains(type: EVOLUTION_TYPE): Promise<IPokemon[]> {
