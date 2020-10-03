@@ -58,6 +58,7 @@ export class PokemonWiki {
       .map($tr => Array.from($tr.children));
 
     const types = getTexts($types.querySelectorAll('a span'));
+    const group = getText($group);
 
     return {
       no,
@@ -65,6 +66,7 @@ export class PokemonWiki {
       engName,
       images,
       types,
+      group,
     };
   };
 }
