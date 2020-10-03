@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { EvolutionChain, initCrawlingUtils, Pokedex } from './crawling';
+import { PokemonWiki } from './crawling/pokemonWiki';
 import { IEvolvingTo, IPokemon } from './pokemon.interface';
 import { EVOLUTION_TYPE } from './pokemon.type';
 
@@ -52,6 +53,18 @@ export class PokemonService {
 
   public async getEvolutionChainByOtherCondition(): Promise<IPokemon[]> {
     return this.getEvolutionChains(EVOLUTION_TYPE.STATUS);
+  }
+
+  public async getPokemonWiki(): Promise<any> {
+    const url = 'https://pokemon.fandom.com/ko/wiki/뮤';
+    const selector = '.infobox-pokemon';
+    const { browser, page } = await getBrowserAndPage(url, selector);
+    const { crawling } = new PokemonWiki();
+
+    const pokemons = await crawling(page);
+    await browser.close();
+
+    return pokemons;
   }
 
   public mergeEvolutionChains(): IPokemon[] {
