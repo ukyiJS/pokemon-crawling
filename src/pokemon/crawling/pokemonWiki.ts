@@ -41,9 +41,12 @@ export class PokemonWiki {
     const getTexts = ($elements: NodeListOf<Element> | Element[]): string[] => Array.from($elements).map(getText);
 
     const no = getText($element.querySelector('.index')!).replace(/\D/g, '');
+    const [korName, , engName] = getTexts($element.querySelectorAll(`div[class^='name-']`));
 
     return {
       no,
+      name: korName,
+      engName,
     };
   };
 }
