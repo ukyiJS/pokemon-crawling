@@ -67,6 +67,7 @@ export class PokemonWiki {
       name: getText($color),
       code: $color.firstElementChild!.getAttribute('style')!.replace(/background:/, ''),
     };
+    const friendship = +getText($friendship);
 
     return {
       no,
@@ -78,6 +79,7 @@ export class PokemonWiki {
       abilities,
       hiddenAbility,
       color,
+      friendship,
     };
   };
 }
