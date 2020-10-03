@@ -60,6 +60,8 @@ export class PokemonWiki {
     const types = getTexts($types.querySelectorAll('a span'));
     const group = getText($group);
 
+    const abilities = getTexts($abilities.querySelectorAll('a span'));
+
     return {
       no,
       name: korName,
@@ -67,6 +69,7 @@ export class PokemonWiki {
       images,
       types,
       group,
+      abilities,
     };
   };
 }
