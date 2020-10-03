@@ -61,6 +61,7 @@ export class PokemonWiki {
     const group = getText($group);
 
     const abilities = getTexts($abilities.querySelectorAll('a span'));
+    const hiddenAbility = getText($hiddenAbility);
 
     return {
       no,
@@ -70,6 +71,7 @@ export class PokemonWiki {
       types,
       group,
       abilities,
+      hiddenAbility,
     };
   };
 }
