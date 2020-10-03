@@ -36,5 +36,7 @@ export class PokemonWiki {
     return pokemons;
   };
 
-  private getPokemons = ($element: Element): IPokemonWiki => {};
+  private getPokemons = ($element: Element): IPokemonWiki => {
+    const getText = ($element: Element): string => $element.textContent!.trim();
+  };
 }
