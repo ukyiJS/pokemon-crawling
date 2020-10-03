@@ -69,6 +69,8 @@ export class PokemonWiki {
     };
     const friendship = +getText($friendship);
 
+    const height = getText($height);
+
     return {
       no,
       name: korName,
@@ -80,6 +82,7 @@ export class PokemonWiki {
       hiddenAbility,
       color,
       friendship,
+      height,
     };
   };
 }
