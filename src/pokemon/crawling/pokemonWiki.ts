@@ -70,6 +70,7 @@ export class PokemonWiki {
     const friendship = +getText($friendship);
 
     const height = getText($height);
+    const weight = getText($weight);
 
     return {
       no,
@@ -83,6 +84,7 @@ export class PokemonWiki {
       color,
       friendship,
       height,
+      weight,
     };
   };
 }
