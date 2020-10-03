@@ -73,6 +73,11 @@ export class PokemonWiki {
     const weight = getText($weight);
 
     const captureRate = +getText($captureRate);
+    const genderNames = ['수컷', '암컷'];
+    const genderText = getText($genderRatio).replace(/[:ㄱ-힣%]/g, '');
+    const genderRatio = genderText
+      ? genderText.split(' ').map((ratio, i) => ({ name: genderNames[i], ratio: +ratio }))
+      : [{ name: '무성', ratio: 100 }];
 
     return {
       no,
@@ -88,6 +93,7 @@ export class PokemonWiki {
       height,
       weight,
       captureRate,
+      genderRatio,
     };
   };
 }
