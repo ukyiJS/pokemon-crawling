@@ -31,3 +31,30 @@ export interface IStats {
   name: string;
   value: number;
 }
+
+export interface IColor {
+  name: string;
+  code: string;
+}
+
+export interface IGenderRatio {
+  name: string;
+  ratio: number;
+}
+
+export interface IPokemonWiki {
+  no: string;
+  name: string;
+  engName: string;
+  images: string[];
+  types: string[];
+  group: string;
+  abilities: string[];
+  hiddenAbility: string;
+  color: IColor;
+  friendship: number;
+  height: string;
+  weight: string;
+  captureRate: number;
+  genderRatio: IGenderRatio[];
+}
