@@ -42,11 +42,13 @@ export class PokemonWiki {
 
     const no = getText($element.querySelector('.index')!).replace(/\D/g, '');
     const [korName, , engName] = getTexts($element.querySelectorAll(`div[class^='name-']`));
+    const images = Array.from($element.querySelectorAll('.image a')).map($a => ($a as HTMLAnchorElement).href);
 
     return {
       no,
       name: korName,
       engName,
+      images,
     };
   };
 }
