@@ -44,11 +44,27 @@ export class PokemonWiki {
     const [korName, , engName] = getTexts($element.querySelectorAll(`div[class^='name-']`));
     const images = Array.from($element.querySelectorAll('.image a')).map($a => ($a as HTMLAnchorElement).href);
 
+    const [
+      [$types, $group],
+      [$abilities, $hiddenAbility],
+      ,
+      ,
+      ,
+      [$color, $friendship],
+      [$height, $weight],
+      [$captureRate, $genderRatio],
+    ] = Array.from($element.querySelectorAll('.body tr:not(:nth-child(7))'))
+      .filter((_, i) => i % 2)
+      .map($tr => Array.from($tr.children));
+
+    const types = getTexts($types.querySelectorAll('a span'));
+
     return {
       no,
       name: korName,
       engName,
       images,
+      types,
     };
   };
 }
