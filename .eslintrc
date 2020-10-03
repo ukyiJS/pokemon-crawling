@@ -33,6 +33,7 @@
     "func-names": "off",
     "no-new-func": "off",
     "no-return-assign": "off",
-    "no-param-reassign": "off"
+    "no-param-reassign": "off",
+    "no-await-in-loop": "off"
   }
 }
