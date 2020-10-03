@@ -35,4 +35,6 @@ export class PokemonWiki {
 
     return pokemons;
   };
+
+  private getPokemons = ($element: Element): IPokemonWiki => {};
 }
