@@ -72,6 +72,8 @@ export class PokemonWiki {
     const height = getText($height);
     const weight = getText($weight);
 
+    const captureRate = +getText($captureRate);
+
     return {
       no,
       name: korName,
@@ -85,6 +87,7 @@ export class PokemonWiki {
       friendship,
       height,
       weight,
+      captureRate,
     };
   };
 }
