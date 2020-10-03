@@ -63,6 +63,11 @@ export class PokemonWiki {
     const abilities = getTexts($abilities.querySelectorAll('a span'));
     const hiddenAbility = getText($hiddenAbility);
 
+    const color = {
+      name: getText($color),
+      code: $color.firstElementChild!.getAttribute('style')!.replace(/background:/, ''),
+    };
+
     return {
       no,
       name: korName,
@@ -72,6 +77,7 @@ export class PokemonWiki {
       group,
       abilities,
       hiddenAbility,
+      color,
     };
   };
 }
