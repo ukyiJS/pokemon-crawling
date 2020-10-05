@@ -82,7 +82,7 @@ export interface ITypeDefense {
 export interface IPokemonSimpleInfo {
   no: string;
   name: string;
-  images: string[];
+  image: string;
   stats: IStats[];
   types: string[];
   typeDefenses: ITypeDefense[];
@@ -91,5 +91,9 @@ export interface IPokemonSimpleInfo {
   weight: string;
   abilities: string[];
   hiddenAbility: string;
+  evYield: string;
+  catchRate: number;
+  friendship: number;
+  exp: number;
   moves: IMoves;
 }
