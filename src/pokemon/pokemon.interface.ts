@@ -66,3 +66,10 @@ interface IMove {
   power: number | null;
   accuracy: number | null;
 }
+
+export interface IMoves {
+  level: (IMove & { value: number | null })[];
+  egg: IMove[];
+  tm: (IMove & { no: number })[];
+  tr: (IMove & { no: number })[];
+}
