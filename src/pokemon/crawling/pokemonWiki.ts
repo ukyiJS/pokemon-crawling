@@ -45,7 +45,7 @@ export class PokemonWiki {
     const images = Array.from($element.querySelectorAll('.image a')).map($a => ($a as HTMLAnchorElement).href);
 
     const [
-      [$types, $group],
+      [$types, $species],
       [$abilities, $hiddenAbility],
       ,
       ,
@@ -58,7 +58,7 @@ export class PokemonWiki {
       .map($tr => Array.from($tr.children));
 
     const types = getTexts($types.querySelectorAll('a span'));
-    const group = getText($group);
+    const species = getText($species);
 
     const abilities = getTexts($abilities.querySelectorAll('a span'));
     const hiddenAbility = getText($hiddenAbility);
@@ -85,7 +85,7 @@ export class PokemonWiki {
       engName,
       images,
       types,
-      group,
+      species,
       abilities,
       hiddenAbility,
       color,

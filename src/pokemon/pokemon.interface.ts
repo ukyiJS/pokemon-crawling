@@ -48,7 +48,7 @@ export interface IPokemonWiki {
   engName: string;
   images: string[];
   types: string[];
-  group: string;
+  species: string;
   abilities: string[];
   hiddenAbility: string;
   color: IColor;
