@@ -53,7 +53,8 @@ export class PokemonSimpleInfo {
     );
 
     const name = getText($basics);
+    const image = $image.querySelector('img')!.src;
 
-    return { name } as IPokemonSimpleInfo;
+    return { name, image } as IPokemonSimpleInfo;
   };
 }
