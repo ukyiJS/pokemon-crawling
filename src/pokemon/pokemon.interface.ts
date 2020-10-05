@@ -58,3 +58,11 @@ export interface IPokemonWiki {
   captureRate: number;
   genderRatio: IGenderRatio[];
 }
+
+interface IMove {
+  name: string;
+  type: string;
+  category: string;
+  power: number | null;
+  accuracy: number | null;
+}
