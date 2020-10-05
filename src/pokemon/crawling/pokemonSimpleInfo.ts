@@ -47,9 +47,11 @@ export class PokemonSimpleInfo {
     const [$tab, $panel] = children($element.querySelector('.tabset-basics'));
     const [$basics, ...$differentForm] = children($tab);
 
-    const [[$image], [$no, $types, $species, $height, $weight, $abilities], [$evYield, $catchRate]] = array(
-      $panel.querySelectorAll(`.active .grid-col:not(:nth-child(3))`),
-    ).reduce<Element[][]>(
+    const [
+      [$image],
+      [$no, $types, $species, $height, $weight, $abilities],
+      [$evYield, $catchRate, $friendship],
+    ] = array($panel.querySelectorAll(`.active .grid-col:not(:nth-child(3))`)).reduce<Element[][]>(
       (acc, $el) => [...acc, ...($el.querySelector('table') ? [array($el.querySelectorAll('table td'))] : [[$el]])],
       [],
     );
@@ -65,6 +67,7 @@ export class PokemonSimpleInfo {
     const hiddenAbility = getText($abilities.querySelector('small a')!);
     const evYield = getText($evYield, null).trim();
     const catchRate = +getText($catchRate, null);
+    const friendship = +getText($friendship, /\(.*/);
 
     return {
       name,
@@ -78,6 +81,7 @@ export class PokemonSimpleInfo {
       hiddenAbility,
       evYield,
       catchRate,
+      friendship,
     } as IPokemonSimpleInfo;
   };
 }
