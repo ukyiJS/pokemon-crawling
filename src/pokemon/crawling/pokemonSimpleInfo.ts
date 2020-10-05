@@ -43,5 +43,7 @@ export class PokemonSimpleInfo {
     const getText = ($el: Element, regExp?: RegExp | null, str?: string): string =>
       $el.textContent!.replace(regExp === null ? '' : /\s/g, '').replace(RegExp(regExp ?? '', 'gi'), str ?? '');
     const getTexts = ($el: NodeListOf<Element> | Element[]): string[] => array($el).map($el => getText($el));
+
+    const [$tab, $panel] = children($element.querySelector('.tabset-basics'));
   };
 }
