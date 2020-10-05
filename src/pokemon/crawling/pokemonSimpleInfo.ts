@@ -47,7 +47,7 @@ export class PokemonSimpleInfo {
     const [$tab, $panel] = children($element.querySelector('.tabset-basics'));
     const [$basics, ...$differentForm] = children($tab);
 
-    const [[$image], [$no, $types, $species, $height]] = array(
+    const [[$image], [$no, $types, $species, $height, $weight]] = array(
       $panel.querySelectorAll(`.active .grid-col:not(:nth-child(3))`),
     ).reduce<Element[][]>(
       (acc, $el) => [...acc, ...($el.querySelector('table') ? [array($el.querySelectorAll('table td'))] : [[$el]])],
@@ -60,7 +60,8 @@ export class PokemonSimpleInfo {
     const types = getTexts(children($types));
     const species = getText($species, /é/, 'e');
     const height = getText($height, /\(.*/);
+    const weight = getText($weight, /\(.*/);
 
-    return { name, image, no, types, species, height } as IPokemonSimpleInfo;
+    return { name, image, no, types, species, height, weight } as IPokemonSimpleInfo;
   };
 }
