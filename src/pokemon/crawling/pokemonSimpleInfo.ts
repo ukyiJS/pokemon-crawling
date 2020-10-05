@@ -53,6 +53,7 @@ export class PokemonSimpleInfo {
       [$evYield, $catchRate, $friendship, $exp],
       [$eegGroups, $gender, $eggCycles],
       $stats,
+      $typeDefenses,
     ] = array($panel.querySelectorAll(`.active .grid-col:not(:nth-child(3))`)).reduce<Element[][]>(
       (acc, $el) => [...acc, ...($el.querySelector('table') ? [array($el.querySelectorAll('table td'))] : [[$el]])],
       [],
@@ -80,6 +81,12 @@ export class PokemonSimpleInfo {
       name: statNames[i],
       value: +value,
     }));
+    const typeDefenseNames = Object.keys(POKEMON_TYPE);
+    const typeDefenses = $typeDefenses.map(($el, i) => {
+      const type = typeDefenseNames[i];
+      const damage = +(getText($el) || '1').replace(/(½)|(¼)/, (_, m1, m2) => (m1 && '0.5') || (m2 && '0.4'));
+      return { type, damage };
+    });
 
     return {
       name,
@@ -99,6 +106,7 @@ export class PokemonSimpleInfo {
       gender,
       eggCycles,
       stats,
+      typeDefenses,
     } as IPokemonSimpleInfo;
   };
 }
