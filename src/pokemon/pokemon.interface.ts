@@ -76,7 +76,7 @@ export interface IMoves {
 
 export interface ITypeDefense {
   type: string;
-  damage: 0 | 0.25 | 0.5 | 1 | 2 | 4;
+  damage: number;
 }
 
 export interface IPokemonSimpleInfo {
