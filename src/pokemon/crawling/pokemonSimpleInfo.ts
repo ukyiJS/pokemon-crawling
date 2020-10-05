@@ -62,7 +62,8 @@ export class PokemonSimpleInfo {
     const height = getText($height, /\(.*/);
     const weight = getText($weight, /\(.*/);
     const abilities = getTexts($abilities.firstElementChild!.querySelectorAll('a'));
+    const hiddenAbility = getText($abilities.querySelector('small a')!);
 
-    return { name, image, no, types, species, height, weight, abilities } as IPokemonSimpleInfo;
+    return { name, image, no, types, species, height, weight, abilities, hiddenAbility } as IPokemonSimpleInfo;
   };
 }
