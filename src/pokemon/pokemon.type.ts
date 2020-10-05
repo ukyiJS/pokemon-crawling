@@ -251,3 +251,14 @@ export type Condition =
   | typeof ELEMENTAL_STONE
   | typeof TRADING_CONDITION
   | typeof ADDITIONAL_CONDITION;
+
+export const STAT = {
+  HP: 'HP',
+  ATTACK: '공격',
+  DEFENSE: '방어',
+  SP_ATTACK: '특수공격',
+  SP_DEFENSE: '특수방어',
+  SPEED: '스피드',
+  TOTAL: '총합',
+} as const;
+export type STAT = typeof STAT[keyof typeof STAT];
