@@ -73,3 +73,8 @@ export interface IMoves {
   tm: (IMove & { no: number })[];
   tr: (IMove & { no: number })[];
 }
+
+export interface ITypeDefense {
+  type: string;
+  damage: 0 | 0.25 | 0.5 | 1 | 2 | 4;
+}
