@@ -56,7 +56,7 @@ export class PokemonService {
   }
 
   public async getPokemonWiki(): Promise<any> {
-    const url = 'https://pokemon.fandom.com/ko/wiki/뮤';
+    const url = 'https://pokemon.fandom.com/ko/wiki/이상해씨';
     const selector = '.infobox-pokemon';
     const { browser, page } = await getBrowserAndPage(url, selector);
     const { crawling } = new PokemonWiki();
