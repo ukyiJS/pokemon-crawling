@@ -61,6 +61,7 @@ export class PokemonSimpleInfo {
 
     const name = getText($basics);
     const image = $image.querySelector('img')!.src;
+
     const no = getText($no);
     const types = getTexts(children($types));
     const species = getText($species, /é/, 'e');
@@ -68,19 +69,23 @@ export class PokemonSimpleInfo {
     const weight = getText($weight, /\(.*/);
     const abilities = getTexts($abilities.firstElementChild!.querySelectorAll('a'));
     const hiddenAbility = getText($abilities.querySelector('small a')!);
+
     const evYield = getText($evYield, null).trim();
     const catchRate = +getText($catchRate, null);
     const friendship = +getText($friendship, /\(.*/);
     const exp = +getText($exp);
+
     const eegGroups = getText($eegGroups).split(',');
     const gender = getText($gender).split(',');
     const [cycle, step] = getText($eggCycles, /\)|,|steps/).split('(');
     const eggCycles = { cycle, step };
+
     const statNames = Object.keys(STAT);
     const stats = getTexts($stats.filter((_, i) => !(i % 4))).map((value, i) => ({
       name: statNames[i],
       value: +value,
     }));
+
     const typeDefenseNames = Object.keys(POKEMON_TYPE);
     const typeDefenses = $typeDefenses.map(($el, i) => {
       const type = typeDefenseNames[i];
