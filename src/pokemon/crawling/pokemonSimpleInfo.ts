@@ -47,11 +47,13 @@ export class PokemonSimpleInfo {
     const [$tab, $panel] = children($element.querySelector('.tabset-basics'));
     const [$basics, ...$differentForm] = children($tab);
 
-    const $col = array($panel.querySelectorAll(`.active .grid-col:not(:nth-child(3))`)).reduce<Element[][]>(
+    const [[$image]] = array($panel.querySelectorAll(`.active .grid-col:not(:nth-child(3))`)).reduce<Element[][]>(
       (acc, $el) => [...acc, ...($el.querySelector('table') ? [array($el.querySelectorAll('table td'))] : [[$el]])],
       [],
     );
 
-    return {} as IPokemonSimpleInfo;
+    const name = getText($basics);
+
+    return { name } as IPokemonSimpleInfo;
   };
 }
