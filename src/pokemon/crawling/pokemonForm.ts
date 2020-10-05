@@ -1,6 +1,6 @@
 import { IEvolvingTo, IPokemon } from '../pokemon.interface';
 import { DIFFERENT_FORM, EVOLUTION_TYPE, EXCEPTIONAL_FORM_KEY } from '../pokemon.type';
-import { PokemonCondition } from './pokemonCondition';
+import { PokemonEvolutionCondition } from './pokemonEvolutionCondition';
 
 export class PokemonForm {
   evolutionType?: EVOLUTION_TYPE;
@@ -47,7 +47,7 @@ export class PokemonForm {
     form: this.getForm(chain.form),
     differentForm: chain.differentForm.map(this.deepConvertForm),
     evolvingTo: chain.evolvingTo.map(to => {
-      const { convertConditionIntoKor } = new PokemonCondition();
+      const { convertConditionIntoKor } = new PokemonEvolutionCondition();
       const evolvingTo = this.evolutionType ? convertConditionIntoKor(to, this.evolutionType) : to;
       return this.deepConvertForm(evolvingTo) as IEvolvingTo;
     }),
