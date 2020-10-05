@@ -79,6 +79,11 @@ export interface ITypeDefense {
   damage: number;
 }
 
+export interface IEggCycle {
+  cycle: string;
+  step: string;
+}
+
 export interface IPokemonSimpleInfo {
   no: string;
   name: string;
@@ -96,4 +101,7 @@ export interface IPokemonSimpleInfo {
   friendship: number;
   exp: number;
   moves: IMoves;
+  eegGroups: string[];
+  gender: string[];
+  eggCycles: IEggCycle;
 }
