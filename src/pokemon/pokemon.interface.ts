@@ -78,3 +78,18 @@ export interface ITypeDefense {
   type: string;
   damage: 0 | 0.25 | 0.5 | 1 | 2 | 4;
 }
+
+export interface IPokemonSimpleInfo {
+  no: string;
+  name: string;
+  images: string[];
+  stats: IStats[];
+  types: string[];
+  typeDefenses: ITypeDefense[];
+  species: string;
+  height: string;
+  weight: string;
+  abilities: string[];
+  hiddenAbility: string;
+  moves: IMoves;
+}
