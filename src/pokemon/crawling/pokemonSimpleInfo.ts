@@ -77,7 +77,7 @@ export class PokemonSimpleInfo {
     const [cycle, step] = getText($eggCycles, /\)|,|steps/).split('(');
     const eggCycles = { cycle, step };
     const statNames = Object.keys(STAT);
-    const stats = getTexts($stats.filter(($td, i) => !(i % 4))).map((value, i) => ({
+    const stats = getTexts($stats.filter((_, i) => !(i % 4))).map((value, i) => ({
       name: statNames[i],
       value: +value,
     }));
