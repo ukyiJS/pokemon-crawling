@@ -1,6 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer';
-import { IPokemonSimpleInfo } from '../pokemon.interface';
+import { IMoves, IPokemonSimpleInfo } from '../pokemon.interface';
+import { POKEMON_TYPE, STAT } from '../pokemon.type';
 
 export class PokemonSimpleInfo {
   private loopCount: number;
@@ -37,6 +38,10 @@ export class PokemonSimpleInfo {
   };
 
   private getPokemons = ($element: Element): IPokemonSimpleInfo => {
-    return {} as IPokemonSimpleInfo;
+    const array = <T>($el: Iterable<T>): T[] => Array.from($el);
+    const children = ($el: Element | null) => ($el ? Array.from($el.children) : []);
+    const getText = ($el: Element, regExp?: RegExp | null, str?: string): string =>
+      $el.textContent!.replace(regExp === null ? '' : /\s/g, '').replace(RegExp(regExp ?? '', 'gi'), str ?? '');
+    const getTexts = ($el: NodeListOf<Element> | Element[]): string[] => array($el).map($el => getText($el));
   };
 }
