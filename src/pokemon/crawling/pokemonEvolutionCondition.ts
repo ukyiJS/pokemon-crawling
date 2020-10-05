@@ -9,7 +9,7 @@ import {
   TRADING_CONDITION,
 } from '../pokemon.type';
 
-export class PokemonCondition {
+export class PokemonEvolutionCondition {
   evolutionType?: EVOLUTION_TYPE;
 
   private getCondition = (condition: string | null, type?: EVOLUTION_TYPE): string | null => {
