@@ -50,7 +50,7 @@ export class PokemonSimpleInfo {
     const [
       [$image],
       [$no, $types, $species, $height, $weight, $abilities],
-      [$evYield, $catchRate, $friendship],
+      [$evYield, $catchRate, $friendship, $exp],
     ] = array($panel.querySelectorAll(`.active .grid-col:not(:nth-child(3))`)).reduce<Element[][]>(
       (acc, $el) => [...acc, ...($el.querySelector('table') ? [array($el.querySelectorAll('table td'))] : [[$el]])],
       [],
@@ -68,6 +68,7 @@ export class PokemonSimpleInfo {
     const evYield = getText($evYield, null).trim();
     const catchRate = +getText($catchRate, null);
     const friendship = +getText($friendship, /\(.*/);
+    const exp = +getText($exp);
 
     return {
       name,
@@ -82,6 +83,7 @@ export class PokemonSimpleInfo {
       evYield,
       catchRate,
       friendship,
+      exp,
     } as IPokemonSimpleInfo;
   };
 }
