@@ -5,7 +5,7 @@ import { IPokemonWiki } from '../pokemon.interface';
 export class PokemonWiki {
   private loopCount: number;
 
-  constructor(loopCount = 892) {
+  constructor(loopCount = 893) {
     this.loopCount = loopCount;
   }
 
@@ -13,12 +13,21 @@ export class PokemonWiki {
     let currentCount = 0;
     let pokemons: IPokemonWiki[] = [];
 
+    const selector = '.infobox-pokemon';
     const nextClickSelector = 'table.w-100.mb-1 td:nth-child(3) td:nth-child(1) > a';
     const navigationPromise = page.waitForNavigation();
 
     do {
-      const $infobox = await page.waitForSelector('.infobox-pokemon');
-      const pokemon = await page.evaluate(this.getPokemons, $infobox);
+      await page.waitForSelector(selector);
+      const pokemon = await page.evaluate(this.getPokemons);
+      const $differentForm = await page.$$eval('#pokemonToggle td', $el => Array.from($el).map($el => $el.textContent));
+
+      for (const [i, form] of $differentForm.entries()) {
+        if (!i || !form || /거다이/g.test(form)) continue;
+
+        const differentForm = await page.evaluate(this.getPokemons, i, JSON.stringify(pokemon));
+        pokemon.differentForm = [...pokemon.differentForm, differentForm];
+      }
       pokemons = [...pokemons, pokemon];
 
       currentCount = +pokemon.no;
