@@ -57,6 +57,7 @@ export interface IPokemonWiki {
   weight: string;
   captureRate: number;
   genderRatio: IGenderRatio[];
+  form: string | null;
 }
 
 interface IMove {
