@@ -59,6 +59,7 @@ export interface IPokemonWiki {
   genderRatio: IGenderRatio[];
   form: string | null;
   megaStone?: string;
+  differentForm: IPokemonWiki[];
 }
 
 interface IMove {
