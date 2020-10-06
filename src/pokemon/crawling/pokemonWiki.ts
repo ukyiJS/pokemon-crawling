@@ -1,4 +1,6 @@
+import { LoadingBar } from '@/utils/loadingBar';
 import { Logger } from '@nestjs/common';
+import { blueBright, whiteBright, yellowBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { IPokemonWiki } from '../pokemon.interface';
 
@@ -17,25 +19,35 @@ export class PokemonWiki {
     const nextClickSelector = 'table.w-100.mb-1 td:nth-child(3) td:nth-child(1) > a';
     const navigationPromise = page.waitForNavigation();
 
+    const loadingBar = new LoadingBar('log');
+
     do {
       await page.waitForSelector(selector);
       const pokemon = await page.evaluate(this.getPokemons);
-      const $differentForm = await page.$$eval('#pokemonToggle td', $el => Array.from($el).map($el => $el.textContent));
+      const isToggleTable = await page.$('#pokemonToggle table');
+      const toggleSelector = isToggleTable ? '#pokemonToggle table td' : '#pokemonToggle td';
+      const $differentForm = await page.$$eval(toggleSelector, $el => Array.from($el).map($el => $el.textContent));
 
       for (const [i, form] of $differentForm.entries()) {
         if (!i || !form || /거다이/g.test(form)) continue;
 
         const differentForm = await page.evaluate(this.getPokemons, i, JSON.stringify(pokemon));
+        pokemon.form = form;
         pokemon.differentForm = [...pokemon.differentForm, differentForm];
       }
       pokemons = [...pokemons, pokemon];
 
       currentCount = +pokemon.no;
-      Logger.warn(currentCount, 'currentCount');
 
-      const percent = `${Math.floor((currentCount / this.loopCount) * 100)}%`;
-      Logger.debug(`${JSON.stringify(pokemon)}`, 'Result');
-      Logger.verbose(`############################## ${percent} ##############################`, 'Result');
+      const percent = (currentCount / this.loopCount) * 100;
+      const json = `${JSON.stringify(pokemon)}`
+        .replace(/("(?=n|e|i|t|s|c|a|h|f|w|g|r|d)(\w)+")/g, (_, m1) => m1.replace(/"/g, ''))
+        .replace(/(:|,|{)+(?!\/)/g, '$1 ')
+        .replace(/(})/g, ' $1')
+        .replace(/([[\]{}])/g, blueBright('$1'))
+        .replace(/(\w+:(?!\/))/g, yellowBright('$1'));
+      loadingBar.update(percent);
+      Logger.log(whiteBright(json), 'Result');
 
       await page.waitForSelector(nextClickSelector);
       await page.click(nextClickSelector);
@@ -57,7 +69,6 @@ export class PokemonWiki {
     const $no = $element.querySelector('.index');
     const no = getText($no).replace(/\D/g, '');
     const [korName, , engName] = getTexts($element.querySelectorAll(`div[class^='name-']`));
-    const form = toggleIndex ? korName : null;
     const image = $element.querySelector<HTMLAnchorElement>('.image a')!.href;
 
     const $body = Array.from($element.querySelectorAll<Element>('.body > tbody > tr > td:not(.nostyle)'));
@@ -82,21 +93,24 @@ export class PokemonWiki {
     const species = getText($species);
 
     const abilities = getTexts($abilities.querySelectorAll('a span'));
-    const hiddenAbility = getText($hiddenAbility) || null;
+    let hiddenAbility = getText($hiddenAbility) || null;
+    if (hiddenAbility && /없음/g.test(hiddenAbility)) hiddenAbility = null;
 
     if (isDifferentForm && /메가|원시|울트라/g.test(korName)) {
       const [, , , $height, $weight, $megaStone] = $body;
-      const form = korName;
       const height = getText($height);
       const weight = getText($weight);
       const megaStone = getText($megaStone) || undefined;
 
-      return { ...pokemon, types, image, species, abilities, hiddenAbility: null, height, weight, form, megaStone };
+      return { ...pokemon, types, image, species, abilities, hiddenAbility: null, height, weight, megaStone };
     }
 
     const color = {
       name: getText($color),
-      code: $color.firstElementChild!.getAttribute('style')!.replace(/background:/, ''),
+      code: $color
+        .querySelector('span')!
+        .getAttribute('style')!
+        .replace(/background:/, ''),
     };
     const friendship = +getText($friendship) || 0;
 
@@ -125,7 +139,7 @@ export class PokemonWiki {
       weight,
       captureRate,
       genderRatio,
-      form,
+      form: null,
       differentForm: [],
     };
   };
