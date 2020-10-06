@@ -22,7 +22,7 @@ export class PokemonWiki {
       pokemons = [...pokemons, pokemon];
 
       currentCount = +pokemon.no;
-      Logger.warn(this.loopCount, 'loopCount');
+      Logger.warn(currentCount, 'currentCount');
 
       const percent = `${Math.floor((currentCount / this.loopCount) * 100)}%`;
       Logger.debug(`${JSON.stringify(pokemon)}`, 'Result');
@@ -37,25 +37,29 @@ export class PokemonWiki {
   };
 
   private getPokemons = ($element: Element): IPokemonWiki => {
-    const getText = ($element: Element): string => $element.textContent!.replace(/\s/g, '');
-    const getTexts = ($elements: NodeListOf<Element> | Element[]): string[] => Array.from($elements).map(getText);
+    const getText = ($el: Element): string => $el.textContent!.trim();
+    const getTexts = ($el: NodeListOf<Element> | Element[]): string[] => Array.from($el).map(getText);
 
+    const $body = $element.querySelector('.body')!;
     const no = getText($element.querySelector('.index')!).replace(/\D/g, '');
     const [korName, , engName] = getTexts($element.querySelectorAll(`div[class^='name-']`));
     const images = Array.from($element.querySelectorAll('.image a')).map($a => ($a as HTMLAnchorElement).href);
 
     const [
-      [$types, $species],
-      [$abilities, $hiddenAbility],
+      $types,
+      $species,
+      $abilities,
+      $hiddenAbility,
       ,
       ,
       ,
-      [$color, $friendship],
-      [$height, $weight],
-      [$captureRate, $genderRatio],
-    ] = Array.from($element.querySelectorAll('.body tr:not(:nth-child(7))'))
-      .filter((_, i) => i % 2)
-      .map($tr => Array.from($tr.children));
+      $color,
+      $friendship,
+      $height,
+      $weight,
+      $captureRate,
+      $genderRatio,
+    ] = Array.from($body.querySelectorAll('td')).filter($td => $td.className !== 'nostyle');
 
     const types = getTexts($types.querySelectorAll('a span'));
     const species = getText($species);
@@ -72,7 +76,7 @@ export class PokemonWiki {
     const height = getText($height);
     const weight = getText($weight);
 
-    const captureRate = +getText($captureRate);
+    const captureRate = +getText($captureRate).replace(/\D/g, '');
     const genderNames = ['수컷', '암컷'];
     const genderText = getText($genderRatio).replace(/[:ㄱ-힣%]/g, '');
     const genderRatio = genderText
