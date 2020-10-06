@@ -45,13 +45,22 @@ export class PokemonWiki {
     return pokemons;
   };
 
-  private getPokemons = ($element: Element): IPokemonWiki => {
-    const getText = ($el: Element): string => $el.textContent!.trim();
-    const getTexts = ($el: NodeListOf<Element> | Element[]): string[] => Array.from($el).map(getText);
+  private getPokemons = (toggleIndex = 0, pokemonStr?: string): IPokemonWiki => {
+    const $element = document.querySelectorAll('.infobox-pokemon')[toggleIndex];
+    const pokemon = JSON.parse(pokemonStr ?? '{}') as IPokemonWiki;
+    const isDifferentForm = !!toggleIndex;
 
-    const no = getText($element.querySelector('.index')!).replace(/\D/g, '');
+    const getText = ($el: Element | null): string => $el?.textContent?.trim() ?? '';
+    const getTexts = ($el: NodeListOf<Element> | Element[]): string[] =>
+      Array.from($el).reduce<string[]>((acc, $el, _, __, text = getText($el)) => (text ? [...acc, text] : acc), []);
+
+    const $no = $element.querySelector('.index');
+    const no = getText($no).replace(/\D/g, '');
     const [korName, , engName] = getTexts($element.querySelectorAll(`div[class^='name-']`));
-    const images = Array.from($element.querySelectorAll('.image a')).map($a => ($a as HTMLAnchorElement).href);
+    const form = toggleIndex ? korName : null;
+    const image = $element.querySelector<HTMLAnchorElement>('.image a')!.href;
+
+    const $body = Array.from($element.querySelectorAll<Element>('.body > tbody > tr > td:not(.nostyle)'));
 
     const [
       $types,
@@ -67,13 +76,23 @@ export class PokemonWiki {
       $weight,
       $captureRate,
       $genderRatio,
-    ] = Array.from($element.querySelectorAll<Element>('.body > tbody > tr > td:not(.nostyle)'));
+    ] = $body;
 
     const types = getTexts($types.querySelectorAll('a span'));
     const species = getText($species);
 
     const abilities = getTexts($abilities.querySelectorAll('a span'));
-    const hiddenAbility = getText($hiddenAbility);
+    const hiddenAbility = getText($hiddenAbility) || null;
+
+    if (isDifferentForm && /메가|원시|울트라/g.test(korName)) {
+      const [, , , $height, $weight, $megaStone] = $body;
+      const form = korName;
+      const height = getText($height);
+      const weight = getText($weight);
+      const megaStone = getText($megaStone) || undefined;
+
+      return { ...pokemon, types, image, species, abilities, hiddenAbility: null, height, weight, form, megaStone };
+    }
 
     const color = {
       name: getText($color),
@@ -95,7 +114,7 @@ export class PokemonWiki {
       no,
       name: korName,
       engName,
-      images,
+      image,
       types,
       species,
       abilities,
@@ -106,6 +125,8 @@ export class PokemonWiki {
       weight,
       captureRate,
       genderRatio,
+      form,
+      differentForm: [],
     };
   };
 }
