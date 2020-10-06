@@ -1,6 +1,6 @@
 import { LoadingBar } from '@/utils/loadingBar';
 import { Logger } from '@nestjs/common';
-import { blueBright, whiteBright, yellowBright } from 'chalk';
+import { blueBright, redBright, whiteBright, yellowBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { IPokemonWiki } from '../pokemon.interface';
 
@@ -42,10 +42,11 @@ export class PokemonWiki {
       const percent = (currentCount / this.loopCount) * 100;
       const json = `${JSON.stringify(pokemon)}`
         .replace(/("(?=n|e|i|t|s|c|a|h|f|w|g|r|d)(\w)+")/g, (_, m1) => m1.replace(/"/g, ''))
-        .replace(/(:|,|{)+(?!\/)/g, '$1 ')
-        .replace(/(})/g, ' $1')
+        .replace(/([:,{](?!\/))/g, '$1 ')
+        .replace(/([}])/g, ' $1')
         .replace(/([[\]{}])/g, blueBright('$1'))
-        .replace(/(\w+:(?!\/))/g, yellowBright('$1'));
+        .replace(/(\w+:(?!\/))/g, yellowBright('$1'))
+        .replace(/(null)/g, redBright('$1'));
       loadingBar.update(percent);
       Logger.log(whiteBright(json), 'Result');
 
