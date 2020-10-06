@@ -58,6 +58,7 @@ export interface IPokemonWiki {
   captureRate: number;
   genderRatio: IGenderRatio[];
   form: string | null;
+  megaStone?: string;
 }
 
 interface IMove {
