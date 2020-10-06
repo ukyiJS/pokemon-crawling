@@ -40,7 +40,6 @@ export class PokemonWiki {
     const getText = ($el: Element): string => $el.textContent!.trim();
     const getTexts = ($el: NodeListOf<Element> | Element[]): string[] => Array.from($el).map(getText);
 
-    const $body = $element.querySelector('.body')!;
     const no = getText($element.querySelector('.index')!).replace(/\D/g, '');
     const [korName, , engName] = getTexts($element.querySelectorAll(`div[class^='name-']`));
     const images = Array.from($element.querySelectorAll('.image a')).map($a => ($a as HTMLAnchorElement).href);
@@ -59,7 +58,7 @@ export class PokemonWiki {
       $weight,
       $captureRate,
       $genderRatio,
-    ] = Array.from($body.querySelectorAll('td')).filter($td => $td.className !== 'nostyle');
+    ] = Array.from($element.querySelectorAll<Element>('.body > tbody > tr > td:not(.nostyle)'));
 
     const types = getTexts($types.querySelectorAll('a span'));
     const species = getText($species);
@@ -71,12 +70,12 @@ export class PokemonWiki {
       name: getText($color),
       code: $color.firstElementChild!.getAttribute('style')!.replace(/background:/, ''),
     };
-    const friendship = +getText($friendship);
+    const friendship = +getText($friendship) || 0;
 
     const height = getText($height);
     const weight = getText($weight);
 
-    const captureRate = +getText($captureRate).replace(/\D/g, '');
+    const captureRate = +getText($captureRate);
     const genderNames = ['수컷', '암컷'];
     const genderText = getText($genderRatio).replace(/[:ㄱ-힣%]/g, '');
     const genderRatio = genderText
