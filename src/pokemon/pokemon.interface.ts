@@ -50,7 +50,7 @@ export interface IPokemonWiki {
   types: string[];
   species: string;
   abilities: string[];
-  hiddenAbility: string;
+  hiddenAbility: string | null;
   color: IColor;
   friendship: number;
   height: string;
