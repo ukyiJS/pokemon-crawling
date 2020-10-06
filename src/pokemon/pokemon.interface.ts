@@ -46,7 +46,7 @@ export interface IPokemonWiki {
   no: string;
   name: string;
   engName: string;
-  images: string[];
+  image: string;
   types: string[];
   species: string;
   abilities: string[];
