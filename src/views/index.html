@@ -51,7 +51,7 @@
       (() => {
         let isLoading = false;
         const { defaults, interceptors, get } = axios;
-        defaults.timeout = 100000;
+        defaults.timeout = 3000000;
         const toggleDisable = flag => $buttons.forEach(el => (el.disabled = flag));
         const $get = url =>
           get(url)
@@ -62,7 +62,18 @@
             });
 
         const $buttons = Array.from(document.querySelector('.buttons').children);
-        $buttons.forEach(el => el.addEventListener('click', e => $get(e.target.dataset.url)));
+        $buttons.forEach(el =>
+          el.addEventListener('click', async e => {
+            let result = {};
+            try {
+              result = await $get(e.target.dataset.url);
+            } catch (error) {
+              console.warn(error.message, error);
+            } finally {
+              console.log('### result', result);
+            }
+          }),
+        );
 
         let reqTime;
         const toggleLoading = interceptor => {
