@@ -50,11 +50,11 @@
     <script>
       (() => {
         let isLoading = false;
-        const { defaults, interceptors, get } = axios;
-        defaults.timeout = 3000000;
+        const { interceptors, get } = axios;
+
         const toggleDisable = flag => $buttons.forEach(el => (el.disabled = flag));
         const $get = url =>
-          get(url)
+          get(url, { timeout: 3000000 })
             .then(({ data }) => data)
             .catch(error => {
               toggleDisable(false);
