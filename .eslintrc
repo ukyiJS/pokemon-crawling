@@ -34,6 +34,7 @@
     "no-new-func": "off",
     "no-return-assign": "off",
     "no-param-reassign": "off",
-    "no-await-in-loop": "off"
+    "no-await-in-loop": "off",
+    "no-restricted-syntax": "off"
   }
 }
