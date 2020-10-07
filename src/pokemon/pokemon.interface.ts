@@ -1,3 +1,5 @@
+import { STAT } from './pokemon.type';
+
 export interface IWindow extends Window {
   [key: string]: any;
   getText: ($element: Element) => string;
@@ -8,6 +10,7 @@ export interface IWindow extends Window {
   addMultipleEvolvingTo: (acc: IPokemon[], index: number, evolvingTo: IEvolvingTo) => IPokemon[];
   addFromDifferentForm: (acc: IPokemon[], index: number, chain: IPokemon) => IPokemon[];
   getStats: ($element: Element) => IStats[];
+  STAT: typeof STAT;
 }
 
 export interface IPokemon {
@@ -107,4 +110,6 @@ export interface IPokemonSimpleInfo {
   eegGroups: string[];
   gender: string[];
   eggCycles: IEggCycle;
+  form: string | null;
+  differentForm: IPokemonSimpleInfo[];
 }
