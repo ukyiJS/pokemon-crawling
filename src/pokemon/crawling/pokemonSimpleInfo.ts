@@ -54,7 +54,9 @@ export class PokemonSimpleInfo {
     return pokemons;
   };
 
-  private getPokemons = ($element: Element): IPokemonSimpleInfo => {
+  private getPokemons = (STAT: STAT, POKEMON_TYPE: POKEMON_TYPE): IPokemonSimpleInfo => {
+    const $element = document.querySelector('#main')!;
+
     const array = <T>($el: Iterable<T>): T[] => Array.from($el);
     const children = ($el: Element | null) => ($el ? Array.from($el.children) : []);
     const getText = ($el: Element, regExp?: RegExp | null, str?: string): string =>
