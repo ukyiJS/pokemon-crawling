@@ -59,9 +59,9 @@ export class PokemonSimpleInfo {
 
     const array = <T>($el: Iterable<T>): T[] => Array.from($el);
     const children = ($el: Element | null) => ($el ? Array.from($el.children) : []);
-    const getText = ($el: Element, regExp?: RegExp | null, str?: string): string =>
-      $el.textContent!.replace(regExp === null ? '' : /\s/g, '').replace(RegExp(regExp ?? '', 'gi'), str ?? '');
-    const getTexts = ($el: NodeListOf<Element> | Element[]): string[] => array($el).map($el => getText($el));
+    const getText = ($el: Element | null): string => $el?.textContent?.trim() ?? '';
+    const getTexts = ($el: NodeListOf<Element> | Element[]): string[] =>
+      Array.from($el).reduce<string[]>((acc, $el, _, __, text = getText($el)) => (text ? [...acc, text] : acc), []);
 
     const [$tab, $panel] = children($element.querySelector('.tabset-basics'));
     const [$basics, ...$differentForm] = children($tab);
@@ -83,20 +83,22 @@ export class PokemonSimpleInfo {
 
     const no = getText($no);
     const types = getTexts(children($types));
-    const species = getText($species, /é/, 'e');
-    const height = getText($height, /\(.*/);
-    const weight = getText($weight, /\(.*/);
-    const abilities = getTexts($abilities.firstElementChild!.querySelectorAll('a'));
-    const hiddenAbility = getText($abilities.querySelector('small a')!);
+    const species = getText($species).replace(/é/g, 'e');
+    const height = getText($height).replace(/\(.*/g, '');
+    const weight = getText($weight).replace(/\(.*/g, '');
+    const abilities = getTexts($abilities.querySelectorAll('span > a'));
+    const hiddenAbility = getText($abilities.querySelector('small > a')) || null;
 
-    const evYield = getText($evYield, null).trim();
-    const catchRate = +getText($catchRate, null);
-    const friendship = +getText($friendship, /\(.*/);
+    const evYield = getText($evYield);
+    const catchRate = +getText($catchRate);
+    const friendship = +getText($friendship).replace(/\(.*/, '');
     const exp = +getText($exp);
 
     const eegGroups = getText($eegGroups).split(',');
     const gender = getText($gender).split(',');
-    const [cycle, step] = getText($eggCycles, /\)|,|steps/).split('(');
+    const [cycle, step] = getText($eggCycles)
+      .replace(/[,)]|steps/g, '')
+      .split('(');
     const eggCycles = { cycle, step };
 
     const statNames = Object.keys(STAT);
