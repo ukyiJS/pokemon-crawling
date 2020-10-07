@@ -1,6 +1,9 @@
+import { LoadingBar } from '@/utils/loadingBar';
 import { Logger } from '@nestjs/common';
+import { blueBright, redBright, whiteBright, yellowBright } from 'chalk';
+import { join } from 'path';
 import { Page } from 'puppeteer';
-import { IMoves, IPokemonSimpleInfo } from '../pokemon.interface';
+import { IPokemonSimpleInfo } from '../pokemon.interface';
 import { POKEMON_TYPE, STAT } from '../pokemon.type';
 
 export class PokemonSimpleInfo {
@@ -23,17 +26,25 @@ export class PokemonSimpleInfo {
       await page.click('#gdpr-confirm > div > div > p.text-right > button');
     }
 
+    const loadingBar = new LoadingBar('log');
     do {
-      const $main = await page.waitForSelector('#main');
-      const pokemon = await page.evaluate(this.getPokemons, $main);
+      await page.waitForSelector('#main');
+
+      const pokemon = await page.evaluate(this.getPokemons, STAT, POKEMON_TYPE);
       pokemons = [...pokemons, pokemon];
+      Logger.log(page.url(), 'url');
 
       currentCount = +pokemon.no;
-      Logger.warn(this.loopCount, 'loopCount');
-
-      const percent = `${Math.floor((currentCount / this.loopCount) * 100)}%`;
-      Logger.debug(`${JSON.stringify(pokemon)}`, 'Result');
-      Logger.verbose(`############################## ${percent} ##############################`, 'Result');
+      const percent = (currentCount / this.loopCount) * 100;
+      const json = `${JSON.stringify(pokemon)}`
+        .replace(/("(?=n|e|i|t|s|c|a|h|f|w|g|r|d|v)(\w)+")/g, (_, m1) => m1.replace(/"/g, ''))
+        .replace(/([:,{](?!\/))/g, '$1 ')
+        .replace(/([}])/g, ' $1')
+        .replace(/([[\]{}])/g, blueBright('$1'))
+        .replace(/(\w+:(?!\/))/g, yellowBright('$1'))
+        .replace(/(null)/g, redBright('$1'));
+      loadingBar.update(percent);
+      Logger.log(whiteBright(json), 'Result');
 
       await page.waitForSelector(nextClickSelector);
       await page.click(nextClickSelector);
