@@ -98,7 +98,7 @@ export interface IPokemonSimpleInfo {
   height: string;
   weight: string;
   abilities: string[];
-  hiddenAbility: string;
+  hiddenAbility: string | null;
   evYield: string;
   catchRate: number;
   friendship: number;
