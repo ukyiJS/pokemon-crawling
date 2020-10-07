@@ -107,7 +107,7 @@ export class PokemonSimpleInfo {
       value: +value,
     }));
 
-    const typeDefenseNames = Object.keys(POKEMON_TYPE);
+    const typeDefenseNames = Object.values(POKEMON_TYPE);
     const typeDefenses = $typeDefenses.map(($el, i) => {
       const type = typeDefenseNames[i];
       const damage = +(getText($el) || '1').replace(/(½)|(¼)/, (_, m1, m2) => (m1 && '0.5') || (m2 && '0.25'));
