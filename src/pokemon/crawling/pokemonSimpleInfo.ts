@@ -1,7 +1,8 @@
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
+import { join } from 'path';
 import { Page } from 'puppeteer';
-import { IPokemonSimpleInfo, IWindow } from '../pokemon.interface';
+import { IMoves, IPokemonSimpleInfo, IWindow } from '../pokemon.interface';
 import { POKEMON_TYPE, STAT } from '../pokemon.type';
 import { CrawlingUtil } from './utils';
 
@@ -32,41 +33,37 @@ export class PokemonSimpleInfo extends CrawlingUtil {
       POKEMON_TYPE,
     });
 
-  public crawling = async (page: Page): Promise<IPokemonSimpleInfo[]> => {
+  public crawling = async (): Promise<IPokemonSimpleInfo[]> => {
     let currentCount = 0;
     let pokemons: IPokemonSimpleInfo[] = [];
 
     const nextClickSelector = '.entity-nav-next';
-    const navigationPromise = page.waitForNavigation();
+    const navigationPromise = this.page.waitForNavigation();
 
-    const $popupButton = await page.$('#gdpr-confirm > div > div > p.text-right > button');
-    if ($popupButton) {
-      Logger.log('############button', 'button');
-      await page.click('#gdpr-confirm > div > div > p.text-right > button');
-    }
-
-    const loadingBar = new LoadingBar('log');
+    await this.initLocalStorage();
     do {
-      await page.waitForSelector('#main');
+      await this.initCrawlingUtils();
+      await this.page.waitForSelector('#main');
 
-      const pokemon = await page.evaluate(this.getPokemons, STAT, POKEMON_TYPE);
+      const pokemon = await this.page.evaluate(this.getPokemons);
+
+      const forms = await this.page.$$eval('.tabset-basics > .tabs-tab-list > .tabs-tab', (_, $el = Array.from(_)) =>
+        $el.map($el => $el.textContent!).filter((f, i) => i && !/partner/gi.test(f)),
+      );
+      if (forms.length) {
+        pokemon.differentForm = (
+          await Promise.all(forms.map((_, i) => this.page.evaluate(this.getPokemons, i + 1)))
+        ).map((differentForm, i) => ({ ...differentForm, form: forms[i] }));
+      }
+
       pokemons = [...pokemons, pokemon];
-      Logger.log(page.url(), 'url');
 
       currentCount = +pokemon.no;
-      const percent = (currentCount / this.loopCount) * 100;
-      const json = `${JSON.stringify(pokemon)}`
-        .replace(/("(?=n|e|i|t|s|c|a|h|f|w|g|r|d|v)(\w)+")/g, (_, m1) => m1.replace(/"/g, ''))
-        .replace(/([:,{](?!\/))/g, '$1 ')
-        .replace(/([}])/g, ' $1')
-        .replace(/([[\]{}])/g, blueBright('$1'))
-        .replace(/(\w+:(?!\/))/g, yellowBright('$1'))
-        .replace(/(null)/g, redBright('$1'));
-      loadingBar.update(percent);
-      Logger.log(whiteBright(json), 'Result');
+      Logger.log(whiteBright(this.getPrettyJson(pokemon)), 'Result');
+      this.loading.update(currentCount);
 
-      await page.waitForSelector(nextClickSelector);
-      await page.click(nextClickSelector);
+      await this.page.waitForSelector(nextClickSelector);
+      await this.page.click(nextClickSelector);
       await navigationPromise;
     } while (currentCount < this.loopCount);
 
