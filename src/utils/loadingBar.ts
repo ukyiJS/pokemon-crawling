@@ -17,7 +17,7 @@ export class LoadingBar {
     this.type = type;
   }
 
-  private init = (): void => {
+  private printLoading = (): void => {
     const dots = '\u2592'.repeat(this.cursor / 2);
     const left = this.percent / 2 - Math.floor(this.cursor / 2);
     const empty = '\u2591'.repeat(left);
@@ -34,6 +34,6 @@ export class LoadingBar {
 
   public update = (cursor: number): void => {
     this.cursor = Math.floor(cursor);
-    this.init();
+    this.printLoading();
   };
 }
