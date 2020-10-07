@@ -70,7 +70,7 @@ export class PokemonSimpleInfo extends CrawlingUtil {
     return pokemons;
   };
 
-  private getPokemons = (STAT: STAT, POKEMON_TYPE: POKEMON_TYPE): IPokemonSimpleInfo => {
+  private getPokemons = (i = 0): IPokemonSimpleInfo => {
     const $element = document.querySelector('#main')!;
 
     const array = <T>($el: Iterable<T>): T[] => Array.from($el);
@@ -79,9 +79,8 @@ export class PokemonSimpleInfo extends CrawlingUtil {
     const getTexts = ($el: NodeListOf<Element> | Element[]): string[] =>
       Array.from($el).reduce<string[]>((acc, $el, _, __, text = getText($el)) => (text ? [...acc, text] : acc), []);
 
-    const [$tab, $panel] = children($element.querySelector('.tabset-basics'));
-    const [$basics, ...$differentForm] = children($tab);
-    const $grid = array($panel.querySelectorAll(`.active .grid-col:not(:nth-child(3))`));
+    const $panel = $element.querySelectorAll('.tabset-basics > .tabs-panel-list > .tabs-panel')[i];
+    const $grid = array($panel.querySelectorAll('.grid-col:not(:nth-child(3))'));
     const $columns = $grid.reduce<Element[][]>((acc, $el) => {
       const isTable = $el.querySelector('table');
       const tableDataCell = array($el.querySelectorAll('table td'));
@@ -97,14 +96,14 @@ export class PokemonSimpleInfo extends CrawlingUtil {
       $typeDefenses,
     ] = $columns;
 
-    const name = getText($basics);
+    const name = getText($element.querySelector('h1'));
     const image = $image.querySelector('img')!.src;
 
     const no = getText($no);
     const types = getTexts(children($types));
     const species = getText($species).replace(/é/g, 'e');
-    const height = getText($height).replace(/\(.*/g, '');
-    const weight = getText($weight).replace(/\(.*/g, '');
+    const height = getText($height).replace(/\s(\w).*/g, '$1');
+    const weight = getText($weight).replace(/\s(\w).*/g, '$1');
     const abilities = getTexts($abilities.querySelectorAll('span > a'));
     const hiddenAbility = getText($abilities.querySelector('small > a')) || null;
 
@@ -116,17 +115,17 @@ export class PokemonSimpleInfo extends CrawlingUtil {
     const eegGroups = getText($eegGroups).split(',');
     const gender = getText($gender).split(',');
     const [cycle, step] = getText($eggCycles)
-      .replace(/[,)]|steps/g, '')
-      .split('(');
+      .replace(/(?:\(|,| steps\))/g, '')
+      .split(' ');
     const eggCycles = { cycle, step };
 
-    const statNames = Object.values(STAT);
+    const statNames = Object.values(window.STAT);
     const stats = getTexts($stats.filter((_, i) => !(i % 4))).map((value, i) => ({
       name: statNames[i],
       value: +value,
     }));
 
-    const typeDefenseNames = Object.values(POKEMON_TYPE);
+    const typeDefenseNames = Object.values(window.POKEMON_TYPE);
     const typeDefenses = $typeDefenses.map(($el, i) => {
       const type = typeDefenseNames[i];
       const damage = +(getText($el) || '1').replace(/(½)|(¼)/, (_, m1, m2) => (m1 && '0.5') || (m2 && '0.25'));
@@ -152,6 +151,9 @@ export class PokemonSimpleInfo extends CrawlingUtil {
       eggCycles,
       stats,
       typeDefenses,
-    } as IPokemonSimpleInfo;
+      form: null,
+      differentForm: [],
+      moves: {} as IMoves,
+    };
   };
 }
