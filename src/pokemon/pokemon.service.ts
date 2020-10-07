@@ -124,9 +124,9 @@ export class PokemonService {
     const url = 'https://pokemondb.net/pokedex/bulbasaur';
     const selector = '#main';
     const { browser, page } = await getBrowserAndPage(url, selector);
-    const { crawling } = new PokemonSimpleInfo();
+    const { crawling } = new PokemonSimpleInfo(page);
 
-    const pokemons = await crawling(page);
+    const pokemons = await crawling();
     await browser.close();
 
     return pokemons;
