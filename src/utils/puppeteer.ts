@@ -21,7 +21,11 @@ export const getBrowserAndPage = async (url: string, waitForSelector: string): P
 
   page.once('domcontentloaded', () => Logger.log('✅ DOM is ready', 'DomcontentLoad'));
   page.once('load', () => Logger.log(`✅ Page is Loaded`, 'PageLoad'));
-  page.on('console', message => Logger.log(`👉 ${message.text()}`, 'Console'));
+  page.on('console', message => {
+    const regExp = /^A parser-blocking|^Failed|^Access to|^No targeting|^SG Installed|^guaTrackEvent|^Created ad|^Powered by|^tracker|^Aff Overrides/gi;
+    if (regExp.test(message.text())) return;
+    Logger.log(`👉 ${message.text()}`, 'Console');
+  });
   page.on('dialog', async dialog => {
     Logger.log(`👉 ${dialog.message()}`, 'Dialog');
     await dialog.dismiss();
