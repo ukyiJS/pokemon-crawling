@@ -7,18 +7,17 @@ export const LOG = 'log';
 export type LoadingType = typeof STDOUT | typeof LOG;
 
 export class LoadingBar {
-  percent = 100;
+  private percent = 100;
 
-  cursor = 0;
+  private cursor = 0;
 
-  type: LoadingType;
+  private type: LoadingType;
 
   constructor(type: LoadingType = STDOUT) {
     this.type = type;
-    this.init();
   }
 
-  init = (): void => {
+  private init = (): void => {
     const dots = '\u2592'.repeat(this.cursor / 2);
     const left = this.percent / 2 - Math.floor(this.cursor / 2);
     const empty = '\u2591'.repeat(left);
@@ -33,7 +32,7 @@ export class LoadingBar {
     }
   };
 
-  update = (cursor: number): void => {
+  public update = (cursor: number): void => {
     this.cursor = Math.floor(cursor);
     this.init();
   };
