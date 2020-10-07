@@ -1,4 +1,4 @@
-import { STAT } from './pokemon.type';
+import { POKEMON_TYPE, STAT } from './pokemon.type';
 
 export interface IWindow extends Window {
   [key: string]: any;
@@ -11,6 +11,7 @@ export interface IWindow extends Window {
   addFromDifferentForm: (acc: IPokemon[], index: number, chain: IPokemon) => IPokemon[];
   getStats: ($element: Element) => IStats[];
   STAT: typeof STAT;
+  POKEMON_TYPE: typeof POKEMON_TYPE;
 }
 
 export interface IPokemon {
