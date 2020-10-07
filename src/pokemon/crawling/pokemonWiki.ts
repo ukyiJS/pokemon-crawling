@@ -1,14 +1,16 @@
-import { LoadingBar } from '@/utils/loadingBar';
 import { Logger } from '@nestjs/common';
-import { blueBright, redBright, whiteBright, yellowBright } from 'chalk';
+import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { IPokemonWiki } from '../pokemon.interface';
+import { CrawlingUtil } from './utils';
 
-export class PokemonWiki {
+export class PokemonWiki extends CrawlingUtil {
   private loopCount: number;
 
   constructor(loopCount = 893) {
+    super();
     this.loopCount = loopCount;
+    this.initLoading(loopCount);
   }
 
   public crawling = async (page: Page): Promise<IPokemonWiki[]> => {
@@ -19,36 +21,27 @@ export class PokemonWiki {
     const nextClickSelector = 'table.w-100.mb-1 td:nth-child(3) td:nth-child(1) > a';
     const navigationPromise = page.waitForNavigation();
 
-    const loadingBar = new LoadingBar('log');
-
     do {
       await page.waitForSelector(selector);
+
       const pokemon = await page.evaluate(this.getPokemons);
+
       const isToggleTable = await page.$('#pokemonToggle table');
       const toggleSelector = isToggleTable ? '#pokemonToggle table td' : '#pokemonToggle td';
-      const $differentForm = await page.$$eval(toggleSelector, $el => Array.from($el).map($el => $el.textContent));
-
-      for (const [i, form] of $differentForm.entries()) {
-        if (!i || !form || /거다이/g.test(form)) continue;
-
-        const differentForm = await page.evaluate(this.getPokemons, i, JSON.stringify(pokemon));
-        pokemon.form = form;
-        pokemon.differentForm = [...pokemon.differentForm, differentForm];
+      const forms = await page.$$eval(toggleSelector, (_, $el = Array.from(_)) =>
+        $el.map($el => $el.textContent).filter((f, i) => i && f && !/거다이/g.test(f)),
+      );
+      if (forms.length) {
+        pokemon.differentForm = (
+          await Promise.all(forms.map((_, i) => page.evaluate(this.getPokemons, i + 1, JSON.stringify(pokemon))))
+        ).map((differentForm, i) => ({ ...differentForm, form: forms[i] }));
       }
+
       pokemons = [...pokemons, pokemon];
 
       currentCount = +pokemon.no;
-
-      const percent = (currentCount / this.loopCount) * 100;
-      const json = `${JSON.stringify(pokemon)}`
-        .replace(/("(?=n|e|i|t|s|c|a|h|f|w|g|r|d)(\w)+")/g, (_, m1) => m1.replace(/"/g, ''))
-        .replace(/([:,{](?!\/))/g, '$1 ')
-        .replace(/([}])/g, ' $1')
-        .replace(/([[\]{}])/g, blueBright('$1'))
-        .replace(/(\w+:(?!\/))/g, yellowBright('$1'))
-        .replace(/(null)/g, redBright('$1'));
-      loadingBar.update(percent);
-      Logger.log(whiteBright(json), 'Result');
+      Logger.log(whiteBright(this.getPrettyJson(pokemon)), 'Result');
+      this.loading.update(currentCount);
 
       await page.waitForSelector(nextClickSelector);
       await page.click(nextClickSelector);
@@ -99,11 +92,18 @@ export class PokemonWiki {
 
     if (isDifferentForm && /메가|원시|울트라/g.test(korName)) {
       const [, , , $height, $weight, $megaStone] = $body;
-      const height = getText($height);
-      const weight = getText($weight);
-      const megaStone = getText($megaStone) || undefined;
-
-      return { ...pokemon, types, image, species, abilities, hiddenAbility: null, height, weight, megaStone };
+      return {
+        ...pokemon,
+        types,
+        image,
+        species,
+        abilities,
+        hiddenAbility: null,
+        height: getText($height),
+        weight: getText($weight),
+        differentForm: [],
+        megaStone: getText($megaStone) || undefined,
+      };
     }
 
     const color = {
