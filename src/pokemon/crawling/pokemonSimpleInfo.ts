@@ -1,9 +1,11 @@
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
-import { IPokemonSimpleInfo } from '../pokemon.interface';
+import { IPokemonSimpleInfo, IWindow } from '../pokemon.interface';
 import { POKEMON_TYPE, STAT } from '../pokemon.type';
 import { CrawlingUtil } from './utils';
+
+declare let window: IWindow;
 
 export class PokemonSimpleInfo extends CrawlingUtil {
   private loopCount: number;
@@ -16,6 +18,12 @@ export class PokemonSimpleInfo extends CrawlingUtil {
     this.page = page;
     this.initLoading(loopCount);
   }
+
+  private initCrawlingUtils = (): Promise<void> =>
+    this.page.evaluate(utils => Object.entries(utils).forEach(([key, value]) => (window[key] = value)), {
+      STAT,
+      POKEMON_TYPE,
+    });
 
   public crawling = async (page: Page): Promise<IPokemonSimpleInfo[]> => {
     let currentCount = 0;
