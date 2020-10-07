@@ -2,9 +2,9 @@ import { Logger } from '@nestjs/common';
 import { greenBright } from 'chalk';
 import * as process from 'process';
 
-const STDOUT = 'stdout';
-const LOG = 'log';
-type LoadingType = typeof STDOUT | typeof LOG;
+export const STDOUT = 'stdout';
+export const LOG = 'log';
+export type LoadingType = typeof STDOUT | typeof LOG;
 
 export class LoadingBar {
   percent = 100;
