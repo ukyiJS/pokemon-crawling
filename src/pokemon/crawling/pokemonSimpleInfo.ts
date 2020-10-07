@@ -19,6 +19,13 @@ export class PokemonSimpleInfo extends CrawlingUtil {
     this.initLoading(loopCount);
   }
 
+  private initLocalStorage = async (): Promise<void> => {
+    await this.page.evaluate(() => localStorage.setItem('gdpr', '0'));
+    Logger.log('gdpr = 0', 'LocalStorage');
+    await this.page.reload();
+    Logger.log('page is reloaded', 'Reload');
+  };
+
   private initCrawlingUtils = (): Promise<void> =>
     this.page.evaluate(utils => Object.entries(utils).forEach(([key, value]) => (window[key] = value)), {
       STAT,
