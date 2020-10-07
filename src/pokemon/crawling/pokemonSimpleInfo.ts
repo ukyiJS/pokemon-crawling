@@ -17,6 +17,12 @@ export class PokemonSimpleInfo {
     const nextClickSelector = '.entity-nav-next';
     const navigationPromise = page.waitForNavigation();
 
+    const $popupButton = await page.$('#gdpr-confirm > div > div > p.text-right > button');
+    if ($popupButton) {
+      Logger.log('############button', 'button');
+      await page.click('#gdpr-confirm > div > div > p.text-right > button');
+    }
+
     do {
       const $main = await page.waitForSelector('#main');
       const pokemon = await page.evaluate(this.getPokemons, $main);
