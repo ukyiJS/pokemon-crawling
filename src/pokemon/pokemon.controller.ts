@@ -1,6 +1,6 @@
 import { WriteJsonInterceptor } from '@/common';
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
-import { IPokemon, IPokemonWiki } from './pokemon.interface';
+import { IPokemon, IPokemonSimpleInfo, IPokemonWiki } from './pokemon.interface';
 import { PokemonService } from './pokemon.service';
 
 @UseInterceptors(WriteJsonInterceptor)
@@ -41,6 +41,11 @@ export class PokemonController {
   @Get('pokemonWiki')
   public getPokemonWiki(): Promise<IPokemonWiki[]> {
     return this.pokemonService.getPokemonWiki();
+  }
+
+  @Get('pokemonSimpleInfo')
+  public getPokemonSimpleInfo(): Promise<IPokemonSimpleInfo[]> {
+    return this.pokemonService.getPokemonSimpleInfo();
   }
 
   @Get('mergedEvolutionChains')
