@@ -1,16 +1,20 @@
-import { LoadingBar } from '@/utils/loadingBar';
 import { Logger } from '@nestjs/common';
-import { blueBright, redBright, whiteBright, yellowBright } from 'chalk';
-import { join } from 'path';
+import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { IPokemonSimpleInfo } from '../pokemon.interface';
 import { POKEMON_TYPE, STAT } from '../pokemon.type';
+import { CrawlingUtil } from './utils';
 
-export class PokemonSimpleInfo {
+export class PokemonSimpleInfo extends CrawlingUtil {
   private loopCount: number;
 
-  constructor(loopCount = 892) {
+  private page: Page;
+
+  constructor(page: Page, loopCount = 893) {
+    super();
     this.loopCount = loopCount;
+    this.page = page;
+    this.initLoading(loopCount);
   }
 
   public crawling = async (page: Page): Promise<IPokemonSimpleInfo[]> => {
