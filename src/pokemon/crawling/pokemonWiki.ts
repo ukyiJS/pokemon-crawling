@@ -17,6 +17,7 @@ export class PokemonWiki extends CrawlingUtil {
     let currentCount = 0;
     let pokemons: IPokemonWiki[] = [];
 
+    const isLoop = currentCount < this.loopCount;
     const selector = '.infobox-pokemon';
     const nextClickSelector = 'table.w-100.mb-1 td:nth-child(3) td:nth-child(1) > a';
     const navigationPromise = page.waitForNavigation();
@@ -43,10 +44,12 @@ export class PokemonWiki extends CrawlingUtil {
       Logger.log(whiteBright(this.getPrettyJson(pokemon)), 'Result');
       this.loading.update(currentCount);
 
+      if (!isLoop) break;
+
       await page.waitForSelector(nextClickSelector);
       await page.click(nextClickSelector);
       await navigationPromise;
-    } while (currentCount < this.loopCount);
+    } while (isLoop);
 
     return pokemons;
   };
