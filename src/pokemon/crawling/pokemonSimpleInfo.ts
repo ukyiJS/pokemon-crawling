@@ -37,6 +37,7 @@ export class PokemonSimpleInfo extends CrawlingUtil {
     let currentCount = 0;
     let pokemons: IPokemonSimpleInfo[] = [];
 
+    const isLoop = currentCount < this.loopCount;
     const nextClickSelector = '.entity-nav-next';
     const navigationPromise = this.page.waitForNavigation();
 
@@ -62,10 +63,12 @@ export class PokemonSimpleInfo extends CrawlingUtil {
       Logger.log(whiteBright(this.getPrettyJson(pokemon)), 'Result');
       this.loading.update(currentCount);
 
+      if (!isLoop) break;
+
       await this.page.waitForSelector(nextClickSelector);
       await this.page.click(nextClickSelector);
       await navigationPromise;
-    } while (currentCount < this.loopCount);
+    } while (isLoop);
 
     return pokemons;
   };
