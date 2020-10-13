@@ -1,6 +1,6 @@
-<a href="http://nestjs.com/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/images/master/logo/nest.svg?token=AMPSASLHDKTKGBZACQ3L3627QUM5W" height="160"/></a>
-<a href="https://pptr.dev/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/images/master/logo/puppeteer.png?token=AMPSASNI6SBKKVAI7LO44OK7QUMZ4" height="160"></a>
-<a href="https://typeorm.io/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/images/master/logo/typeorm.png?token=AMPSASN3US4A2ZTED7HSHLS7QUNJU" height="160"></a>
+<a href="http://nestjs.com/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/pokemon-crawling/master/src/assets/img/nest.svg" height="160"/></a>
+<a href="https://pptr.dev/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/pokemon-crawling/master/src/assets/img/puppeteer.png" height="160"></a>
+<a href="https://typeorm.io/" target="_blank"><img src="https://raw.githubusercontent.com/ukyiJS/pokemon-crawling/master/src/assets/img/typeorm.png" height="160"></a>
 
 ## Description
 
