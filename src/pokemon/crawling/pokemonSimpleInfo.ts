@@ -47,7 +47,7 @@ export class PokemonSimpleInfo extends CrawlingUtil {
 
     await this.initLocalStorage(localStorages);
 
-    do {
+    while (true) {
       await this.initCrawlingUtils();
       await this.page.waitForSelector('#main');
 
@@ -68,12 +68,12 @@ export class PokemonSimpleInfo extends CrawlingUtil {
       Logger.log(whiteBright(this.getPrettyJson(pokemon)), 'Result');
       this.loading.update(currentCount);
 
-      if (!isLoop) break;
+      if (currentCount <= this.loopCount) break;
 
       await this.page.waitForSelector(nextClickSelector);
       await this.page.click(nextClickSelector);
       await navigationPromise;
-    } while (isLoop);
+    }
 
     return pokemons;
   };
