@@ -43,9 +43,9 @@ export class PokemonController {
     return this.pokemonService.getPokemonWiki();
   }
 
-  @Get('pokemonSimpleInfo')
-  public getPokemonSimpleInfo(): Promise<IPokemonSimpleInfo[]> {
-    return this.pokemonService.getPokemonSimpleInfo();
+  @Get('pokemonsOfDatabase')
+  public getPokemonsOfDatabase(): Promise<IPokemonSimpleInfo[]> {
+    return this.pokemonService.getPokemonsOfDatabase();
   }
 
   @Get('mergedEvolutionChains')

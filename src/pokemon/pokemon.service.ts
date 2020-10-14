@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { EvolutionChain, initCrawlingUtils, Pokedex } from './crawling';
-import { PokemonSimpleInfo } from './crawling/pokemonSimpleInfo';
+import { PokemonsOfDatabase } from './crawling/pokemonsOfDatabase';
 import { PokemonsOfWiki } from './crawling/pokemonsOfWiki';
 import { IEvolvingTo, IPokemon, IPokemonSimpleInfo } from './pokemon.interface';
 import { EVOLUTION_TYPE } from './pokemon.type';
@@ -120,11 +120,11 @@ export class PokemonService {
     }, []);
   }
 
-  public getPokemonSimpleInfo = async (): Promise<IPokemonSimpleInfo[]> => {
+  public getPokemonsOfDatabase = async (): Promise<IPokemonSimpleInfo[]> => {
     const url = 'https://pokemondb.net/pokedex/bulbasaur';
     const selector = '#main';
     const { browser, page } = await getBrowserAndPage(url, selector);
-    const { crawling } = new PokemonSimpleInfo(page);
+    const { crawling } = new PokemonsOfDatabase(page);
 
     const pokemons = await crawling();
     await browser.close();

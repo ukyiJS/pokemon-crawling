@@ -8,7 +8,7 @@ import { CrawlingUtil } from './utils';
 
 declare let window: IWindow;
 
-export class PokemonSimpleInfo extends CrawlingUtil {
+export class PokemonsOfDatabase extends CrawlingUtil {
   private loopCount: number;
 
   private page: Page;
