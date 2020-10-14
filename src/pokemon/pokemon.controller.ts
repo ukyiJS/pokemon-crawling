@@ -38,9 +38,9 @@ export class PokemonController {
     return this.pokemonService.getPokedex();
   }
 
-  @Get('pokemonWiki')
+  @Get('pokemonsOfWiki')
   public getPokemonWiki(): Promise<IPokemonWiki[]> {
-    return this.pokemonService.getPokemonWiki();
+    return this.pokemonService.getPokemonsOfWiki();
   }
 
   @Get('pokemonsOfDatabase')
