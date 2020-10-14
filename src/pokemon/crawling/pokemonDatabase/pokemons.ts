@@ -114,7 +114,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       Logger.log(whiteBright(this.getPrettyJson(pokemon)), 'Result');
       this.loading.update(currentCount);
 
-      if (currentCount <= this.loopCount) break;
+      if (currentCount >= this.loopCount) break;
 
       await this.page.waitForSelector(nextClickSelector);
       await this.page.click(nextClickSelector);
