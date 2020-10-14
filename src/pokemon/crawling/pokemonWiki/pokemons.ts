@@ -1,4 +1,4 @@
-import { CrawlingUtil } from '@/pokemon/crawling';
+import { CrawlingUtil } from '@/pokemon/crawling/utils';
 import { IPokemonsOfWiki } from '@/pokemon/pokemon.interface';
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';

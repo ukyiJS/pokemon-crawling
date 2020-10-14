@@ -1,4 +1,4 @@
-import { CrawlingUtil } from '@/pokemon/crawling';
+import { CrawlingUtil } from '@/pokemon/crawling/utils';
 import { IMoves, IPokemonsOfDatabase } from '@/pokemon/pokemon.interface';
 import { POKEMON_TYPE, STAT } from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
