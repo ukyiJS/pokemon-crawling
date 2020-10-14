@@ -91,7 +91,7 @@ export interface IEggCycle {
   step: string;
 }
 
-export interface IPokemonSimpleInfo {
+export interface IPokemonsOfDatabase {
   no: string;
   name: string;
   image: string;
@@ -112,5 +112,5 @@ export interface IPokemonSimpleInfo {
   gender: string[];
   eggCycles: IEggCycle;
   form: string | null;
-  differentForm: IPokemonSimpleInfo[];
+  differentForm: IPokemonsOfDatabase[];
 }

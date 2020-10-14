@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { ObjectLiteral } from 'typeorm';
-import { IMoves, IPokemonSimpleInfo, IWindow } from '../pokemon.interface';
+import { IMoves, IPokemonsOfDatabase, IWindow } from '../pokemon.interface';
 import { POKEMON_TYPE, STAT } from '../pokemon.type';
 import { CrawlingUtil } from './utils';
 
@@ -37,9 +37,9 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       POKEMON_TYPE,
     });
 
-  public crawling = async (): Promise<IPokemonSimpleInfo[]> => {
+  public crawling = async (): Promise<IPokemonsOfDatabase[]> => {
     let currentCount = 0;
-    let pokemons: IPokemonSimpleInfo[] = [];
+    let pokemons: IPokemonsOfDatabase[] = [];
 
     const localStorages = [{ gdpr: '0' }, { POKEMON_TYPE }, { STAT }];
     const nextClickSelector = '.entity-nav-next';
@@ -78,7 +78,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     return pokemons;
   };
 
-  private getPokemons = (i = 0): IPokemonSimpleInfo => {
+  private getPokemons = (i = 0): IPokemonsOfDatabase => {
     const $element = document.querySelector('#main')!;
 
     const array = <T>($el: Iterable<T>): T[] => Array.from($el);

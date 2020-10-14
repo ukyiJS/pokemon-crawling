@@ -1,6 +1,6 @@
 import { WriteJsonInterceptor } from '@/common';
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
-import { IPokemon, IPokemonSimpleInfo, IPokemonWiki } from './pokemon.interface';
+import { IPokemon, IPokemonsOfDatabase, IPokemonWiki } from './pokemon.interface';
 import { PokemonService } from './pokemon.service';
 
 @UseInterceptors(WriteJsonInterceptor)
@@ -44,7 +44,7 @@ export class PokemonController {
   }
 
   @Get('pokemonsOfDatabase')
-  public getPokemonsOfDatabase(): Promise<IPokemonSimpleInfo[]> {
+  public getPokemonsOfDatabase(): Promise<IPokemonsOfDatabase[]> {
     return this.pokemonService.getPokemonsOfDatabase();
   }
 

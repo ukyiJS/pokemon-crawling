@@ -5,7 +5,7 @@ import { join } from 'path';
 import { EvolutionChain, initCrawlingUtils, Pokedex } from './crawling';
 import { PokemonsOfDatabase } from './crawling/pokemonsOfDatabase';
 import { PokemonsOfWiki } from './crawling/pokemonsOfWiki';
-import { IEvolvingTo, IPokemon, IPokemonSimpleInfo, IPokemonWiki } from './pokemon.interface';
+import { IEvolvingTo, IPokemon, IPokemonsOfDatabase, IPokemonWiki } from './pokemon.interface';
 import { EVOLUTION_TYPE } from './pokemon.type';
 
 @Injectable()
@@ -120,7 +120,7 @@ export class PokemonService {
     }, []);
   }
 
-  public getPokemonsOfDatabase = async (): Promise<IPokemonSimpleInfo[]> => {
+  public getPokemonsOfDatabase = async (): Promise<IPokemonsOfDatabase[]> => {
     const url = 'https://pokemondb.net/pokedex/bulbasaur';
     const selector = '#main';
     const { browser, page } = await getBrowserAndPage(url, selector);
