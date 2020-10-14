@@ -4,7 +4,7 @@ import { existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { EvolutionChain, initCrawlingUtils, Pokedex } from './crawling';
 import { PokemonSimpleInfo } from './crawling/pokemonSimpleInfo';
-import { PokemonWiki } from './crawling/pokemonWiki';
+import { PokemonsOfWiki } from './crawling/pokemonsOfWiki';
 import { IEvolvingTo, IPokemon, IPokemonSimpleInfo } from './pokemon.interface';
 import { EVOLUTION_TYPE } from './pokemon.type';
 
@@ -60,7 +60,7 @@ export class PokemonService {
     const url = 'https://pokemon.fandom.com/ko/wiki/이상해씨';
     const selector = '.infobox-pokemon';
     const { browser, page } = await getBrowserAndPage(url, selector);
-    const { crawling } = new PokemonWiki();
+    const { crawling } = new PokemonsOfWiki();
 
     const pokemons = await crawling(page);
     await browser.close();

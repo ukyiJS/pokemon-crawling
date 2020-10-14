@@ -4,7 +4,7 @@ import { Page } from 'puppeteer';
 import { IPokemonWiki } from '../pokemon.interface';
 import { CrawlingUtil } from './utils';
 
-export class PokemonWiki extends CrawlingUtil {
+export class PokemonsOfWiki extends CrawlingUtil {
   private loopCount: number;
 
   constructor(loopCount = 893) {
