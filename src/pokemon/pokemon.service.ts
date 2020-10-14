@@ -2,9 +2,7 @@ import { getBrowserAndPage, getJson, mergeJson } from '@/utils';
 import { Injectable } from '@nestjs/common';
 import { existsSync, readdirSync } from 'fs';
 import { join } from 'path';
-import { EvolutionChain, initCrawlingUtils, Pokedex } from './crawling';
-import { PokemonsOfDatabase } from './crawling/pokemonsOfDatabase';
-import { PokemonsOfWiki } from './crawling/pokemonsOfWiki';
+import { EvolutionChain, initCrawlingUtils, Pokedex, PokemonsOfDatabase, PokemonsOfWiki } from './crawling';
 import { IEvolvingTo, IPokemon, IPokemonsOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
 import { EVOLUTION_TYPE } from './pokemon.type';
 

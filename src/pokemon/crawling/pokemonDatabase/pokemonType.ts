@@ -1,7 +1,7 @@
-import { IPokemon } from '../pokemon.interface';
-import { POKEMON_TYPE } from '../pokemon.type';
+import { IPokemon } from '@/pokemon/pokemon.interface';
+import { POKEMON_TYPE } from '@/pokemon/pokemon.type';
 
-export class PokemonTypes {
+export class PokemonType {
   public convertTypesIntoKor = (pokemon: IPokemon): IPokemon => {
     return this.deepConvertTypes(pokemon);
   };

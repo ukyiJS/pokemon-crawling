@@ -1,10 +1,10 @@
+import { CrawlingUtil } from '@/pokemon/crawling';
+import { IMoves, IPokemonsOfDatabase, IWindow } from '@/pokemon/pokemon.interface';
+import { POKEMON_TYPE, STAT } from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { ObjectLiteral } from 'typeorm';
-import { IMoves, IPokemonsOfDatabase, IWindow } from '../pokemon.interface';
-import { POKEMON_TYPE, STAT } from '../pokemon.type';
-import { CrawlingUtil } from './utils';
 
 declare let window: IWindow;
 

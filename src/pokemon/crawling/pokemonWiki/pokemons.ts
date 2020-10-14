@@ -1,8 +1,8 @@
+import { CrawlingUtil } from '@/pokemon/crawling';
+import { IPokemonsOfWiki } from '@/pokemon/pokemon.interface';
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
-import { IPokemonsOfWiki } from '../pokemon.interface';
-import { CrawlingUtil } from './utils';
 
 export class PokemonsOfWiki extends CrawlingUtil {
   private loopCount: number;

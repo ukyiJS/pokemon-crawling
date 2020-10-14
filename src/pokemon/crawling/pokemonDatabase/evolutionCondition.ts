@@ -1,4 +1,4 @@
-import { IEvolvingTo } from '../pokemon.interface';
+import { IEvolvingTo } from '@/pokemon/pokemon.interface';
 import {
   ADDITIONAL_CONDITION,
   ELEMENTAL_STONE,
@@ -7,9 +7,9 @@ import {
   LEVEL_CONDITION,
   OTHER_CONDITION,
   TRADING_CONDITION,
-} from '../pokemon.type';
+} from '@/pokemon/pokemon.type';
 
-export class PokemonEvolutionCondition {
+export class EvolutionCondition {
   evolutionType?: EVOLUTION_TYPE;
 
   private getCondition = (condition: string | null, type?: EVOLUTION_TYPE): string | null => {
