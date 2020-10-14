@@ -46,7 +46,7 @@ export interface IGenderRatio {
   ratio: number;
 }
 
-export interface IPokemonWiki {
+export interface IPokemonsOfWiki {
   no: string;
   name: string;
   engName: string;
@@ -63,7 +63,7 @@ export interface IPokemonWiki {
   genderRatio: IGenderRatio[];
   form: string | null;
   megaStone?: string;
-  differentForm: IPokemonWiki[];
+  differentForm: IPokemonsOfWiki[];
 }
 
 interface IMove {

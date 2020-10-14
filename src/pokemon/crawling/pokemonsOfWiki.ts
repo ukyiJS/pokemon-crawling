@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
-import { IPokemonWiki } from '../pokemon.interface';
+import { IPokemonsOfWiki } from '../pokemon.interface';
 import { CrawlingUtil } from './utils';
 
 export class PokemonsOfWiki extends CrawlingUtil {
@@ -13,9 +13,9 @@ export class PokemonsOfWiki extends CrawlingUtil {
     this.initLoading(loopCount);
   }
 
-  public crawling = async (page: Page): Promise<IPokemonWiki[]> => {
+  public crawling = async (page: Page): Promise<IPokemonsOfWiki[]> => {
     let currentCount = 0;
-    let pokemons: IPokemonWiki[] = [];
+    let pokemons: IPokemonsOfWiki[] = [];
 
     const isLoop = currentCount < this.loopCount;
     const selector = '.infobox-pokemon';
@@ -54,9 +54,9 @@ export class PokemonsOfWiki extends CrawlingUtil {
     return pokemons;
   };
 
-  private getPokemons = (toggleIndex = 0, pokemonStr?: string): IPokemonWiki => {
+  private getPokemons = (toggleIndex = 0, pokemonStr?: string): IPokemonsOfWiki => {
     const $element = document.querySelectorAll('.infobox-pokemon')[toggleIndex];
-    const pokemon = JSON.parse(pokemonStr ?? '{}') as IPokemonWiki;
+    const pokemon = JSON.parse(pokemonStr ?? '{}') as IPokemonsOfWiki;
     const isDifferentForm = !!toggleIndex;
 
     const getText = ($el: Element | null): string => $el?.textContent?.trim() ?? '';
