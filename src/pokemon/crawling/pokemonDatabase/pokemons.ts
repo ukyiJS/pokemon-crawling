@@ -1,10 +1,19 @@
 import { CrawlingUtil } from '@/pokemon/crawling/utils';
-import { IMoves, IPokemonsOfDatabase } from '@/pokemon/pokemon.interface';
+import { IEggCycle, IGenderRatio, IPokemonsOfDatabase, IStats, ITypeDefense } from '@/pokemon/pokemon.interface';
 import { POKEMON_TYPE, STAT } from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { ObjectLiteral } from 'typeorm';
+
+type UtilString = {
+  getTypes: string;
+  getGroups: string;
+  getGender: string;
+  getEggCycles: string;
+  getStats: string;
+  getTypeDefenses: string;
+};
 
 export class PokemonsOfDatabase extends CrawlingUtil {
   private loopCount: number;
@@ -29,11 +38,57 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     Logger.log('page is reloaded', 'Reload');
   };
 
+  private utilString = (): UtilString => {
+    const getTypes = function(types: string[], POKEMON_TYPE: POKEMON_TYPE): POKEMON_TYPE[] {
+      return types.map(_type => {
+        const [, type] = Object.entries(POKEMON_TYPE).find(([key]) => new RegExp(key, 'gi').test(_type))!;
+        return type as POKEMON_TYPE;
+      });
+    }.toString();
+
+    const getGroups = function(eegGroups: string): string[] {
+      return eegGroups.replace(/—/g, '') ? eegGroups.split(',') : [];
+    }.toString();
+
+    const getGender = function(gender: string): IGenderRatio[] {
+      const _gender = gender.replace(/—/g, '');
+      if (!_gender) return [{ name: '무성', ratio: 100 }];
+      const [male, female] = _gender.split(', ').map(k => k.replace(/\D+\D/g, ''));
+      return [
+        { name: '수컷', ratio: +male },
+        { name: '암컷', ratio: +female },
+      ].filter(gender => gender.ratio);
+    }.toString();
+
+    const getEggCycles = function(eggCycles: string) {
+      const [cycle, step] = eggCycles.replace(/(?:\(|—|,| steps\))/g, '').split(' ');
+      return { cycle: Number(cycle), step };
+    }.toString();
+
+    const getStats = function(stats: string[], STAT: STAT) {
+      return stats
+        .filter((_, i) => !(i % 4))
+        .map((value, i) => ({
+          name: Object.values(STAT)[i],
+          value: +value,
+        }));
+    }.toString();
+
+    const getTypeDefenses = function(typeDefenses: string[], POKEMON_TYPE: POKEMON_TYPE) {
+      return typeDefenses.map((typeDefense, i) => ({
+        type: Object.values(POKEMON_TYPE)[i],
+        damage: +(typeDefense || '1').replace(/(½)|(¼)/, (_, m1, m2) => (m1 && '0.5') || (m2 && '0.25')),
+      }));
+    }.toString();
+
+    return { getTypes, getGroups, getGender, getEggCycles, getStats, getTypeDefenses };
+  };
+
   public crawling = async (): Promise<IPokemonsOfDatabase[]> => {
     let currentCount = 0;
     let pokemons: IPokemonsOfDatabase[] = [];
 
-    const localStorages = [{ gdpr: '0' }, { POKEMON_TYPE }, { STAT }];
+    const localStorages = [{ gdpr: '0' }, { POKEMON_TYPE }, { STAT }, { util: this.utilString() }];
     const nextClickSelector = '.entity-nav-next';
     const navigationPromise = this.page.waitForNavigation();
 
@@ -73,8 +128,27 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     const $element = document.querySelector('#main')!;
 
     const getItem = <T>(key: string): T => JSON.parse(localStorage.getItem(key)!);
-    const STAT = getItem<STAT>('STAT');
-    const POKEMON_TYPE = getItem<POKEMON_TYPE>('POKEMON_TYPE');
+    const parseFunction = (str: string) => {
+      const funcReg = /function *\(([^()]*)\)[ \n\t]*{(.*)}/gim;
+      const match = funcReg.exec(str.replace(/\n/g, ' '));
+      if (!match) return null;
+
+      const [, func, ...funcs] = match;
+      return new Function(...[...func.split(','), ...funcs]);
+    };
+    const stat = getItem<STAT>('STAT');
+    const pokemonType = getItem<POKEMON_TYPE>('POKEMON_TYPE');
+    const util = getItem<UtilString>('util');
+
+    const getTypes = parseFunction(util.getTypes) as (types: string[], pokemonType: POKEMON_TYPE) => POKEMON_TYPE[];
+    const getGroups = parseFunction(util.getGroups) as (eegGroups: string) => string[];
+    const getGender = parseFunction(util.getGender) as (gender: string) => IGenderRatio[];
+    const getEggCycles = parseFunction(util.getEggCycles) as (eggCycles: string) => IEggCycle;
+    const getStats = parseFunction(util.getStats) as (stats: string[], stat: STAT) => IStats[];
+    const getTypeDefenses = parseFunction(util.getTypeDefenses) as (
+      typeDefenses: string[],
+      pokemonType: POKEMON_TYPE,
+    ) => ITypeDefense[];
 
     const array = <T>($el: Iterable<T>): T[] => Array.from($el);
     const children = ($el: Element | null) => ($el ? Array.from($el.children) : []);
@@ -91,75 +165,54 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     }, []);
 
     const [
-      [$image],
-      [$no, $types, $species, $height, $weight, $abilities],
+      [_$image],
+      [$no, _$types, $species, $height, $weight, _$abilities],
       [$evYield, $catchRate, $friendship, $exp],
       [$eegGroups, $gender, $eggCycles],
       $stats,
       $typeDefenses,
     ] = $columns;
+    const $name = $element.querySelector('h1');
+    const $image = _$image.querySelector('img');
+    const $types = children(_$types);
+    const $abilities = _$abilities.querySelectorAll('span > a');
+    const $hiddenAbility = _$abilities.querySelector('small > a');
 
-    const name = getText($element.querySelector('h1'));
-    const image = $image.querySelector('img')!.src;
-
-    const no = getText($no);
-    const types = getTexts(children($types));
-    const species = getText($species).replace(/é/g, 'e');
-    const height = getText($height).replace(/\s(\w).*/g, '$1');
-    const weight = getText($weight).replace(/\s(\w).*/g, '$1');
-    const abilities = getTexts($abilities.querySelectorAll('span > a'));
-    const hiddenAbility = getText($abilities.querySelector('small > a')) || null;
-
-    const evYield = getText($evYield).replace(/—/g, '') || null;
-    const catchRate = +getText($catchRate).replace(/—/g, '');
-    const friendship = +getText($friendship).replace(/\(.*/, '');
-    const exp = +getText($exp) || 0;
-
-    const eegGroups = getText($eegGroups)
-      .replace(/—/g, '')
-      .split(',')
-      .filter(group => group);
-    const gender = (getText($gender).replace(/—/g, '') || 'genderless').split(',');
-    const [cycle, step = null] = getText($eggCycles)
-      .replace(/(?:\(|—|,| steps\))/g, '')
-      .split(' ');
-    const eggCycles = { cycle: +cycle, step };
-
-    const statNames = Object.values(STAT);
-    const stats = getTexts($stats.filter((_, i) => !(i % 4))).map((value, i) => ({
-      name: statNames[i],
-      value: +value,
-    }));
-
-    const typeDefenseNames = Object.values(POKEMON_TYPE);
-    const typeDefenses = $typeDefenses.map(($el, i) => {
-      const type = typeDefenseNames[i];
-      const damage = +(getText($el) || '1').replace(/(½)|(¼)/, (_, m1, m2) => (m1 && '0.5') || (m2 && '0.25'));
-      return { type, damage };
-    });
+    const raw = {
+      no: getText($no),
+      name: getText($name),
+      image: $image?.src ?? '',
+      types: getTexts($types),
+      species: getText($species),
+      height: getText($height),
+      weight: getText($weight),
+      abilities: getTexts($abilities),
+      hiddenAbility: getText($hiddenAbility) || null,
+      evYield: getText($evYield),
+      catchRate: getText($catchRate),
+      friendship: getText($friendship),
+      exp: Number(getText($exp)),
+      eegGroups: getText($eegGroups),
+      gender: getText($gender),
+      eggCycles: getText($eggCycles),
+      stats: getTexts($stats),
+      typeDefenses: getTexts($typeDefenses),
+    };
 
     return {
-      name,
-      image,
-      no,
-      types,
-      species,
-      height,
-      weight,
-      abilities,
-      hiddenAbility,
-      evYield,
-      catchRate,
-      friendship,
-      exp,
-      eegGroups,
-      gender,
-      eggCycles,
-      stats,
-      typeDefenses,
-      form: null,
-      differentForm: [],
-      moves: {} as IMoves,
-    };
+      ...raw,
+      types: getTypes(raw.types, pokemonType),
+      species: raw.species.replace(/é/g, 'e'),
+      height: raw.height.replace(/\s(\w).*/g, '$1'),
+      weight: raw.weight.replace(/\s(\w).*/g, '$1'),
+      evYield: raw.evYield.replace(/—/g, ''),
+      catchRate: Number((raw.catchRate, /—/)),
+      friendship: Number((raw.friendship, /\(.*/)),
+      eegGroups: getGroups(raw.eegGroups),
+      gender: getGender(raw.gender),
+      eggCycles: getEggCycles(raw.eggCycles),
+      stats: getStats(raw.stats, stat),
+      typeDefenses: getTypeDefenses(raw.typeDefenses, pokemonType),
+    } as IPokemonsOfDatabase;
   };
 }
