@@ -87,8 +87,8 @@ export interface ITypeDefense {
 }
 
 export interface IEggCycle {
-  cycle: string;
-  step: string;
+  cycle: number;
+  step: string | null;
 }
 
 export interface IPokemonsOfDatabase {
@@ -103,7 +103,7 @@ export interface IPokemonsOfDatabase {
   weight: string;
   abilities: string[];
   hiddenAbility: string | null;
-  evYield: string;
+  evYield: string | null;
   catchRate: number;
   friendship: number;
   exp: number;
