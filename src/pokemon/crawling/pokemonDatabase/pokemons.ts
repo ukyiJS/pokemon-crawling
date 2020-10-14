@@ -72,7 +72,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
   private getPokemons = (i = 0): IPokemonsOfDatabase => {
     const $element = document.querySelector('#main')!;
 
-    const getItem = <T>(key: string): T[] => Object.values(JSON.parse(localStorage.getItem(key)!));
+    const getItem = <T>(key: string): T => JSON.parse(localStorage.getItem(key)!);
     const STAT = getItem<STAT>('STAT');
     const POKEMON_TYPE = getItem<POKEMON_TYPE>('POKEMON_TYPE');
 
@@ -110,17 +110,20 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     const abilities = getTexts($abilities.querySelectorAll('span > a'));
     const hiddenAbility = getText($abilities.querySelector('small > a')) || null;
 
-    const evYield = getText($evYield);
-    const catchRate = +getText($catchRate);
+    const evYield = getText($evYield).replace(/—/g, '') || null;
+    const catchRate = +getText($catchRate).replace(/—/g, '');
     const friendship = +getText($friendship).replace(/\(.*/, '');
-    const exp = +getText($exp);
+    const exp = +getText($exp) || 0;
 
-    const eegGroups = getText($eegGroups).split(',');
-    const gender = getText($gender).split(',');
-    const [cycle, step] = getText($eggCycles)
-      .replace(/(?:\(|,| steps\))/g, '')
+    const eegGroups = getText($eegGroups)
+      .replace(/—/g, '')
+      .split(',')
+      .filter(group => group);
+    const gender = (getText($gender).replace(/—/g, '') || 'genderless').split(',');
+    const [cycle, step = null] = getText($eggCycles)
+      .replace(/(?:\(|—|,| steps\))/g, '')
       .split(' ');
-    const eggCycles = { cycle, step };
+    const eggCycles = { cycle: +cycle, step };
 
     const statNames = Object.values(STAT);
     const stats = getTexts($stats.filter((_, i) => !(i % 4))).map((value, i) => ({
