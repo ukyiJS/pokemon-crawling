@@ -1,12 +1,10 @@
 import { CrawlingUtil } from '@/pokemon/crawling';
-import { IMoves, IPokemonsOfDatabase, IWindow } from '@/pokemon/pokemon.interface';
+import { IMoves, IPokemonsOfDatabase } from '@/pokemon/pokemon.interface';
 import { POKEMON_TYPE, STAT } from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { ObjectLiteral } from 'typeorm';
-
-declare let window: IWindow;
 
 export class PokemonsOfDatabase extends CrawlingUtil {
   private loopCount: number;
@@ -31,12 +29,6 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     Logger.log('page is reloaded', 'Reload');
   };
 
-  private initCrawlingUtils = (): Promise<void> =>
-    this.page.evaluate(utils => Object.entries(utils).forEach(([key, value]) => (window[key] = value)), {
-      STAT,
-      POKEMON_TYPE,
-    });
-
   public crawling = async (): Promise<IPokemonsOfDatabase[]> => {
     let currentCount = 0;
     let pokemons: IPokemonsOfDatabase[] = [];
@@ -48,7 +40,6 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     await this.initLocalStorage(localStorages);
 
     while (true) {
-      await this.initCrawlingUtils();
       await this.page.waitForSelector('#main');
 
       const pokemon = await this.page.evaluate(this.getPokemons);
@@ -80,6 +71,10 @@ export class PokemonsOfDatabase extends CrawlingUtil {
 
   private getPokemons = (i = 0): IPokemonsOfDatabase => {
     const $element = document.querySelector('#main')!;
+
+    const getItem = <T>(key: string): T[] => Object.values(JSON.parse(localStorage.getItem(key)!));
+    const STAT = getItem<STAT>('STAT');
+    const POKEMON_TYPE = getItem<POKEMON_TYPE>('POKEMON_TYPE');
 
     const array = <T>($el: Iterable<T>): T[] => Array.from($el);
     const children = ($el: Element | null) => ($el ? Array.from($el.children) : []);
@@ -127,13 +122,13 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       .split(' ');
     const eggCycles = { cycle, step };
 
-    const statNames = Object.values(window.STAT);
+    const statNames = Object.values(STAT);
     const stats = getTexts($stats.filter((_, i) => !(i % 4))).map((value, i) => ({
       name: statNames[i],
       value: +value,
     }));
 
-    const typeDefenseNames = Object.values(window.POKEMON_TYPE);
+    const typeDefenseNames = Object.values(POKEMON_TYPE);
     const typeDefenses = $typeDefenses.map(($el, i) => {
       const type = typeDefenseNames[i];
       const damage = +(getText($el) || '1').replace(/(½)|(¼)/, (_, m1, m2) => (m1 && '0.5') || (m2 && '0.25'));
