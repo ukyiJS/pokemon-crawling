@@ -41,11 +41,12 @@ export class PokemonSimpleInfo extends CrawlingUtil {
     let currentCount = 0;
     let pokemons: IPokemonSimpleInfo[] = [];
 
-    const isLoop = currentCount < this.loopCount;
+    const localStorages = [{ gdpr: '0' }, { POKEMON_TYPE }, { STAT }];
     const nextClickSelector = '.entity-nav-next';
     const navigationPromise = this.page.waitForNavigation();
 
-    await this.initLocalStorage();
+    await this.initLocalStorage(localStorages);
+
     do {
       await this.initCrawlingUtils();
       await this.page.waitForSelector('#main');
