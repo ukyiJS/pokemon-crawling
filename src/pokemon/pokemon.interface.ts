@@ -109,7 +109,7 @@ export interface IPokemonsOfDatabase {
   exp: number;
   moves: IMoves;
   eegGroups: string[];
-  gender: string[];
+  gender: IGenderRatio[];
   eggCycles: IEggCycle;
   form: string | null;
   differentForm: IPokemonsOfDatabase[];
