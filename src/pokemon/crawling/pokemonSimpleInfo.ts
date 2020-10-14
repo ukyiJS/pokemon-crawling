@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
-import { join } from 'path';
 import { Page } from 'puppeteer';
+import { ObjectLiteral } from 'typeorm';
 import { IMoves, IPokemonSimpleInfo, IWindow } from '../pokemon.interface';
 import { POKEMON_TYPE, STAT } from '../pokemon.type';
 import { CrawlingUtil } from './utils';
@@ -20,9 +20,13 @@ export class PokemonSimpleInfo extends CrawlingUtil {
     this.initLoading(loopCount);
   }
 
-  private initLocalStorage = async (): Promise<void> => {
-    await this.page.evaluate(() => localStorage.setItem('gdpr', '0'));
-    Logger.log('gdpr = 0', 'LocalStorage');
+  private initLocalStorage = async (localStorageItems: ObjectLiteral[]): Promise<void> => {
+    await this.page.evaluate<(items: ObjectLiteral[]) => void>(items => {
+      items.forEach(item =>
+        Object.entries(item).forEach(([key, value]) => localStorage.setItem(key, JSON.stringify(value))),
+      );
+    }, localStorageItems);
+    Logger.log(localStorageItems, 'LocalStorage');
     await this.page.reload();
     Logger.log('page is reloaded', 'Reload');
   };
