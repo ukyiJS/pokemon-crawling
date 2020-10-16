@@ -527,6 +527,23 @@ export const ABILITY = {
 } as const;
 export type ABILITY = typeof ABILITY[keyof typeof ABILITY];
 
+export const EGG_GROUP = {
+  MONSTER: '괴수',
+  WATER: '수중',
+  BUG: '벌레',
+  FLYING: '비행',
+  FIELD: '육상',
+  FAIRY: '요정',
+  GRASS: '식물',
+  HUMAN_LIKE: '인간형',
+  MINERAL: '광물',
+  AMORPHOUS: '부정형',
+  DITTO: '메타몽',
+  DRAGON: '드래곤',
+  UNDISCOVERED: '미발견',
+} as const;
+export type EGG_GROUP = typeof EGG_GROUP[keyof typeof EGG_GROUP];
+
 export const POKEMON = {
   BULBASAUR: '이상해씨',
   IVYSAUR: '이상해풀',
