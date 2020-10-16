@@ -1,12 +1,13 @@
 import { CrawlingUtil } from '@/pokemon/crawling/utils';
 import { IEggCycle, IGenderRatio, IPokemonsOfDatabase, IStats, ITypeDefense } from '@/pokemon/pokemon.interface';
-import { POKEMON_TYPE, STAT, ABILITY } from '@/pokemon/pokemon.type';
+import { POKEMON_TYPE, STAT, ABILITY, POKEMON } from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { ObjectLiteral } from 'typeorm';
 
 type UtilString = {
+  getName: string;
   getTypes: string;
   getAbility: string;
   getEvYield: string;
@@ -41,51 +42,58 @@ export class PokemonsOfDatabase extends CrawlingUtil {
   };
 
   private utilString = (): UtilString => {
-    const getTypes = `${function(types: string[], pokemonType: POKEMON_TYPE): POKEMON_TYPE[] {
-      return types.map(_type => {
-        const [, type] = Object.entries(pokemonType).find(([key]) => new RegExp(key, 'gi').test(_type))!;
-        return type as POKEMON_TYPE;
+    const getName = `${function(raw: string, pokemon: POKEMON): POKEMON {
+      const _raw = raw.replace(/\s/g, '');
+      const [, name] = Object.entries(pokemon).find(([key]) => new RegExp(key, 'gi').test(_raw)) ?? [];
+      return name as POKEMON;
+    }}`;
+
+    const getTypes = `${function(raw: string[], pokemonType: POKEMON_TYPE): POKEMON_TYPE[] | null {
+      return raw.map(_type => {
+        const [, typeName] = Object.entries(pokemonType).find(([key]) => new RegExp(key, 'gi').test(_type)) ?? [];
+        return typeName as POKEMON_TYPE;
       });
     }}`;
 
     const getAbility = `${function(raw: string, ability: ABILITY): ABILITY | null {
       if (!raw) return null;
       const _raw = raw.replace(/\s/g, '');
-      const [, abilityName] = Object.entries(ability).find(([key]) => RegExp(key.replace(/_/g, ''), 'gi').test(_raw))!;
+      const [, abilityName] =
+        Object.entries(ability).find(([key]) => new RegExp(key.replace(/_/g, ''), 'gi').test(_raw)) ?? [];
       return abilityName as ABILITY;
     }}`;
 
-    const getEvYield = `${function(evYield: string, stat: STAT): string | null {
-      const _evYield = evYield.replace(/—/g, '');
-      if (!_evYield) return null;
+    const getEvYield = `${function(raw: string, stat: STAT): string | null {
+      const _raw = raw.replace(/—/g, '');
+      if (!_raw) return null;
 
-      return _evYield.replace(/(\d+).(\w.*)/, (_, g1, g2) => {
+      return _raw.replace(/(\d+).(\w.*)/, (_, g1, g2) => {
         const [, statName] = Object.entries(stat).find(([key]) => new RegExp(key, 'gi').test(g2))!;
         return `${statName} ${g1}`;
       });
     }}`;
 
-    const getGroups = `${function(eegGroups: string): string[] {
-      return eegGroups.replace(/—/g, '') ? eegGroups.split(',') : [];
+    const getGroups = `${function(raw: string): string[] {
+      return raw.replace(/—/g, '') ? raw.split(',') : [];
     }}`;
 
-    const getGender = `${function(gender: string): IGenderRatio[] {
-      const _gender = gender.replace(/—/g, '');
-      if (!_gender) return [{ name: '무성', ratio: 100 }];
-      const [male, female] = _gender.split(', ').map(k => k.replace(/\D+\D/g, ''));
+    const getGender = `${function(raw: string): IGenderRatio[] {
+      const _raw = raw.replace(/—/g, '');
+      if (!_raw) return [{ name: '무성', ratio: 100 }];
+      const [male, female] = _raw.split(', ').map(k => k.replace(/\D+\D/g, ''));
       return [
         { name: '수컷', ratio: +male },
         { name: '암컷', ratio: +female },
       ].filter(gender => gender.ratio);
     }}`;
 
-    const getEggCycles = `${function(eggCycles: string) {
-      const [cycle, step] = eggCycles.replace(/(?:\(|—|,| steps\))/g, '').split(' ');
+    const getEggCycles = `${function(raw: string) {
+      const [cycle, step] = raw.replace(/(?:\(|—|,| steps\))/g, '').split(' ');
       return { cycle: Number(cycle), step };
     }}`;
 
-    const getStats = `${function(stats: string[], stat: STAT) {
-      return stats
+    const getStats = `${function(raw: string[], stat: STAT) {
+      return raw
         .filter((_, i) => !(i % 4))
         .map((value, i) => ({
           name: Object.values(stat)[i],
@@ -93,21 +101,28 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         }));
     }}`;
 
-    const getTypeDefenses = `${function(typeDefenses: string[], pokemonType: POKEMON_TYPE) {
-      return typeDefenses.map((typeDefense, i) => ({
+    const getTypeDefenses = `${function(raw: string[], pokemonType: POKEMON_TYPE) {
+      return raw.map((typeDefense, i) => ({
         type: Object.values(pokemonType)[i],
         damage: +(typeDefense || '1').replace(/(½)|(¼)/g, (_, g1, g2) => (g1 && '0.5') || (g2 && '0.25')),
       }));
     }}`;
 
-    return { getTypes, getAbility, getEvYield, getGroups, getGender, getEggCycles, getStats, getTypeDefenses };
+    return { getName, getTypes, getAbility, getEvYield, getGroups, getGender, getEggCycles, getStats, getTypeDefenses };
   };
 
   public crawling = async (): Promise<IPokemonsOfDatabase[]> => {
     let currentCount = 0;
     let pokemons: IPokemonsOfDatabase[] = [];
 
-    const localStorages = [{ gdpr: '0' }, { POKEMON_TYPE }, { STAT }, { ABILITY }, { util: this.utilString() }];
+    const localStorages = [
+      { gdpr: '0' },
+      { POKEMON },
+      { POKEMON_TYPE },
+      { STAT },
+      { ABILITY },
+      { util: this.utilString() },
+    ];
     const nextClickSelector = '.entity-nav-next';
     const navigationPromise = this.page.waitForNavigation();
 
@@ -155,11 +170,13 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       const [, func, ...funcs] = match;
       return new Function(...[...func.split(','), ...funcs]);
     };
+    const POKEMON = getItem<POKEMON>('POKEMON');
     const STAT = getItem<STAT>('STAT');
     const POKEMON_TYPE = getItem<POKEMON_TYPE>('POKEMON_TYPE');
     const ABILITY = getItem<ABILITY>('ABILITY');
     const util = getItem<UtilString>('util');
 
+    const getName = (name: string): POKEMON => parseFunction(util.getName)?.call(null, name, POKEMON);
     const getTypes = (types: string[]): POKEMON_TYPE[] => parseFunction(util.getTypes)?.call(null, types, POKEMON_TYPE);
     const getAbility = (raw: string | null): string | null => parseFunction(util.getAbility)?.call(null, raw, ABILITY);
     const getEvYield = (evYield: string): string => parseFunction(util.getEvYield)?.call(null, evYield, STAT);
@@ -211,7 +228,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       evYield: getText($evYield),
       catchRate: getText($catchRate),
       friendship: getText($friendship),
-      exp: Number(getText($exp)),
+      exp: getText($exp),
       eegGroups: getText($eegGroups),
       gender: getText($gender),
       eggCycles: getText($eggCycles),
@@ -221,6 +238,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
 
     return {
       ...raw,
+      name: getName(raw.name),
+      engName: raw.name,
       types: getTypes(raw.types),
       abilities: raw.abilities.map(getAbility),
       hiddenAbility: getAbility(raw.hiddenAbility),
@@ -229,7 +248,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       weight: raw.weight.match(/^(\d+.\d*.\w+)/)?.[1] ?? null,
       evYield: getEvYield(raw.evYield),
       catchRate: Number(raw.catchRate.replace(/—|\s.*/g, '')),
-      friendship: Number(raw.friendship.replace(/\(.*/g, '')),
+      friendship: Number(raw.friendship.replace(/—|\s.*/g, '')),
+      exp: Number(raw.exp.replace(/—|\s.*/g, '')),
       eegGroups: getGroups(raw.eegGroups),
       gender: getGender(raw.gender),
       eggCycles: getEggCycles(raw.eggCycles),
