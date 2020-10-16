@@ -156,11 +156,11 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       return new Function(...[...func.split(','), ...funcs]);
     };
     const stat = getItem<STAT>('STAT');
-    const pokemonType = getItem<POKEMON_TYPE>('POKEMON_TYPE');
+    const POKEMON_TYPE = getItem<POKEMON_TYPE>('POKEMON_TYPE');
     const ability = getItem<ABILITY>('ABILITY');
     const util = getItem<UtilString>('util');
 
-    const getTypes = parseFunction(util.getTypes) as (types: string[], pokemonType: POKEMON_TYPE) => POKEMON_TYPE[];
+    const getTypes = (types: string[]): POKEMON_TYPE[] => parseFunction(util.getTypes)?.call(null, types, POKEMON_TYPE);
     const getAbility = (raw: string | null): string | null => parseFunction(util.getAbility)?.call(null, raw, ability);
     const getEvYield = (evYield: string): string => parseFunction(util.getEvYield)?.call(null, evYield, stat);
     const getGroups = parseFunction(util.getGroups) as (eegGroups: string) => string[];
@@ -223,7 +223,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
 
     return {
       ...raw,
-      types: getTypes(raw.types, pokemonType),
+      types: getTypes(raw.types),
       abilities: raw.abilities.map(getAbility),
       hiddenAbility: getAbility(raw.hiddenAbility),
       species: raw.species.replace(/é/g, 'e'),
@@ -236,7 +236,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       gender: getGender(raw.gender),
       eggCycles: getEggCycles(raw.eggCycles),
       stats: getStats(raw.stats, stat),
-      typeDefenses: getTypeDefenses(raw.typeDefenses, pokemonType),
+      typeDefenses: getTypeDefenses(raw.typeDefenses, POKEMON_TYPE),
     } as IPokemonsOfDatabase;
   };
 }
