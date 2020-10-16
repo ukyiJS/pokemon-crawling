@@ -8,6 +8,7 @@ import { ObjectLiteral } from 'typeorm';
 
 type UtilString = {
   getTypes: string;
+  getAbility: string;
   getEvYield: string;
   getGroups: string;
   getGender: string;
@@ -45,6 +46,13 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         const [, type] = Object.entries(pokemonType).find(([key]) => new RegExp(key, 'gi').test(_type))!;
         return type as POKEMON_TYPE;
       });
+    }}`;
+
+    const getAbility = `${function(raw: string, ability: ABILITY): ABILITY | null {
+      if (!raw) return null;
+      const _raw = raw.replace(/\s/g, '');
+      const [, abilityName] = Object.entries(ability).find(([key]) => RegExp(key.replace(/_/g, ''), 'gi').test(_raw))!;
+      return abilityName as ABILITY;
     }}`;
 
     const getEvYield = `${function(evYield: string, stat: STAT): string | null {
@@ -92,7 +100,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       }));
     }}`;
 
-    return { getTypes, getEvYield, getGroups, getGender, getEggCycles, getStats, getTypeDefenses };
+    return { getTypes, getAbility, getEvYield, getGroups, getGender, getEggCycles, getStats, getTypeDefenses };
   };
 
   public crawling = async (): Promise<IPokemonsOfDatabase[]> => {
@@ -153,6 +161,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     const util = getItem<UtilString>('util');
 
     const getTypes = parseFunction(util.getTypes) as (types: string[], pokemonType: POKEMON_TYPE) => POKEMON_TYPE[];
+    const getAbility = (raw: string | null): string | null => parseFunction(util.getAbility)?.call(null, raw, ability);
     const getEvYield = (evYield: string): string => parseFunction(util.getEvYield)?.call(null, evYield, stat);
     const getGroups = parseFunction(util.getGroups) as (eegGroups: string) => string[];
     const getGender = parseFunction(util.getGender) as (gender: string) => IGenderRatio[];
@@ -215,6 +224,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     return {
       ...raw,
       types: getTypes(raw.types, pokemonType),
+      abilities: raw.abilities.map(getAbility),
+      hiddenAbility: getAbility(raw.hiddenAbility),
       species: raw.species.replace(/é/g, 'e'),
       height: raw.height.match(/^(\d+.\d*.\w+)/)?.[1] ?? null,
       weight: raw.weight.match(/^(\d+.\d*.\w+)/)?.[1] ?? null,
