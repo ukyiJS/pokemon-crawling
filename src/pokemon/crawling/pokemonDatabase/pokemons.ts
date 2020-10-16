@@ -40,9 +40,9 @@ export class PokemonsOfDatabase extends CrawlingUtil {
   };
 
   private utilString = (): UtilString => {
-    const getTypes = function(types: string[], POKEMON_TYPE: POKEMON_TYPE): POKEMON_TYPE[] {
+    const getTypes = function(types: string[], pokemonType: POKEMON_TYPE): POKEMON_TYPE[] {
       return types.map(_type => {
-        const [, type] = Object.entries(POKEMON_TYPE).find(([key]) => new RegExp(key, 'gi').test(_type))!;
+        const [, type] = Object.entries(pokemonType).find(([key]) => new RegExp(key, 'gi').test(_type))!;
         return type as POKEMON_TYPE;
       });
     }.toString();
@@ -85,10 +85,10 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         }));
     }.toString();
 
-    const getTypeDefenses = function(typeDefenses: string[], POKEMON_TYPE: POKEMON_TYPE) {
+    const getTypeDefenses = function(typeDefenses: string[], pokemonType: POKEMON_TYPE) {
       return typeDefenses.map((typeDefense, i) => ({
-        type: Object.values(POKEMON_TYPE)[i],
-        damage: +(typeDefense || '1').replace(/(½)|(¼)/, (_, m1, m2) => (m1 && '0.5') || (m2 && '0.25')),
+        type: Object.values(pokemonType)[i],
+        damage: +(typeDefense || '1').replace(/(½)|(¼)/g, (_, g1, g2) => (g1 && '0.5') || (g2 && '0.25')),
       }));
     }.toString();
 
