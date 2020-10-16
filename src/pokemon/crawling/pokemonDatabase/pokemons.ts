@@ -1,6 +1,6 @@
 import { CrawlingUtil } from '@/pokemon/crawling/utils';
 import { IEggCycle, IGenderRatio, IPokemonsOfDatabase, IStats, ITypeDefense } from '@/pokemon/pokemon.interface';
-import { POKEMON_TYPE, STAT } from '@/pokemon/pokemon.type';
+import { POKEMON_TYPE, STAT, ABILITY } from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
@@ -99,7 +99,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     let currentCount = 0;
     let pokemons: IPokemonsOfDatabase[] = [];
 
-    const localStorages = [{ gdpr: '0' }, { POKEMON_TYPE }, { STAT }, { util: this.utilString() }];
+    const localStorages = [{ gdpr: '0' }, { POKEMON_TYPE }, { STAT }, { ABILITY }, { util: this.utilString() }];
     const nextClickSelector = '.entity-nav-next';
     const navigationPromise = this.page.waitForNavigation();
 
@@ -149,6 +149,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     };
     const stat = getItem<STAT>('STAT');
     const pokemonType = getItem<POKEMON_TYPE>('POKEMON_TYPE');
+    const ability = getItem<ABILITY>('ABILITY');
     const util = getItem<UtilString>('util');
 
     const getTypes = parseFunction(util.getTypes) as (types: string[], pokemonType: POKEMON_TYPE) => POKEMON_TYPE[];
