@@ -155,22 +155,20 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       const [, func, ...funcs] = match;
       return new Function(...[...func.split(','), ...funcs]);
     };
-    const stat = getItem<STAT>('STAT');
+    const STAT = getItem<STAT>('STAT');
     const POKEMON_TYPE = getItem<POKEMON_TYPE>('POKEMON_TYPE');
-    const ability = getItem<ABILITY>('ABILITY');
+    const ABILITY = getItem<ABILITY>('ABILITY');
     const util = getItem<UtilString>('util');
 
     const getTypes = (types: string[]): POKEMON_TYPE[] => parseFunction(util.getTypes)?.call(null, types, POKEMON_TYPE);
-    const getAbility = (raw: string | null): string | null => parseFunction(util.getAbility)?.call(null, raw, ability);
-    const getEvYield = (evYield: string): string => parseFunction(util.getEvYield)?.call(null, evYield, stat);
-    const getGroups = parseFunction(util.getGroups) as (eegGroups: string) => string[];
-    const getGender = parseFunction(util.getGender) as (gender: string) => IGenderRatio[];
-    const getEggCycles = parseFunction(util.getEggCycles) as (eggCycles: string) => IEggCycle;
-    const getStats = parseFunction(util.getStats) as (stats: string[], stat: STAT) => IStats[];
-    const getTypeDefenses = parseFunction(util.getTypeDefenses) as (
-      typeDefenses: string[],
-      pokemonType: POKEMON_TYPE,
-    ) => ITypeDefense[];
+    const getAbility = (raw: string | null): string | null => parseFunction(util.getAbility)?.call(null, raw, ABILITY);
+    const getEvYield = (evYield: string): string => parseFunction(util.getEvYield)?.call(null, evYield, STAT);
+    const getGroups = (eegGroups: string): string[] => parseFunction(util.getGroups)?.call(null, eegGroups);
+    const getGender = (gender: string): IGenderRatio[] => parseFunction(util.getGender)?.call(null, gender);
+    const getEggCycles = (eggCycles: string): IEggCycle => parseFunction(util.getEggCycles)?.call(null, eggCycles);
+    const getStats = (stats: string[]): IStats[] => parseFunction(util.getStats)?.call(null, stats, STAT);
+    const getTypeDefenses = (typeDefenses: string[]): ITypeDefense[] =>
+      parseFunction(util.getTypeDefenses)?.call(null, typeDefenses, POKEMON_TYPE);
 
     const array = <T>($el: Iterable<T>): T[] => Array.from($el);
     const children = ($el: Element | null) => ($el ? Array.from($el.children) : []);
@@ -235,8 +233,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       eegGroups: getGroups(raw.eegGroups),
       gender: getGender(raw.gender),
       eggCycles: getEggCycles(raw.eggCycles),
-      stats: getStats(raw.stats, stat),
-      typeDefenses: getTypeDefenses(raw.typeDefenses, POKEMON_TYPE),
+      stats: getStats(raw.stats),
+      typeDefenses: getTypeDefenses(raw.typeDefenses),
     } as IPokemonsOfDatabase;
   };
 }
