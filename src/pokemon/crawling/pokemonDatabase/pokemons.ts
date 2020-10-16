@@ -8,6 +8,7 @@ import { ObjectLiteral } from 'typeorm';
 
 type UtilString = {
   getTypes: string;
+  getEvYield: string;
   getGroups: string;
   getGender: string;
   getEggCycles: string;
@@ -46,6 +47,16 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       });
     }.toString();
 
+    const getEvYield = `${function(evYield: string, stat: STAT): string | null {
+      const _evYield = evYield.replace(/—/g, '');
+      if (!_evYield) return null;
+
+      return _evYield.replace(/(\d+).(\w.*)/, (str, g1, g2) => {
+        const [, statName] = Object.entries(stat).find(([key]) => new RegExp(key, 'gi').test(g2))!;
+        return `${statName} ${g1}`;
+      });
+    }}`;
+
     const getGroups = function(eegGroups: string): string[] {
       return eegGroups.replace(/—/g, '') ? eegGroups.split(',') : [];
     }.toString();
@@ -81,7 +92,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       }));
     }.toString();
 
-    return { getTypes, getGroups, getGender, getEggCycles, getStats, getTypeDefenses };
+    return { getTypes, getEvYield, getGroups, getGender, getEggCycles, getStats, getTypeDefenses };
   };
 
   public crawling = async (): Promise<IPokemonsOfDatabase[]> => {
@@ -141,6 +152,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     const util = getItem<UtilString>('util');
 
     const getTypes = parseFunction(util.getTypes) as (types: string[], pokemonType: POKEMON_TYPE) => POKEMON_TYPE[];
+    const getEvYield = (evYield: string): string => parseFunction(util.getEvYield)?.call(null, evYield, stat);
     const getGroups = parseFunction(util.getGroups) as (eegGroups: string) => string[];
     const getGender = parseFunction(util.getGender) as (gender: string) => IGenderRatio[];
     const getEggCycles = parseFunction(util.getEggCycles) as (eggCycles: string) => IEggCycle;
@@ -205,8 +217,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       species: raw.species.replace(/é/g, 'e'),
       height: raw.height.replace(/\s(\w).*/g, '$1'),
       weight: raw.weight.replace(/\s(\w).*/g, '$1'),
-      evYield: raw.evYield.replace(/—/g, ''),
-      catchRate: Number(raw.catchRate.replace(/—/g, '')),
+      evYield: getEvYield(raw.evYield),
+      catchRate: Number(raw.catchRate.replace(/—|\s.*/g, '')),
       friendship: Number(raw.friendship.replace(/\(.*/g, '')),
       eegGroups: getGroups(raw.eegGroups),
       gender: getGender(raw.gender),
