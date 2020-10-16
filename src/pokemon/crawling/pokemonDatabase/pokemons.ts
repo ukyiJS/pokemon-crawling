@@ -78,13 +78,15 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     }}`;
 
     const getGender = `${function(raw: string): IGenderRatio[] {
-      const _raw = raw.replace(/—/g, '');
-      if (!_raw) return [{ name: '무성', ratio: 100 }];
-      const [male, female] = _raw.split(', ').map(k => k.replace(/\D+\D/g, ''));
+      const match = raw.match(/(\d*.\d*)(?=%)/g);
+      const genderless = [{ name: '무성', ratio: 100 }];
+      if (!match) return genderless;
+
+      const [male, female] = match;
       return [
         { name: '수컷', ratio: +male },
         { name: '암컷', ratio: +female },
-      ].filter(gender => gender.ratio);
+      ];
     }}`;
 
     const getEggCycles = `${function(raw: string) {
