@@ -76,11 +76,11 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       return { cycle: Number(cycle), step };
     }.toString();
 
-    const getStats = function(stats: string[], STAT: STAT) {
+    const getStats = function(stats: string[], stat: STAT) {
       return stats
         .filter((_, i) => !(i % 4))
         .map((value, i) => ({
-          name: Object.values(STAT)[i],
+          name: Object.values(stat)[i],
           value: +value,
         }));
     }.toString();
