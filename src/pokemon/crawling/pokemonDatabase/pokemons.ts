@@ -40,12 +40,12 @@ export class PokemonsOfDatabase extends CrawlingUtil {
   };
 
   private utilString = (): UtilString => {
-    const getTypes = function(types: string[], pokemonType: POKEMON_TYPE): POKEMON_TYPE[] {
+    const getTypes = `${function(types: string[], pokemonType: POKEMON_TYPE): POKEMON_TYPE[] {
       return types.map(_type => {
         const [, type] = Object.entries(pokemonType).find(([key]) => new RegExp(key, 'gi').test(_type))!;
         return type as POKEMON_TYPE;
       });
-    }.toString();
+    }}`;
 
     const getEvYield = `${function(evYield: string, stat: STAT): string | null {
       const _evYield = evYield.replace(/—/g, '');
@@ -57,11 +57,11 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       });
     }}`;
 
-    const getGroups = function(eegGroups: string): string[] {
+    const getGroups = `${function(eegGroups: string): string[] {
       return eegGroups.replace(/—/g, '') ? eegGroups.split(',') : [];
-    }.toString();
+    }}`;
 
-    const getGender = function(gender: string): IGenderRatio[] {
+    const getGender = `${function(gender: string): IGenderRatio[] {
       const _gender = gender.replace(/—/g, '');
       if (!_gender) return [{ name: '무성', ratio: 100 }];
       const [male, female] = _gender.split(', ').map(k => k.replace(/\D+\D/g, ''));
@@ -69,28 +69,28 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         { name: '수컷', ratio: +male },
         { name: '암컷', ratio: +female },
       ].filter(gender => gender.ratio);
-    }.toString();
+    }}`;
 
-    const getEggCycles = function(eggCycles: string) {
+    const getEggCycles = `${function(eggCycles: string) {
       const [cycle, step] = eggCycles.replace(/(?:\(|—|,| steps\))/g, '').split(' ');
       return { cycle: Number(cycle), step };
-    }.toString();
+    }}`;
 
-    const getStats = function(stats: string[], stat: STAT) {
+    const getStats = `${function(stats: string[], stat: STAT) {
       return stats
         .filter((_, i) => !(i % 4))
         .map((value, i) => ({
           name: Object.values(stat)[i],
           value: +value,
         }));
-    }.toString();
+    }}`;
 
-    const getTypeDefenses = function(typeDefenses: string[], pokemonType: POKEMON_TYPE) {
+    const getTypeDefenses = `${function(typeDefenses: string[], pokemonType: POKEMON_TYPE) {
       return typeDefenses.map((typeDefense, i) => ({
         type: Object.values(pokemonType)[i],
         damage: +(typeDefense || '1').replace(/(½)|(¼)/g, (_, g1, g2) => (g1 && '0.5') || (g2 && '0.25')),
       }));
-    }.toString();
+    }}`;
 
     return { getTypes, getEvYield, getGroups, getGender, getEggCycles, getStats, getTypeDefenses };
   };
