@@ -94,6 +94,7 @@ export interface IEggCycle {
 export interface IPokemonsOfDatabase {
   no: string;
   name: string;
+  engName: string;
   image: string;
   stats: IStats[];
   types: string[];
