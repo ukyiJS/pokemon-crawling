@@ -51,7 +51,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       const _evYield = evYield.replace(/—/g, '');
       if (!_evYield) return null;
 
-      return _evYield.replace(/(\d+).(\w.*)/, (str, g1, g2) => {
+      return _evYield.replace(/(\d+).(\w.*)/, (_, g1, g2) => {
         const [, statName] = Object.entries(stat).find(([key]) => new RegExp(key, 'gi').test(g2))!;
         return `${statName} ${g1}`;
       });
