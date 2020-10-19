@@ -94,7 +94,7 @@ export class CrawlingUtil {
 
       let result: string;
       try {
-        const _ability = ability.replace(/\s/g, '');
+        const _ability = ability.replace(/[^a-z]/gi, '');
         const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
         [, result] = Object.entries(ABILITY).find(([key]) => regExp(key).test(_ability))!;
       } catch (error) {
@@ -193,30 +193,24 @@ export class CrawlingUtil {
         case EXCEPTIONAL_FORM_KEY.MEGA_Y:
           return /mega.*y$/;
         case EXCEPTIONAL_FORM_KEY.GALARIAN_STANDARD_MODE:
-          return /galar.*standard mode/;
+          return /galar.*standardmode/;
         case EXCEPTIONAL_FORM_KEY.GALARIAN_ZEN_MODE:
-          return /galar.*zen mode/;
-        case EXCEPTIONAL_FORM_KEY.ASH_GRENINJA:
-          return /ash-greninja/;
+          return /galar.*zenmode/;
         case EXCEPTIONAL_FORM_KEY.FIFTY_PERCENT_FORM:
-          return /50% forme/;
+          return /50forme/;
         case EXCEPTIONAL_FORM_KEY.TEN_PERCENT_FORM:
-          return /10% forme/;
-        case EXCEPTIONAL_FORM_KEY.PA_U_STYLE:
-          return /pa'u style/;
-        case EXCEPTIONAL_FORM_KEY.POM_POM_STYLE:
-          return /pom-pom style/;
+          return /10forme/;
         case EXCEPTIONAL_FORM_KEY.HUNGRY_MODE:
-          return /hangry mode|hungry mode/;
+          return /hangrymode|hungrymode/;
         default:
-          return new RegExp(key.replace(/_/g, ' '));
+          return new RegExp(key.replace(/[^a-z]/gi, ''));
       }
     };
     let result: DIFFERENT_FORM;
     try {
       [, result] = Object.entries(DIFFERENT_FORM).find(([key]) => {
         const regExp = new RegExp(convertKeyToRegExp(key), 'gi');
-        const _form = form.replace(/[^a-z\s]/gi, '');
+        const _form = form.replace(/[^a-z0-9]/gi, '');
         return regExp.test(_form);
       })!;
     } catch (error) {
