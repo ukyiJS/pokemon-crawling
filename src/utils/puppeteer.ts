@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, LogLevel } from '@nestjs/common';
 import { Browser, launch, Page } from 'puppeteer';
 
 export interface BrowserAndPage {
@@ -24,7 +24,9 @@ export const getBrowserAndPage = async (url: string, waitForSelector: string): P
   page.on('console', message => {
     const regExp = /^A parser-blocking|^Failed|^Access to|^No targeting|^SG Installed|^guaTrackEvent|^Created ad|^Powered by|^tracker|^Aff Overrides/gi;
     if (regExp.test(message.text())) return;
-    Logger.log(`👉 ${message.text()}`, 'Console');
+    const LoggerKeys: Array<LogLevel> = ['log', 'error', 'warn', 'debug', 'verbose'];
+    const LoggerType = LoggerKeys.find(key => new RegExp(key, 'gi').test(message.type())) ?? 'log';
+    Logger[LoggerType](`👉 ${message.text()}`, 'Console');
   });
   page.on('dialog', async dialog => {
     Logger.log(`👉 ${dialog.message()}`, 'Dialog');
