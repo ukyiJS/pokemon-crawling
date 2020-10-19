@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { LoadingBar, LoadingType, STDOUT } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { blueBright, redBright, yellowBright } from 'chalk';
@@ -61,14 +62,27 @@ export class CrawlingUtil {
 
   protected utilString = (): UtilString => {
     const getName = `${function(raw: string, pokemon: POKEMON): POKEMON {
-      const _raw = raw.replace(/\s/g, '');
-      const [, name] = Object.entries(pokemon).find(([key]) => new RegExp(key, 'gi').test(_raw)) ?? [];
+      let name: string;
+      try {
+        const _raw = raw.replace(/\s/g, '').replace(/(\w.*)(♂|♀)/g, (_, g1, g2) => `${g1}${g2 === '♂' ? 'm' : 'f'}`);
+        const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
+        [, name] = Object.entries(pokemon).find(([key]) => regExp(key).test(_raw))!;
+      } catch (error) {
+        console.error('No Matching Name Found', raw);
+        throw error;
+      }
       return name as POKEMON;
     }}`;
 
     const getTypes = `${function(raw: string[], pokemonType: POKEMON_TYPE): POKEMON_TYPE[] | null {
       return raw.map(_type => {
-        const [, typeName] = Object.entries(pokemonType).find(([key]) => new RegExp(key, 'gi').test(_type)) ?? [];
+        let typeName: string;
+        try {
+          [, typeName] = Object.entries(pokemonType).find(([key]) => new RegExp(key, 'gi').test(_type))!;
+        } catch (error) {
+          console.error('No Matching Type Found', raw);
+          throw error;
+        }
         return typeName as POKEMON_TYPE;
       });
     }}`;
@@ -76,9 +90,15 @@ export class CrawlingUtil {
     const getAbility = `${function(raw: string, ability: ABILITY): ABILITY | null {
       if (!raw) return null;
 
-      const _raw = raw.replace(/\s/g, '');
-      const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
-      const [, abilityName] = Object.entries(ability).find(([key]) => regExp(key).test(_raw)) ?? [];
+      let abilityName: string;
+      try {
+        const _raw = raw.replace(/\s/g, '');
+        const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
+        [, abilityName] = Object.entries(ability).find(([key]) => regExp(key).test(_raw))!;
+      } catch (error) {
+        console.error('No Matching Ability Found', raw);
+        throw error;
+      }
       return abilityName as ABILITY;
     }}`;
 
@@ -87,7 +107,13 @@ export class CrawlingUtil {
       if (!_raw) return null;
 
       return _raw.replace(/(\d+).(\w.*)/, (_, g1, g2) => {
-        const [, statName] = Object.entries(stat).find(([key]) => new RegExp(key, 'gi').test(g2)) ?? [];
+        let statName: string;
+        try {
+          [, statName] = Object.entries(stat).find(([key]) => new RegExp(key, 'gi').test(g2))!;
+        } catch (error) {
+          console.error('No Matching EvYield Found', raw);
+          throw error;
+        }
         return statName ? `${statName} ${g1}` : '';
       });
     }}`;
@@ -96,9 +122,16 @@ export class CrawlingUtil {
       const _raw = raw.replace(/[^a-z0-9-,]/gi, '');
       if (!_raw) return [];
 
-      const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
       return _raw.split(',').map(group => {
-        const [key = '', groupName = ''] = Object.entries(eggGroup).find(([key]) => regExp(key).test(group)) ?? [];
+        let key: string;
+        let groupName: string;
+        const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
+        try {
+          [key, groupName] = Object.entries(eggGroup).find(([key]) => regExp(key).test(group))!;
+        } catch (error) {
+          console.error('No Matching EggGroup Found', raw);
+          throw error;
+        }
         return group.replace(regExp(key), groupName) as EGG_GROUP;
       });
     }}`;
@@ -162,9 +195,9 @@ export class CrawlingUtil {
           return /galar.*zen mode/;
         case EXCEPTIONAL_FORM_KEY.ASH_GRENINJA:
           return /ash-greninja/;
-        case EXCEPTIONAL_FORM_KEY.FIFTY_PERCENT:
+        case EXCEPTIONAL_FORM_KEY.FIFTY_PERCENT_FORM:
           return /50% forme/;
-        case EXCEPTIONAL_FORM_KEY.TEN_PERCENT:
+        case EXCEPTIONAL_FORM_KEY.TEN_PERCENT_FORM:
           return /10% forme/;
         case EXCEPTIONAL_FORM_KEY.PA_U_STYLE:
           return /pa'u style/;
