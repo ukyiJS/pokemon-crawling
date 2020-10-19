@@ -11,7 +11,7 @@ type UtilString = {
   getTypes: string;
   getAbility: string;
   getEvYield: string;
-  getGroups: string;
+  getEggGroups: string;
   getGender: string;
   getEggCycles: string;
   getStats: string;
@@ -36,7 +36,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         Object.entries(item).forEach(([key, value]) => localStorage.setItem(key, JSON.stringify(value))),
       );
     }, localStorageItems);
-    Logger.log(localStorageItems, 'LocalStorage');
+    Logger.log('initLocalStorage', 'LocalStorage');
     await this.page.reload();
     Logger.log('page is reloaded', 'Reload');
   };
@@ -74,14 +74,14 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       });
     }}`;
 
-    const getGroups = `${function(raw: string, eggGroup: EGG_GROUP): EGG_GROUP[] {
-      const match = raw.match(/(\w*.\w*),\s*(\w*.\w*)/g);
-      if (!match) return [];
-      const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
+    const getEggGroups = `${function(raw: string, eggGroup: EGG_GROUP): EGG_GROUP[] {
+      const _raw = raw.replace(/[^a-z-,]/gi, '');
+      if (!_raw) return [];
 
-      return match.map(group => {
-        const [, groupName] = Object.entries(eggGroup).find(([key]) => regExp(key).test(group)) ?? [];
-        return groupName as EGG_GROUP;
+      const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
+      return _raw.split(',').map(group => {
+        const [key, groupName] = Object.entries(eggGroup).find(([key]) => regExp(key).test(group))!;
+        return group.replace(regExp(key), groupName) as EGG_GROUP;
       });
     }}`;
 
@@ -118,7 +118,17 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       }));
     }}`;
 
-    return { getName, getTypes, getAbility, getEvYield, getGroups, getGender, getEggCycles, getStats, getTypeDefenses };
+    return {
+      getName,
+      getTypes,
+      getAbility,
+      getEvYield,
+      getEggGroups,
+      getGender,
+      getEggCycles,
+      getStats,
+      getTypeDefenses,
+    };
   };
 
   public crawling = async (): Promise<IPokemonsOfDatabase[]> => {
@@ -193,8 +203,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     const getAbility = (ability: string | null): string | null =>
       parseFunction(util.getAbility)?.call(null, ability, ABILITY);
     const getEvYield = (evYield: string): string => parseFunction(util.getEvYield)?.call(null, evYield, STAT);
-    const getGroups = (eegGroups: string): EGG_GROUP[] =>
-      parseFunction(util.getGroups)?.call(null, eegGroups, EGG_GROUP);
+    const getEggGroups = (eegGroups: string): EGG_GROUP[] =>
+      parseFunction(util.getEggGroups)?.call(null, eegGroups, EGG_GROUP);
     const getGender = (gender: string): IGenderRatio[] => parseFunction(util.getGender)?.call(null, gender);
     const getEggCycles = (eggCycles: string): IEggCycle => parseFunction(util.getEggCycles)?.call(null, eggCycles);
     const getStats = (stats: string[]): IStats[] => parseFunction(util.getStats)?.call(null, stats, STAT);
@@ -264,7 +274,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       catchRate: Number(raw.catchRate.replace(/—|\s.*/g, '')),
       friendship: Number(raw.friendship.replace(/—|\s.*/g, '')),
       exp: Number(raw.exp.replace(/—|\s.*/g, '')),
-      eegGroups: getGroups(raw.eegGroups),
+      eegGroups: getEggGroups(raw.eegGroups),
       gender: getGender(raw.gender),
       eggCycles: getEggCycles(raw.eggCycles),
       stats: getStats(raw.stats),
