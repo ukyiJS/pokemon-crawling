@@ -4,7 +4,16 @@ import { blueBright, redBright, yellowBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { ObjectLiteral } from 'typeorm';
 import { IEvolvingTo, IGenderRatio, IPokemon, IStats, IWindow } from '../pokemon.interface';
-import { ABILITY, EGG_GROUP, POKEMON, POKEMON_TYPE, STAT, UtilString } from '../pokemon.type';
+import {
+  ABILITY,
+  DIFFERENT_FORM,
+  EGG_GROUP,
+  EXCEPTIONAL_FORM_KEY,
+  POKEMON,
+  POKEMON_TYPE,
+  STAT,
+  UtilString,
+} from '../pokemon.type';
 
 declare let window: IWindow;
 type Loading = { update: (curser: number) => void };
@@ -45,9 +54,9 @@ export class CrawlingUtil {
         Object.entries(item).forEach(([key, value]) => localStorage.setItem(key, JSON.stringify(value))),
       );
     }, localStorageItems);
-    Logger.log('initLocalStorage', 'LocalStorage');
+    Logger.log('Initialization LocalStorage', 'LocalStorage');
     await this.page.reload();
-    Logger.log('page is reloaded', 'Reload');
+    Logger.log('Page is Reloaded', 'Reload');
   };
 
   protected utilString = (): UtilString => {
@@ -138,6 +147,41 @@ export class CrawlingUtil {
       getStats,
       getTypeDefenses,
     };
+  };
+
+  protected getForm = (raw: string): DIFFERENT_FORM => {
+    const convertKeyToRegExp = (key: string): RegExp => {
+      switch (key) {
+        case EXCEPTIONAL_FORM_KEY.MEGA_X:
+          return /mega.*x$/;
+        case EXCEPTIONAL_FORM_KEY.MEGA_Y:
+          return /mega.*y$/;
+        case EXCEPTIONAL_FORM_KEY.GALARIAN_STANDARD_MODE:
+          return /galar.*standard mode/;
+        case EXCEPTIONAL_FORM_KEY.GALARIAN_ZEN_MODE:
+          return /galar.*zen mode/;
+        case EXCEPTIONAL_FORM_KEY.ASH_GRENINJA:
+          return /ash-greninja/;
+        case EXCEPTIONAL_FORM_KEY.FIFTY_PERCENT:
+          return /50% forme/;
+        case EXCEPTIONAL_FORM_KEY.TEN_PERCENT:
+          return /10% forme/;
+        case EXCEPTIONAL_FORM_KEY.PA_U_STYLE:
+          return /pa'u style/;
+        case EXCEPTIONAL_FORM_KEY.POM_POM_STYLE:
+          return /pom-pom style/;
+        case EXCEPTIONAL_FORM_KEY.HUNGRY_MODE:
+          return /hangry mode|hungry mode/;
+        default:
+          return new RegExp(key.replace(/_/g, ' '));
+      }
+    };
+    const [, form] = Object.entries(DIFFERENT_FORM).find(([key]) => {
+      const regExp = new RegExp(convertKeyToRegExp(key), 'gi');
+      return regExp.test(raw);
+    })!;
+
+    return form;
   };
 }
 

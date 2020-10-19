@@ -35,7 +35,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     const nextClickSelector = '.entity-nav-next';
 
     while (true) {
-      await this.page.waitForSelector('#main .tabset-basics');
+      await this.page.waitForSelector('#main');
+      await this.page.waitForSelector('.tabset-basics > .tabs-panel-list > .tabs-panel');
 
       const pokemon = await this.page.evaluate(this.getPokemons);
       pokemon.differentForm = await this.getDifferentForm();
@@ -134,7 +135,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       gender: getText($gender),
       eggCycles: getText($eggCycles),
       stats: getTexts($stats),
-      typeDefenses: getTexts($typeDefenses),
+      typeDefenses: $typeDefenses.map(getText),
     };
 
     return {
@@ -160,12 +161,14 @@ export class PokemonsOfDatabase extends CrawlingUtil {
   };
 
   private getDifferentForm = async (): Promise<IPokemonsOfDatabase[]> => {
-    const forms = await this.page.$$eval('.tabset-basics > .tabs-tab-list > .tabs-tab', $el => {
+    let forms = await this.page.$$eval('.tabset-basics > .tabs-tab-list > .tabs-tab', $el => {
       return Array.from($el)
         .map($el => $el.textContent!)
         .filter((f, i) => i && !/partner/gi.test(f));
     });
     if (!forms.length) return [];
+
+    forms = forms.map(this.getForm);
 
     const differentForms = await Promise.all(forms.map((_, i) => this.page.evaluate(this.getPokemons, i + 1)));
     return differentForms.map((differentForm, i) => ({ ...differentForm, form: forms[i] }));
