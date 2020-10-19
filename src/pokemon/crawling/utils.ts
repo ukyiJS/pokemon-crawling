@@ -61,83 +61,86 @@ export class CrawlingUtil {
   };
 
   protected utilString = (): UtilString => {
-    const getName = `${function(raw: string, pokemon: POKEMON): POKEMON {
-      let name: string;
+    const getName = `${function(name: string, POKEMON: POKEMON): POKEMON {
+      let result: string;
       try {
-        const _raw = raw.replace(/\s/g, '').replace(/(\w.*)(♂|♀)/g, (_, g1, g2) => `${g1}${g2 === '♂' ? 'm' : 'f'}`);
+        const _name = name
+          .replace(/(\w.*)(♂|♀)/g, (_, g1, g2) => `${g1}${g2 === '♂' ? 'm' : 'f'}`)
+          .replace(/[^a-z]/gi, '');
         const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
-        [, name] = Object.entries(pokemon).find(([key]) => regExp(key).test(_raw))!;
+        [, result] = Object.entries(POKEMON).find(([key]) => regExp(key).test(_name))!;
       } catch (error) {
-        console.error('No Matching Name Found', raw);
+        console.error('No Matching Name Found', name);
         throw error;
       }
-      return name as POKEMON;
+      return result as POKEMON;
     }}`;
 
-    const getTypes = `${function(raw: string[], pokemonType: POKEMON_TYPE): POKEMON_TYPE[] | null {
-      return raw.map(_type => {
-        let typeName: string;
+    const getTypes = `${function(types: string[], POKEMON_TYPE: POKEMON_TYPE): POKEMON_TYPE[] | null {
+      return types.map(type => {
+        let result: string;
         try {
-          [, typeName] = Object.entries(pokemonType).find(([key]) => new RegExp(key, 'gi').test(_type))!;
+          [, result] = Object.entries(POKEMON_TYPE).find(([key]) => new RegExp(key, 'gi').test(type))!;
         } catch (error) {
-          console.error('No Matching Type Found', raw);
+          console.error('No Matching Type Found', types);
           throw error;
         }
-        return typeName as POKEMON_TYPE;
+        return result as POKEMON_TYPE;
       });
     }}`;
 
-    const getAbility = `${function(raw: string, ability: ABILITY): ABILITY | null {
-      if (!raw) return null;
+    const getAbility = `${function(ability: string, ABILITY: ABILITY): ABILITY | null {
+      if (!ability) return null;
 
-      let abilityName: string;
+      let result: string;
       try {
-        const _raw = raw.replace(/\s/g, '');
+        const _ability = ability.replace(/\s/g, '');
         const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
-        [, abilityName] = Object.entries(ability).find(([key]) => regExp(key).test(_raw))!;
+        [, result] = Object.entries(ABILITY).find(([key]) => regExp(key).test(_ability))!;
       } catch (error) {
-        console.error('No Matching Ability Found', raw);
+        console.error('No Matching Ability Found', ability);
         throw error;
       }
-      return abilityName as ABILITY;
+      return result as ABILITY;
     }}`;
 
-    const getEvYield = `${function(raw: string, stat: STAT): string | null {
-      const _raw = raw.replace(/—/g, '');
-      if (!_raw) return null;
+    const getEvYield = `${function(evYield: string, STAT: STAT): string | null {
+      const _evYield = evYield.replace(/—/g, '');
+      if (!_evYield) return null;
 
-      return _raw.replace(/(\d+).(\w.*)/, (_, g1, g2) => {
-        let statName: string;
+      return _evYield.replace(/(\d+).(\w.*)/, (_, g1, g2) => {
+        let result: string;
         try {
-          [, statName] = Object.entries(stat).find(([key]) => new RegExp(key, 'gi').test(g2))!;
+          [, result] = Object.entries(STAT).find(([key]) => new RegExp(key, 'gi').test(g2))!;
         } catch (error) {
-          console.error('No Matching EvYield Found', raw);
+          console.error('No Matching EvYield Found', evYield);
           throw error;
         }
-        return statName ? `${statName} ${g1}` : '';
+        return result ? `${result} ${g1}` : '';
       });
     }}`;
 
-    const getEggGroups = `${function(raw: string, eggGroup: EGG_GROUP): EGG_GROUP[] {
-      const _raw = raw.replace(/[^a-z0-9-,]/gi, '');
-      if (!_raw) return [];
+    const getEggGroups = `${function(eggGroups: string, EGG_GROUP: EGG_GROUP): EGG_GROUP[] {
+      const _eggGroups = eggGroups.replace(/[^a-z0-9-,]/gi, '');
+      if (!_eggGroups) return [];
 
-      return _raw.split(',').map(group => {
+      return _eggGroups.split(',').map(eggGroup => {
         let key: string;
-        let groupName: string;
+        let value: string;
         const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
         try {
-          [key, groupName] = Object.entries(eggGroup).find(([key]) => regExp(key).test(group))!;
+          const _eggGroup = eggGroup.replace(/[^a-z]/gi, '');
+          [key, value] = Object.entries(EGG_GROUP).find(([key]) => regExp(key).test(_eggGroup))!;
         } catch (error) {
-          console.error('No Matching EggGroup Found', raw);
+          console.error('No Matching EggGroup Found', eggGroups);
           throw error;
         }
-        return group.replace(regExp(key), groupName) as EGG_GROUP;
+        return value.replace(regExp(key), value) as EGG_GROUP;
       });
     }}`;
 
-    const getGender = `${function(raw: string): IGenderRatio[] {
-      const match = raw.match(/(\d*.\d*)(?=%)/g);
+    const getGender = `${function(gender: string): IGenderRatio[] {
+      const match = gender.match(/(\d*.\d*)(?=%)/g);
       const genderless = [{ name: '무성', ratio: 100 }];
       if (!match) return genderless;
 
@@ -148,23 +151,23 @@ export class CrawlingUtil {
       ];
     }}`;
 
-    const getEggCycles = `${function(raw: string) {
-      const [cycle, step] = raw.replace(/(?:\(|—|,| steps\))/g, '').split(' ');
+    const getEggCycles = `${function(eggCycle: string) {
+      const [cycle, step] = eggCycle.replace(/(?:\(|—|,| steps\))/g, '').split(' ');
       return { cycle: Number(cycle), step };
     }}`;
 
-    const getStats = `${function(raw: string[], stat: STAT) {
-      return raw
+    const getStats = `${function(stats: string[], STAT: STAT) {
+      return stats
         .filter((_, i) => !(i % 4))
         .map((value, i) => ({
-          name: Object.values(stat)[i],
+          name: Object.values(STAT)[i],
           value: +value,
         }));
     }}`;
 
-    const getTypeDefenses = `${function(raw: string[], pokemonType: POKEMON_TYPE) {
-      return raw.map((typeDefense, i) => ({
-        type: Object.values(pokemonType)[i],
+    const getTypeDefenses = `${function(typeDefenses: string[], POKEMON_TYPE: POKEMON_TYPE) {
+      return typeDefenses.map((typeDefense, i) => ({
+        type: Object.values(POKEMON_TYPE)[i],
         damage: +(typeDefense || '1').replace(/(½)|(¼)/g, (_, g1, g2) => (g1 && '0.5') || (g2 && '0.25')),
       }));
     }}`;
@@ -182,7 +185,7 @@ export class CrawlingUtil {
     };
   };
 
-  protected getForm = (raw: string): DIFFERENT_FORM => {
+  protected getForm = (form: string): DIFFERENT_FORM => {
     const convertKeyToRegExp = (key: string): RegExp => {
       switch (key) {
         case EXCEPTIONAL_FORM_KEY.MEGA_X:
@@ -209,12 +212,18 @@ export class CrawlingUtil {
           return new RegExp(key.replace(/_/g, ' '));
       }
     };
-    const [, form] = Object.entries(DIFFERENT_FORM).find(([key]) => {
-      const regExp = new RegExp(convertKeyToRegExp(key), 'gi');
-      return regExp.test(raw);
-    })!;
-
-    return form;
+    let result: DIFFERENT_FORM;
+    try {
+      [, result] = Object.entries(DIFFERENT_FORM).find(([key]) => {
+        const regExp = new RegExp(convertKeyToRegExp(key), 'gi');
+        const _form = form.replace(/[^a-z]/gi, '');
+        return regExp.test(_form);
+      })!;
+    } catch (error) {
+      console.error('No Matching EggGroup Found', form);
+      throw error;
+    }
+    return result;
   };
 }
 
