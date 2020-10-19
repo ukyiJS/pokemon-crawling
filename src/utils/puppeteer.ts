@@ -26,6 +26,11 @@ export const getBrowserAndPage = async (url: string, waitForSelector: string): P
     if (regExp.test(message.text())) return;
     const LoggerKeys: Array<LogLevel> = ['log', 'error', 'warn', 'debug', 'verbose'];
     const LoggerType = LoggerKeys.find(key => new RegExp(key, 'gi').test(message.type())) ?? 'log';
+
+    if (LoggerType === 'error') {
+      Logger.error(`❌ ${message.text()}`, undefined, 'Error');
+      return;
+    }
     Logger[LoggerType](`👉 ${message.text()}`, 'Console');
   });
   page.on('dialog', async dialog => {
