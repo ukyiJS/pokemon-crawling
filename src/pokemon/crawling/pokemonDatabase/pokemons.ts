@@ -1,141 +1,21 @@
 import { CrawlingUtil } from '@/pokemon/crawling/utils';
 import { IEggCycle, IGenderRatio, IPokemonsOfDatabase, IStats, ITypeDefense } from '@/pokemon/pokemon.interface';
-import { POKEMON_TYPE, STAT, ABILITY, POKEMON, EGG_GROUP } from '@/pokemon/pokemon.type';
+import { ABILITY, EGG_GROUP, POKEMON, POKEMON_TYPE, STAT, UtilString } from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
-import { ObjectLiteral } from 'typeorm';
-
-type UtilString = {
-  getName: string;
-  getTypes: string;
-  getAbility: string;
-  getEvYield: string;
-  getEggGroups: string;
-  getGender: string;
-  getEggCycles: string;
-  getStats: string;
-  getTypeDefenses: string;
-};
 
 export class PokemonsOfDatabase extends CrawlingUtil {
   private loopCount: number;
 
-  private page: Page;
+  private promiseLocalStorage: Promise<void>;
 
   constructor(page: Page, loopCount = 893) {
-    super();
+    super(page);
     this.loopCount = loopCount;
-    this.page = page;
     this.initLoading(loopCount);
-  }
 
-  private initLocalStorage = async (localStorageItems: ObjectLiteral[]): Promise<void> => {
-    await this.page.evaluate<(items: ObjectLiteral[]) => void>(items => {
-      items.forEach(item =>
-        Object.entries(item).forEach(([key, value]) => localStorage.setItem(key, JSON.stringify(value))),
-      );
-    }, localStorageItems);
-    Logger.log('initLocalStorage', 'LocalStorage');
-    await this.page.reload();
-    Logger.log('page is reloaded', 'Reload');
-  };
-
-  private utilString = (): UtilString => {
-    const getName = `${function(raw: string, pokemon: POKEMON): POKEMON {
-      const _raw = raw.replace(/\s/g, '');
-      const [, name] = Object.entries(pokemon).find(([key]) => new RegExp(key, 'gi').test(_raw)) ?? [];
-      return name as POKEMON;
-    }}`;
-
-    const getTypes = `${function(raw: string[], pokemonType: POKEMON_TYPE): POKEMON_TYPE[] | null {
-      return raw.map(_type => {
-        const [, typeName] = Object.entries(pokemonType).find(([key]) => new RegExp(key, 'gi').test(_type)) ?? [];
-        return typeName as POKEMON_TYPE;
-      });
-    }}`;
-
-    const getAbility = `${function(raw: string, ability: ABILITY): ABILITY | null {
-      if (!raw) return null;
-
-      const _raw = raw.replace(/\s/g, '');
-      const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
-      const [, abilityName] = Object.entries(ability).find(([key]) => regExp(key).test(_raw)) ?? [];
-      return abilityName as ABILITY;
-    }}`;
-
-    const getEvYield = `${function(raw: string, stat: STAT): string | null {
-      const _raw = raw.replace(/—/g, '');
-      if (!_raw) return null;
-
-      return _raw.replace(/(\d+).(\w.*)/, (_, g1, g2) => {
-        const [, statName] = Object.entries(stat).find(([key]) => new RegExp(key, 'gi').test(g2))!;
-        return `${statName} ${g1}`;
-      });
-    }}`;
-
-    const getEggGroups = `${function(raw: string, eggGroup: EGG_GROUP): EGG_GROUP[] {
-      const _raw = raw.replace(/[^a-z-,]/gi, '');
-      if (!_raw) return [];
-
-      const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
-      return _raw.split(',').map(group => {
-        const [key, groupName] = Object.entries(eggGroup).find(([key]) => regExp(key).test(group))!;
-        return group.replace(regExp(key), groupName) as EGG_GROUP;
-      });
-    }}`;
-
-    const getGender = `${function(raw: string): IGenderRatio[] {
-      const match = raw.match(/(\d*.\d*)(?=%)/g);
-      const genderless = [{ name: '무성', ratio: 100 }];
-      if (!match) return genderless;
-
-      const [male, female] = match;
-      return [
-        { name: '수컷', ratio: +male },
-        { name: '암컷', ratio: +female },
-      ];
-    }}`;
-
-    const getEggCycles = `${function(raw: string) {
-      const [cycle, step] = raw.replace(/(?:\(|—|,| steps\))/g, '').split(' ');
-      return { cycle: Number(cycle), step };
-    }}`;
-
-    const getStats = `${function(raw: string[], stat: STAT) {
-      return raw
-        .filter((_, i) => !(i % 4))
-        .map((value, i) => ({
-          name: Object.values(stat)[i],
-          value: +value,
-        }));
-    }}`;
-
-    const getTypeDefenses = `${function(raw: string[], pokemonType: POKEMON_TYPE) {
-      return raw.map((typeDefense, i) => ({
-        type: Object.values(pokemonType)[i],
-        damage: +(typeDefense || '1').replace(/(½)|(¼)/g, (_, g1, g2) => (g1 && '0.5') || (g2 && '0.25')),
-      }));
-    }}`;
-
-    return {
-      getName,
-      getTypes,
-      getAbility,
-      getEvYield,
-      getEggGroups,
-      getGender,
-      getEggCycles,
-      getStats,
-      getTypeDefenses,
-    };
-  };
-
-  public crawling = async (): Promise<IPokemonsOfDatabase[]> => {
-    let currentCount = 0;
-    let pokemons: IPokemonsOfDatabase[] = [];
-
-    const localStorages = [
+    this.promiseLocalStorage = this.initLocalStorage([
       { gdpr: '0' },
       { POKEMON },
       { POKEMON_TYPE },
@@ -143,25 +23,22 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       { ABILITY },
       { EGG_GROUP },
       { util: this.utilString() },
-    ];
-    const nextClickSelector = '.entity-nav-next';
-    const navigationPromise = this.page.waitForNavigation();
+    ]);
+  }
 
-    await this.initLocalStorage(localStorages);
+  public crawling = async (): Promise<IPokemonsOfDatabase[]> => {
+    await this.promiseLocalStorage;
+
+    let currentCount = 0;
+    let pokemons: IPokemonsOfDatabase[] = [];
+    const waitForNavigation = this.page.waitForNavigation();
+    const nextClickSelector = '.entity-nav-next';
 
     while (true) {
-      await this.page.waitForSelector('#main');
+      await this.page.waitForSelector('#main .tabset-basics');
 
       const pokemon = await this.page.evaluate(this.getPokemons);
-
-      const forms = await this.page.$$eval('.tabset-basics > .tabs-tab-list > .tabs-tab', (_, $el = Array.from(_)) =>
-        $el.map($el => $el.textContent!).filter((f, i) => i && !/partner/gi.test(f)),
-      );
-      if (forms.length) {
-        pokemon.differentForm = (
-          await Promise.all(forms.map((_, i) => this.page.evaluate(this.getPokemons, i + 1)))
-        ).map((differentForm, i) => ({ ...differentForm, form: forms[i] }));
-      }
+      pokemon.differentForm = await this.getDifferentForm();
 
       pokemons = [...pokemons, pokemon];
 
@@ -173,7 +50,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
 
       await this.page.waitForSelector(nextClickSelector);
       await this.page.click(nextClickSelector);
-      await navigationPromise;
+      await waitForNavigation;
     }
 
     return pokemons;
@@ -182,7 +59,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
   private getPokemons = (i = 0): IPokemonsOfDatabase => {
     const $element = document.querySelector('#main')!;
 
-    const getItem = <T>(key: string): T => JSON.parse(localStorage.getItem(key)!);
+    const getItem = <T>(key: string): T => JSON.parse(localStorage.getItem(key) ?? '{}');
     const parseFunction = (str: string) => {
       const funcReg = /function *\(([^()]*)\)[ \n\t]*{(.*)}/gim;
       const match = funcReg.exec(str.replace(/\n/g, ' '));
@@ -280,5 +157,17 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       stats: getStats(raw.stats),
       typeDefenses: getTypeDefenses(raw.typeDefenses),
     } as IPokemonsOfDatabase;
+  };
+
+  private getDifferentForm = async (): Promise<IPokemonsOfDatabase[]> => {
+    const forms = await this.page.$$eval('.tabset-basics > .tabs-tab-list > .tabs-tab', $el => {
+      return Array.from($el)
+        .map($el => $el.textContent!)
+        .filter((f, i) => i && !/partner/gi.test(f));
+    });
+    if (!forms.length) return [];
+
+    const differentForms = await Promise.all(forms.map((_, i) => this.page.evaluate(this.getPokemons, i + 1)));
+    return differentForms.map((differentForm, i) => ({ ...differentForm, form: forms[i] }));
   };
 }

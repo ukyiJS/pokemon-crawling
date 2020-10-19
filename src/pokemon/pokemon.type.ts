@@ -1442,3 +1442,15 @@ export const POKEMON = {
   REGIDRAGO: '레지드래고',
 } as const;
 export type POKEMON = typeof POKEMON[keyof typeof POKEMON];
+
+export type UtilString = {
+  getName: string;
+  getTypes: string;
+  getAbility: string;
+  getEvYield: string;
+  getEggGroups: string;
+  getGender: string;
+  getEggCycles: string;
+  getStats: string;
+  getTypeDefenses: string;
+};

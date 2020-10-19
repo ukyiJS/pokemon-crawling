@@ -7,34 +7,34 @@ import { Page } from 'puppeteer';
 export class PokemonsOfWiki extends CrawlingUtil {
   private loopCount: number;
 
-  constructor(loopCount = 893) {
-    super();
+  constructor(page: Page, loopCount = 893) {
+    super(page);
     this.loopCount = loopCount;
     this.initLoading(loopCount);
   }
 
-  public crawling = async (page: Page): Promise<IPokemonsOfWiki[]> => {
+  public crawling = async (): Promise<IPokemonsOfWiki[]> => {
     let currentCount = 0;
     let pokemons: IPokemonsOfWiki[] = [];
 
     const isLoop = currentCount < this.loopCount;
     const selector = '.infobox-pokemon';
     const nextClickSelector = 'table.w-100.mb-1 td:nth-child(3) td:nth-child(1) > a';
-    const navigationPromise = page.waitForNavigation();
+    const navigationPromise = this.page.waitForNavigation();
 
     do {
-      await page.waitForSelector(selector);
+      await this.page.waitForSelector(selector);
 
-      const pokemon = await page.evaluate(this.getPokemons);
+      const pokemon = await this.page.evaluate(this.getPokemons);
 
-      const isToggleTable = await page.$('#pokemonToggle table');
+      const isToggleTable = await this.page.$('#pokemonToggle table');
       const toggleSelector = isToggleTable ? '#pokemonToggle table td' : '#pokemonToggle td';
-      const forms = await page.$$eval(toggleSelector, (_, $el = Array.from(_)) =>
+      const forms = await this.page.$$eval(toggleSelector, (_, $el = Array.from(_)) =>
         $el.map($el => $el.textContent).filter((f, i) => i && f && !/거다이/g.test(f)),
       );
       if (forms.length) {
         pokemon.differentForm = (
-          await Promise.all(forms.map((_, i) => page.evaluate(this.getPokemons, i + 1, JSON.stringify(pokemon))))
+          await Promise.all(forms.map((_, i) => this.page.evaluate(this.getPokemons, i + 1, JSON.stringify(pokemon))))
         ).map((differentForm, i) => ({ ...differentForm, form: forms[i] }));
       }
 
@@ -46,8 +46,8 @@ export class PokemonsOfWiki extends CrawlingUtil {
 
       if (!isLoop) break;
 
-      await page.waitForSelector(nextClickSelector);
-      await page.click(nextClickSelector);
+      await this.page.waitForSelector(nextClickSelector);
+      await this.page.click(nextClickSelector);
       await navigationPromise;
     } while (isLoop);
 
