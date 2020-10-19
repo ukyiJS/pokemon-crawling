@@ -530,6 +530,8 @@ export const ABILITY = {
   PUNK_ROCK: '펑크록',
   NEUTRALIZING_GAS: '화학변화가스',
   CURIOUS_MEDICINE: '기묘한약',
+  BATTLE_BOND: '유대변화',
+  NEUROFORCE: '브레인포스',
 } as const;
 export type ABILITY = typeof ABILITY[keyof typeof ABILITY];
 
