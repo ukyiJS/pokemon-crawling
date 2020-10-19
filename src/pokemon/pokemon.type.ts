@@ -529,6 +529,7 @@ export const ABILITY = {
   POWER_SPOT: '파워스폿',
   PUNK_ROCK: '펑크록',
   NEUTRALIZING_GAS: '화학변화가스',
+  CURIOUS_MEDICINE: '기묘한약',
 } as const;
 export type ABILITY = typeof ABILITY[keyof typeof ABILITY];
 
