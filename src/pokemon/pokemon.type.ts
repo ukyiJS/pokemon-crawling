@@ -1373,7 +1373,7 @@ export const POKEMON = {
   INTELEON: '인텔리레온',
   SKWOVET: '탐리스',
   GREEDENT: '요씽리스',
-  ROOKIEDEE: '파라꼬',
+  ROOKIDEE: '파라꼬',
   CORVISQUIRE: '파크로우',
   CORVIKNIGHT: '아머까오',
   BLIPBUG: '두루지벌레',
