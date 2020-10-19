@@ -216,11 +216,11 @@ export class CrawlingUtil {
     try {
       [, result] = Object.entries(DIFFERENT_FORM).find(([key]) => {
         const regExp = new RegExp(convertKeyToRegExp(key), 'gi');
-        const _form = form.replace(/[^a-z]/gi, '');
+        const _form = form.replace(/[^a-z\s]/gi, '');
         return regExp.test(_form);
       })!;
     } catch (error) {
-      console.error('No Matching EggGroup Found', form);
+      Logger.error(`No Matching Form Found ${form}`, undefined, 'Error');
       throw error;
     }
     return result;
