@@ -17,9 +17,9 @@ export class DifferentForm {
         return /galar.*zen mode/;
       case EXCEPTIONAL_FORM_KEY.ASH_GRENINJA:
         return /ash-greninja/;
-      case EXCEPTIONAL_FORM_KEY.FIFTY_PERCENT:
+      case EXCEPTIONAL_FORM_KEY.FIFTY_PERCENT_FORM:
         return /50% forme/;
-      case EXCEPTIONAL_FORM_KEY.TEN_PERCENT:
+      case EXCEPTIONAL_FORM_KEY.TEN_PERCENT_FORM:
         return /10% forme/;
       case EXCEPTIONAL_FORM_KEY.PA_U_STYLE:
         return /pa'u style/;
