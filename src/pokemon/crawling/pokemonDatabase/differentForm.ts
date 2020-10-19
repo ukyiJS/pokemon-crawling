@@ -1,8 +1,8 @@
-import { IEvolvingTo, IPokemon } from '../pokemon.interface';
-import { DIFFERENT_FORM, EVOLUTION_TYPE, EXCEPTIONAL_FORM_KEY } from '../pokemon.type';
-import { PokemonCondition } from './pokemonCondition';
+import { IPokemon } from '@/pokemon/pokemon.interface';
+import { DIFFERENT_FORM, EVOLUTION_TYPE, EXCEPTIONAL_FORM_KEY } from '@/pokemon/pokemon.type';
+import { EvolutionCondition } from './evolutionCondition';
 
-export class PokemonForm {
+export class DifferentForm {
   evolutionType?: EVOLUTION_TYPE;
 
   private convertKeyToRegExp = (key: string): RegExp => {
@@ -42,14 +42,14 @@ export class PokemonForm {
     return key ? DIFFERENT_FORM[key as keyof typeof DIFFERENT_FORM] : null;
   };
 
-  private deepConvertForm = (chain: IPokemon): IPokemon | IEvolvingTo => ({
+  private deepConvertForm = <T extends IPokemon>(chain: T): T => ({
     ...chain,
     form: this.getForm(chain.form),
     differentForm: chain.differentForm.map(this.deepConvertForm),
     evolvingTo: chain.evolvingTo.map(to => {
-      const { convertConditionIntoKor } = new PokemonCondition();
+      const { convertConditionIntoKor } = new EvolutionCondition();
       const evolvingTo = this.evolutionType ? convertConditionIntoKor(to, this.evolutionType) : to;
-      return this.deepConvertForm(evolvingTo) as IEvolvingTo;
+      return this.deepConvertForm(evolvingTo);
     }),
   });
 

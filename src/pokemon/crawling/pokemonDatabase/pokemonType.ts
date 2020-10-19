@@ -1,7 +1,7 @@
-import { IEvolvingTo, IPokemon } from '../pokemon.interface';
-import { POKEMON_TYPE } from '../pokemon.type';
+import { IPokemon } from '@/pokemon/pokemon.interface';
+import { POKEMON_TYPE } from '@/pokemon/pokemon.type';
 
-export class PokemonTypes {
+export class PokemonType {
   public convertTypesIntoKor = (pokemon: IPokemon): IPokemon => {
     return this.deepConvertTypes(pokemon);
   };
@@ -14,10 +14,10 @@ export class PokemonTypes {
     });
   };
 
-  private deepConvertTypes = (pokemon: IPokemon): IPokemon | IEvolvingTo => ({
+  private deepConvertTypes = <T extends IPokemon>(pokemon: T): T => ({
     ...pokemon,
     types: this.getTypes(pokemon.types),
-    evolvingTo: pokemon.evolvingTo.map(this.deepConvertTypes) as IEvolvingTo[],
+    evolvingTo: pokemon.evolvingTo.map(this.deepConvertTypes),
     differentForm: pokemon.differentForm.map(this.deepConvertTypes),
   });
 }

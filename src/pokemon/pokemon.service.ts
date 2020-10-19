@@ -2,8 +2,9 @@ import { getBrowserAndPage, getJson, mergeJson } from '@/utils';
 import { Injectable } from '@nestjs/common';
 import { existsSync, readdirSync } from 'fs';
 import { join } from 'path';
-import { EvolutionChain, initCrawlingUtils, Pokedex } from './crawling';
-import { IEvolvingTo, IPokemon } from './pokemon.interface';
+import { EvolutionChain, Pokedex, PokemonsOfDatabase, PokemonsOfWiki } from './crawling';
+import { initCrawlingUtils } from './crawling/utils';
+import { IEvolvingTo, IPokemon, IPokemonsOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
 import { EVOLUTION_TYPE } from './pokemon.type';
 
 @Injectable()
@@ -52,6 +53,18 @@ export class PokemonService {
 
   public async getEvolutionChainByOtherCondition(): Promise<IPokemon[]> {
     return this.getEvolutionChains(EVOLUTION_TYPE.STATUS);
+  }
+
+  public async getPokemonsOfWiki(): Promise<IPokemonsOfWiki[]> {
+    const url = 'https://pokemon.fandom.com/ko/wiki/이상해씨';
+    const selector = '.infobox-pokemon';
+    const { browser, page } = await getBrowserAndPage(url, selector);
+    const { crawling } = new PokemonsOfWiki();
+
+    const pokemons = await crawling(page);
+    await browser.close();
+
+    return pokemons;
   }
 
   public mergeEvolutionChains(): IPokemon[] {
@@ -105,4 +118,16 @@ export class PokemonService {
       return [...acc, { ...pokemon, evolvingTo }];
     }, []);
   }
+
+  public getPokemonsOfDatabase = async (): Promise<IPokemonsOfDatabase[]> => {
+    const url = 'https://pokemondb.net/pokedex/bulbasaur';
+    const selector = '#main';
+    const { browser, page } = await getBrowserAndPage(url, selector);
+    const { crawling } = new PokemonsOfDatabase(page);
+
+    const pokemons = await crawling();
+    await browser.close();
+
+    return pokemons;
+  };
 }

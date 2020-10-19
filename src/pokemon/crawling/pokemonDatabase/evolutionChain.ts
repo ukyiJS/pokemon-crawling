@@ -1,6 +1,6 @@
-import { EVOLUTION_TYPE } from '../pokemon.type';
-import { IPokemon, IWindow } from '../pokemon.interface';
-import { PokemonForm } from './pokemonForm';
+import { IPokemon, IWindow } from '@/pokemon/pokemon.interface';
+import { EVOLUTION_TYPE } from '@/pokemon/pokemon.type';
+import { DifferentForm } from './differentForm';
 
 declare let window: IWindow;
 
@@ -31,7 +31,7 @@ export class EvolutionChain {
     }, []);
 
   public convertIntoKor = (evolutionChains: IPokemon[]): IPokemon[] => {
-    const { convertFormIntoKor } = new PokemonForm();
+    const { convertFormIntoKor } = new DifferentForm();
     return evolutionChains.map(chain => convertFormIntoKor(chain, this.evolutionType));
   };
 }

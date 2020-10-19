@@ -1,7 +1,36 @@
+import { LoadingBar, LoadingType, STDOUT } from '@/utils';
+import { blueBright, redBright, yellowBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { IEvolvingTo, IPokemon, IStats, IWindow } from '../pokemon.interface';
 
 declare let window: IWindow;
+
+type Loading = { update: (curser: number) => void };
+
+export class CrawlingUtil {
+  loadingBar: LoadingBar;
+
+  loadingSize: number;
+
+  protected getPrettyJson = <T>(json: T): string =>
+    `${JSON.stringify(json)}`
+      .replace(/("(?=n|e|i|t|s|c|a|h|f|w|g|r|d|v)(\w)+")/g, (_, m1) => m1.replace(/"/g, ''))
+      .replace(/([:,{](?!\/))/g, '$1 ')
+      .replace(/([}])/g, ' $1')
+      .replace(/([[\]{}])/g, blueBright('$1'))
+      .replace(/(\w+:(?!\/))/g, yellowBright('$1'))
+      .replace(/(null)/g, redBright('$1'));
+
+  protected initLoading = (size: number, type: LoadingType = STDOUT): void => {
+    this.loadingSize = size;
+    this.loadingBar = new LoadingBar(type);
+  };
+
+  protected get loading(): Loading {
+    if (!this.loadingBar) throw redBright('loading has not been initialized.');
+    return { update: (curser: number): void => this.loadingBar.update((curser / this.loadingSize) * 100) };
+  }
+}
 
 export const initCrawlingUtils = async (page: Page): Promise<void> => {
   await page.evaluate(() => {

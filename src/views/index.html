@@ -32,6 +32,12 @@
         <button id="pokedex" data-url="/pokemon/pokedex" class="btn color-8">
           pokedex
         </button>
+        <button id="pokemonsOfWiki" data-url="/pokemon/pokemonsOfWiki" class="btn color-8">
+          pokemonsOfWiki
+        </button>
+        <button id="pokemonsOfDatabase" data-url="/pokemon/pokemonsOfDatabase" class="btn color-8">
+          pokemonsOfDatabase
+        </button>
         <button id="mergedEvolutionChains" data-url="/pokemon/mergedEvolutionChains" class="btn color-7">
           mergedEvolutionChains
         </button>
@@ -48,9 +54,10 @@
       (() => {
         let isLoading = false;
         const { interceptors, get } = axios;
+
         const toggleDisable = flag => $buttons.forEach(el => (el.disabled = flag));
         const $get = url =>
-          get(url)
+          get(url, { timeout: 3000000 })
             .then(({ data }) => data)
             .catch(error => {
               toggleDisable(false);
@@ -58,7 +65,18 @@
             });
 
         const $buttons = Array.from(document.querySelector('.buttons').children);
-        $buttons.forEach(el => el.addEventListener('click', e => $get(e.target.dataset.url)));
+        $buttons.forEach(el =>
+          el.addEventListener('click', async e => {
+            let result = {};
+            try {
+              result = await $get(e.target.dataset.url);
+            } catch (error) {
+              console.warn(error.message, error);
+            } finally {
+              console.log('### result', result);
+            }
+          }),
+        );
 
         let reqTime;
         const toggleLoading = interceptor => {
