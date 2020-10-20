@@ -140,11 +140,11 @@ export class CrawlingUtil {
     }}`;
 
     const getGender = `${function(gender: string): IGenderRatio[] {
-      const match = gender.match(/(\d*.\d*)(?=%)/g);
+      const match = gender.match(/(\d.*)(?=%).*(?<=,\s)(\d.*)(?=%)/);
       const genderless = [{ name: '무성', ratio: 100 }];
       if (!match) return genderless;
 
-      const [male, female] = match;
+      const [, male, female] = match;
       return [
         { name: '수컷', ratio: +male },
         { name: '암컷', ratio: +female },
@@ -152,8 +152,11 @@ export class CrawlingUtil {
     }}`;
 
     const getEggCycles = `${function(eggCycle: string) {
-      const [cycle, step] = eggCycle.replace(/(?:\(|—|,| steps\))/g, '').split(' ');
-      return { cycle: Number(cycle), step };
+      const match = eggCycle.match(/(\d.*)(?:\s\()(\d.*)(?:\ssteps)/);
+      if (!match) return null;
+
+      const [, cycle, step] = match;
+      return { cycle: +cycle, step };
     }}`;
 
     const getStats = `${function(stats: string[], STAT: STAT) {
