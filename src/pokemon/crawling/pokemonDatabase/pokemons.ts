@@ -1,19 +1,16 @@
 import { CrawlingUtil } from '@/pokemon/crawling/utils';
-import { IEggCycle, IGenderRatio, IPokemonsOfDatabase, IStats, ITypeDefense } from '@/pokemon/pokemon.interface';
+import { IEggCycle, IGender, IPokemonsOfDatabase, IStats, ITypeDefense } from '@/pokemon/pokemon.interface';
 import { ABILITY, EGG_GROUP, POKEMON, POKEMON_TYPE, STAT, UtilString } from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
 
 export class PokemonsOfDatabase extends CrawlingUtil {
-  private loopCount: number;
+  private loopCount = 893;
 
-  private promiseLocalStorage: Promise<void>;
-
-  constructor(page: Page, loopCount = 893) {
+  constructor(page: Page) {
     super(page);
-    this.loopCount = loopCount;
-    this.initLoading(loopCount);
+    this.initLoading(this.loopCount);
 
     this.promiseLocalStorage = this.initLocalStorage([
       { gdpr: '0' },
@@ -83,7 +80,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     const getEvYield = (evYield: string): string => parseFunction(util.getEvYield)?.call(null, evYield, STAT);
     const getEggGroups = (eegGroups: string): EGG_GROUP[] =>
       parseFunction(util.getEggGroups)?.call(null, eegGroups, EGG_GROUP);
-    const getGender = (gender: string): IGenderRatio[] => parseFunction(util.getGender)?.call(null, gender);
+    const getGender = (gender: string): IGender[] => parseFunction(util.getGender)?.call(null, gender);
     const getEggCycles = (eggCycles: string): IEggCycle => parseFunction(util.getEggCycles)?.call(null, eggCycles);
     const getStats = (stats: string[]): IStats[] => parseFunction(util.getStats)?.call(null, stats, STAT);
     const getTypeDefenses = (typeDefenses: string[]): ITypeDefense[] =>
