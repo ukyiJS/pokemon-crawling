@@ -83,7 +83,7 @@ export class PokemonsOfWiki extends CrawlingUtil {
       $height,
       $weight,
       $captureRate,
-      $genderRatio,
+      $gender,
     ] = $body;
 
     const types = getTexts($types.querySelectorAll('a span'));
@@ -123,8 +123,8 @@ export class PokemonsOfWiki extends CrawlingUtil {
 
     const captureRate = +getText($captureRate);
     const genderNames = ['수컷', '암컷'];
-    const genderText = getText($genderRatio).replace(/[:ㄱ-힣%]/g, '');
-    const genderRatio = genderText
+    const genderText = getText($gender).replace(/[:ㄱ-힣%]/g, '');
+    const gender = genderText
       ? genderText.split(' ').map((ratio, i) => ({ name: genderNames[i], ratio: +ratio }))
       : [{ name: '무성', ratio: 100 }];
 
@@ -142,7 +142,7 @@ export class PokemonsOfWiki extends CrawlingUtil {
       height,
       weight,
       captureRate,
-      genderRatio,
+      gender,
       form: null,
       differentForm: [],
     };
