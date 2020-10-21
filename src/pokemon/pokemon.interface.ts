@@ -1,14 +1,3 @@
-export interface IPokemon {
-  no?: string;
-  name: string;
-  image: string;
-  form: string | null;
-  types?: string[];
-  evolvingTo: IEvolvingTo[];
-  differentForm: IPokemon[];
-  stats?: IStats[];
-}
-
 export interface IEvolvingTo extends IPokemon {
   type: string;
   level: string | null;
