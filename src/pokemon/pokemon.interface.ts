@@ -82,3 +82,17 @@ export interface IPokemonsOfDatabase {
   form: string | null;
   differentForm: IPokemonsOfDatabase[];
 }
+
+export interface IEvolvingTo extends IEvolution {
+  type: string;
+  condition: string | null;
+  additionalCondition: string | null;
+}
+
+export interface IEvolution {
+  no: string;
+  name: string;
+  image: string;
+  form: string | null;
+  evolvingTo: IEvolvingTo[];
+}
