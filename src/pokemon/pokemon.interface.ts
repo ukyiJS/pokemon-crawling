@@ -1,19 +1,3 @@
-import { POKEMON_TYPE, STAT } from './pokemon.type';
-
-export interface IWindow extends Window {
-  [key: string]: any;
-  getText: ($element: Element) => string;
-  getTexts: ($elements: NodeListOf<Element> | Element[]) => string[];
-  getPokemonInfo: (element: Element) => IPokemon;
-  getEvolvingTo: (element: Element, to: IPokemon, type: string) => IEvolvingTo;
-  addFromEvolvingTo: (acc: IPokemon[], index: number, chain: IPokemon) => IPokemon[];
-  addMultipleEvolvingTo: (acc: IPokemon[], index: number, evolvingTo: IEvolvingTo) => IPokemon[];
-  addFromDifferentForm: (acc: IPokemon[], index: number, chain: IPokemon) => IPokemon[];
-  getStats: ($element: Element) => IStats[];
-  STAT: typeof STAT;
-  POKEMON_TYPE: typeof POKEMON_TYPE;
-}
-
 export interface IPokemon {
   no?: string;
   name: string;
