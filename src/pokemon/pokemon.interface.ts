@@ -1,9 +1,3 @@
-export interface IEvolvingTo extends IPokemon {
-  type: string;
-  level: string | null;
-  condition: string | null;
-}
-
 export interface IStats {
   name: string;
   value: number;
