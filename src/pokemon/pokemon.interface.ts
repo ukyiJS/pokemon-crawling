@@ -41,7 +41,7 @@ export interface IColor {
   code: string;
 }
 
-export interface IGenderRatio {
+export interface IGender {
   name: string;
   ratio: number;
 }
@@ -60,7 +60,7 @@ export interface IPokemonsOfWiki {
   height: string;
   weight: string;
   captureRate: number;
-  genderRatio: IGenderRatio[];
+  gender: IGender[];
   form: string | null;
   megaStone?: string;
   differentForm: IPokemonsOfWiki[];
@@ -110,7 +110,7 @@ export interface IPokemonsOfDatabase {
   exp: number;
   moves: IMoves;
   eegGroups: string[];
-  gender: IGenderRatio[];
+  gender: IGender[];
   eggCycles: IEggCycle;
   form: string | null;
   differentForm: IPokemonsOfDatabase[];
