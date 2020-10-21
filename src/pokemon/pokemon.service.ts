@@ -1,7 +1,6 @@
 import { getBrowserAndPage } from '@/utils';
 import { Injectable } from '@nestjs/common';
-import { PokemonsOfDatabase, PokemonsOfWiki } from './crawling';
-import { Evolution } from './crawling/pokemonDatabase/evolution';
+import { Evolution, PokemonsOfDatabase, PokemonsOfWiki } from './crawling';
 import { IEvolution, IPokemonsOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
 import { EVOLUTION_TYPE } from './pokemon.type';
 
