@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import { blueBright, redBright, yellowBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { ObjectLiteral } from 'typeorm';
-import { IGender } from '../pokemon.interface';
+import { IEggCycle, IGender, IStats, ITypeDefense } from '../pokemon.interface';
 import {
   ABILITY,
   DIFFERENT_FORM,
@@ -152,7 +152,7 @@ export class CrawlingUtil {
       ];
     }}`;
 
-    const getEggCycles = `${function(eggCycle: string) {
+    const getEggCycles = `${function(eggCycle: string): IEggCycle | null {
       const match = eggCycle.match(/(\d.*)(?:\s\()(\d.*)(?:\ssteps)/);
       if (!match) return null;
 
@@ -160,7 +160,7 @@ export class CrawlingUtil {
       return { cycle: +cycle, step };
     }}`;
 
-    const getStats = `${function(stats: string[], STAT: STAT) {
+    const getStats = `${function(stats: string[], STAT: STAT): IStats[] {
       return stats
         .filter((_, i) => !(i % 4))
         .map((value, i) => ({
@@ -169,7 +169,7 @@ export class CrawlingUtil {
         }));
     }}`;
 
-    const getTypeDefenses = `${function(typeDefenses: string[], POKEMON_TYPE: POKEMON_TYPE) {
+    const getTypeDefenses = `${function(typeDefenses: string[], POKEMON_TYPE: POKEMON_TYPE): ITypeDefense[] {
       return typeDefenses.map((typeDefense, i) => ({
         type: Object.values(POKEMON_TYPE)[i],
         damage: +(typeDefense || '1').replace(/(½)|(¼)/g, (_, g1, g2) => (g1 && '0.5') || (g2 && '0.25')),
