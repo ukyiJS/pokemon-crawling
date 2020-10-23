@@ -176,6 +176,41 @@ export class CrawlingUtil {
       }));
     }}`;
 
+    const getForm = `${function(form: string, DIFFERENT_FORM: DIFFERENT_FORM): DIFFERENT_FORM {
+      const convertKeyToRegExp = (key: string): RegExp => {
+        switch (key) {
+          case 'MEGA_X':
+            return /mega.*x$/;
+          case 'MEGA_Y':
+            return /mega.*y$/;
+          case 'GALARIAN_STANDARD_MODE':
+            return /galar.*standardmode/;
+          case 'GALARIAN_ZEN_MODE':
+            return /galar.*zenmode/;
+          case 'FIFTY_PERCENT_FORM':
+            return /50forme/;
+          case 'TEN_PERCENT_FORM':
+            return /10forme/;
+          case 'HUNGRY_MODE':
+            return /hangrymode|hungrymode/;
+          default:
+            return new RegExp(key.replace(/[^a-z]/gi, ''));
+        }
+      };
+      let result: string;
+      try {
+        [, result] = Object.entries(DIFFERENT_FORM).find(([key]) => {
+          const regExp = new RegExp(convertKeyToRegExp(key), 'gi');
+          const _form = form.replace(/[^a-z0-9]/gi, '');
+          return regExp.test(_form);
+        })!;
+      } catch (error) {
+        Logger.error(`No Matching Form Found ${form}`, undefined, 'Error');
+        throw error;
+      }
+      return result as DIFFERENT_FORM;
+    }}`;
+
     return {
       getName,
       getTypes,
@@ -186,6 +221,7 @@ export class CrawlingUtil {
       getEggCycles,
       getStats,
       getTypeDefenses,
+      getForm,
     };
   };
 
