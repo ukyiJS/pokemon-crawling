@@ -17,7 +17,7 @@ export class Evolution extends CrawlingUtil {
   public crawling = async (): Promise<IEvolution[]> => {
     await this.promiseLocalStorage;
 
-    const evolutions = await this.page.evaluate(this.getEvolution);
+    const evolutions = await this.page.evaluate(this.getEvolution, this.evolutionType);
 
     return evolutions;
   };
@@ -51,7 +51,7 @@ export class Evolution extends CrawlingUtil {
 
     const $trList = array(document.querySelectorAll('#evolution > tbody > tr'));
 
-    return $trList.reduce<IEvolution[]>((acc, $tr, i) => {
+    return $trList.reduce<IEvolution[]>((acc, $tr) => {
       const $pokemon = array($tr.querySelectorAll('td:nth-child(-2n + 3)'));
       const $condition = array($tr.querySelectorAll('td:nth-child(n + 4)'));
 
@@ -67,9 +67,9 @@ export class Evolution extends CrawlingUtil {
       const evolvingTo: IEvolvingTo[] = [{ ...to, type, condition, additionalCondition }];
       const pokemon = { ...from, evolvingTo };
 
-      const isTwiceEvolution = acc[i - 1]?.evolvingTo?.some(to => to.no === from.no);
-      if (isTwiceEvolution) {
-        const previousPokemon = acc[i - 1];
+      const twiceEvolutionIndex = acc.findIndex(e => e.evolvingTo.some(to => to.no === from.no));
+      if (twiceEvolutionIndex > -1) {
+        const previousPokemon = acc[twiceEvolutionIndex];
         previousPokemon.evolvingTo = previousPokemon.evolvingTo.map(to => ({ ...to, evolvingTo }));
         return acc;
       }
