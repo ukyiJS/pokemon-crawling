@@ -31,6 +31,21 @@ export class Evolution extends CrawlingUtil {
         return text ? [...acc, text] : acc;
       }, []);
 
+    const getItem = <T>(key: string): T => JSON.parse(localStorage.getItem(key) ?? '{}');
+    const parseFunction = (str: string) => {
+      const funcReg = /function *\(([^()]*)\)[ \n\t]*{(.*)}/gim;
+      const match = funcReg.exec(str.replace(/\n/g, ' '));
+      if (!match) return null;
+
+      const [, func, ...funcs] = match;
+      return new Function(...[...func.split(','), ...funcs]);
+    };
+
+    const POKEMON = getItem<POKEMON>('POKEMON');
+    const util = getItem<UtilString>('util');
+
+    const getName = (name: string): POKEMON => parseFunction(util.getName)?.call(null, name, POKEMON);
+
     const $trList = array(document.querySelectorAll('#evolution > tbody > tr'));
 
     return $trList.reduce<IEvolution[]>((acc, $tr, i) => {
@@ -41,7 +56,7 @@ export class Evolution extends CrawlingUtil {
         const image = $td.querySelector('img')?.src ?? '';
         const [, no, name] = $td.querySelector('a')?.title.match(/(\d+).(\w.*)/) ?? [];
         const form = $td.querySelector('small')?.textContent ?? null;
-        return { no, name: name.replace(/\s/g, ''), image, form, evolvingTo: [] };
+        return { no, name: getName(name), image, form, evolvingTo: [] };
       });
 
       const [condition, additionalCondition = null] = getTexts($condition);
