@@ -1,6 +1,6 @@
 import { CrawlingUtil } from '@/pokemon/crawling/utils';
 import { IEvolution, IEvolvingTo } from '@/pokemon/pokemon.interface';
-import { EVOLUTION_TYPE } from '@/pokemon/pokemon.type';
+import { EVOLUTION_TYPE, POKEMON, UtilString } from '@/pokemon/pokemon.type';
 import { Page } from 'puppeteer';
 
 export class Evolution extends CrawlingUtil {
@@ -15,7 +15,10 @@ export class Evolution extends CrawlingUtil {
   }
 
   public crawling = async (): Promise<IEvolution[]> => {
+    await this.promiseLocalStorage;
+
     const evolutions = await this.page.evaluate(this.getEvolution);
+
     return evolutions;
   };
 
