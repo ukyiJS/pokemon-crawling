@@ -11,7 +11,7 @@ export class Evolution extends CrawlingUtil {
     this.evolutionType = evolutionType;
     // this.initLoading();
 
-    this.promiseLocalStorage = this.initLocalStorage([{ util: this.utilString() }]);
+    this.promiseLocalStorage = this.initLocalStorage([{ POKEMON }, { DIFFERENT_FORM }, { util: this.utilString() }]);
   }
 
   public crawling = async (): Promise<IEvolution[]> => {
@@ -42,6 +42,7 @@ export class Evolution extends CrawlingUtil {
     };
 
     const POKEMON = getItem<POKEMON>('POKEMON');
+    const DIFFERENT_FORM = getItem<DIFFERENT_FORM>('DIFFERENT_FORM');
     const util = getItem<UtilString>('util');
 
     const getName = (name: string): POKEMON => parseFunction(util.getName)?.call(null, name, POKEMON);
@@ -55,7 +56,7 @@ export class Evolution extends CrawlingUtil {
       const $condition = array($tr.querySelectorAll('td:nth-child(n + 4)'));
 
       const [from, to] = $pokemon.map<IEvolution>($td => {
-        const image = $td.querySelector('img')?.src ?? '';
+        const image = $td.querySelector<HTMLSpanElement>('.icon-pkmn')?.dataset.src ?? '';
         const [, no, name] = $td.querySelector('a')?.title.match(/(\d+).(\w.*)/) ?? [];
         const form = $td.querySelector('small')?.textContent ?? null;
         return { no, name: getName(name), image, form: getForm(form), evolvingTo: [] };
