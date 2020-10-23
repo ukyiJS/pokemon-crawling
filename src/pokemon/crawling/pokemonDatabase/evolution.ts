@@ -1,6 +1,6 @@
 import { CrawlingUtil } from '@/pokemon/crawling/utils';
 import { IEvolution, IEvolvingTo } from '@/pokemon/pokemon.interface';
-import { EVOLUTION_TYPE, POKEMON, UtilString } from '@/pokemon/pokemon.type';
+import { DIFFERENT_FORM, EVOLUTION_TYPE, POKEMON, UtilString } from '@/pokemon/pokemon.type';
 import { Page } from 'puppeteer';
 
 export class Evolution extends CrawlingUtil {
@@ -45,6 +45,8 @@ export class Evolution extends CrawlingUtil {
     const util = getItem<UtilString>('util');
 
     const getName = (name: string): POKEMON => parseFunction(util.getName)?.call(null, name, POKEMON);
+    const getForm = (form: string | null): DIFFERENT_FORM =>
+      parseFunction(util.getForm)?.call(null, form, DIFFERENT_FORM);
 
     const $trList = array(document.querySelectorAll('#evolution > tbody > tr'));
 
@@ -56,7 +58,7 @@ export class Evolution extends CrawlingUtil {
         const image = $td.querySelector('img')?.src ?? '';
         const [, no, name] = $td.querySelector('a')?.title.match(/(\d+).(\w.*)/) ?? [];
         const form = $td.querySelector('small')?.textContent ?? null;
-        return { no, name: getName(name), image, form, evolvingTo: [] };
+        return { no, name: getName(name), image, form: getForm(form), evolvingTo: [] };
       });
 
       const [condition, additionalCondition = null] = getTexts($condition);
