@@ -176,7 +176,9 @@ export class CrawlingUtil {
       }));
     }}`;
 
-    const getForm = `${function(form: string, DIFFERENT_FORM: DIFFERENT_FORM): DIFFERENT_FORM {
+    const getForm = `${function(form: string | null, DIFFERENT_FORM: DIFFERENT_FORM): DIFFERENT_FORM | null {
+      if (!form) return null;
+
       const convertKeyToRegExp = (key: string): RegExp => {
         switch (key) {
           case 'MEGA_X':
