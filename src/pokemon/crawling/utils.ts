@@ -63,6 +63,9 @@ export class CrawlingUtil {
 
   protected utilString = (): UtilString => {
     const getName = `${function(name: string, POKEMON: POKEMON): POKEMON {
+      const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
+      if (isEmpty(POKEMON)) throw new Error('getName POKEMON Does Not Exist!');
+
       let result: string;
       try {
         const _name = name
@@ -78,6 +81,9 @@ export class CrawlingUtil {
     }}`;
 
     const getTypes = `${function(types: string[], POKEMON_TYPE: POKEMON_TYPE): POKEMON_TYPE[] | null {
+      const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
+      if (isEmpty(POKEMON_TYPE)) throw new Error('getTypes POKEMON_TYPE Does Not Exist!');
+
       return types.map(type => {
         let result: string;
         try {
@@ -91,6 +97,9 @@ export class CrawlingUtil {
     }}`;
 
     const getAbility = `${function(ability: string, ABILITY: ABILITY): ABILITY | null {
+      const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
+      if (isEmpty(ABILITY)) throw new Error('getAbility ABILITY Does Not Exist!');
+
       if (!ability) return null;
 
       let result: string;
@@ -106,6 +115,9 @@ export class CrawlingUtil {
     }}`;
 
     const getEvYield = `${function(evYield: string, STAT: STAT): string | null {
+      const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
+      if (isEmpty(STAT)) throw new Error('getEvYield STAT Does Not Exist!');
+
       const _evYield = evYield.replace(/—/g, '');
       if (!_evYield) return null;
 
@@ -122,6 +134,9 @@ export class CrawlingUtil {
     }}`;
 
     const getEggGroups = `${function(eggGroups: string, EGG_GROUP: EGG_GROUP): EGG_GROUP[] {
+      const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
+      if (isEmpty(EGG_GROUP)) throw new Error('getEggGroups EGG_GROUP Does Not Exist!');
+
       const _eggGroups = eggGroups.replace(/[^a-z0-9-,]/gi, '');
       if (!_eggGroups) return [];
 
@@ -161,6 +176,9 @@ export class CrawlingUtil {
     }}`;
 
     const getStats = `${function(stats: string[], STAT: STAT): IStats[] {
+      const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
+      if (isEmpty(STAT)) throw new Error('getStats param STAT Does Not Exist!');
+
       return stats
         .filter((_, i) => !(i % 4))
         .map((value, i) => ({
@@ -170,6 +188,9 @@ export class CrawlingUtil {
     }}`;
 
     const getTypeDefenses = `${function(typeDefenses: string[], POKEMON_TYPE: POKEMON_TYPE): ITypeDefense[] {
+      const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
+      if (isEmpty(POKEMON_TYPE)) throw new Error('getTypeDefenses param POKEMON_TYPE Does Not Exist!');
+
       return typeDefenses.map((typeDefense, i) => ({
         type: Object.values(POKEMON_TYPE)[i],
         damage: +(typeDefense || '1').replace(/(½)|(¼)/g, (_, g1, g2) => (g1 && '0.5') || (g2 && '0.25')),
@@ -177,6 +198,9 @@ export class CrawlingUtil {
     }}`;
 
     const getForm = `${function(form: string | null, DIFFERENT_FORM: DIFFERENT_FORM): DIFFERENT_FORM | null {
+      const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
+      if (isEmpty(DIFFERENT_FORM)) throw new Error('getForm param DIFFERENT_FORM Does Not Exist!');
+
       if (!form) return null;
 
       const convertKeyToRegExp = (key: string): RegExp => {
