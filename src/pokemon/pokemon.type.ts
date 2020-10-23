@@ -1462,4 +1462,5 @@ export type UtilString = {
   getEggCycles: string;
   getStats: string;
   getTypeDefenses: string;
+  getForm: string;
 };
