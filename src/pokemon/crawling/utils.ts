@@ -7,8 +7,12 @@ import { ObjectLiteral } from 'typeorm';
 import { IEggCycle, IGender, IStats, ITypeDefense } from '../pokemon.interface';
 import {
   ABILITY,
+  ADDITIONAL_CONDITION,
+  CONDITIONS,
   DIFFERENT_FORM,
   EGG_GROUP,
+  EVOLUTION_TYPE,
+  EXCEPTIONAL_CONDITION,
   EXCEPTIONAL_FORM_KEY,
   POKEMON,
   POKEMON_TYPE,
@@ -231,10 +235,60 @@ export class CrawlingUtil {
           return regExp.test(_form);
         })!;
       } catch (error) {
-        Logger.error(`No Matching Form Found ${form}`, undefined, 'Error');
+        console.error(`No Matching Form Found ${form}`, undefined, 'Error');
         throw error;
       }
       return result as DIFFERENT_FORM;
+    }}`;
+
+    const getCondition = `${function(
+      conditions: (string | null)[],
+      EVOLUTION_TYPE: EVOLUTION_TYPE,
+      CONDITIONS: CONDITIONS,
+      ADDITIONAL_CONDITION: ADDITIONAL_CONDITION,
+      EXCEPTIONAL_CONDITION: EXCEPTIONAL_CONDITION,
+    ): (string | null)[] {
+      const findCondition = (condition: string | null, conditionType: CONDITIONS): string | null => {
+        if (!condition) return null;
+
+        const _condition = condition.replace(/\s/g, '');
+        const [, result] = Object.entries(conditionType).find(([key]) => {
+          const _key = key.replace(/_/g, '');
+          return new RegExp(_key, 'gi').test(_condition);
+        })!;
+        return result;
+      };
+
+      const [condition1, condition2] = conditions.filter(c => {
+        return !EXCEPTIONAL_CONDITION.some(e => c && new RegExp(e, 'gi').test(c));
+      });
+      const [convertedCondition1, convertedCondition2 = null] =
+        EVOLUTION_TYPE === 'level'
+          ? [
+              condition1,
+              condition2
+                ?.split(', ')
+                .reduce((acc, c, i) => `${acc} ${findCondition(c, i ? ADDITIONAL_CONDITION : CONDITIONS)}`, ''),
+            ]
+          : [findCondition(condition1, CONDITIONS), findCondition(condition2, ADDITIONAL_CONDITION)];
+
+      try {
+        switch (EVOLUTION_TYPE) {
+          case 'level':
+            return [condition1 ? `레벨 ${condition1}` : null, convertedCondition2];
+          case 'stone':
+            return [`${convertedCondition1} 사용`, convertedCondition2];
+          case 'trade':
+            return [`${convertedCondition1 ?? ''} 통신교환`.trim(), convertedCondition2];
+          case 'friendship':
+            return [`친밀도가 220이상일 때 ${convertedCondition1} 레벨업`, convertedCondition2];
+          default:
+            return [convertedCondition1, convertedCondition2];
+        }
+      } catch (error) {
+        console.error(`No Matching ${EVOLUTION_TYPE} conditions Found ${conditions}`);
+        throw error;
+      }
     }}`;
 
     return {
@@ -248,6 +302,7 @@ export class CrawlingUtil {
       getStats,
       getTypeDefenses,
       getForm,
+      getCondition,
     };
   };
 

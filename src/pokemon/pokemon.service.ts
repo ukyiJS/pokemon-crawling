@@ -1,5 +1,5 @@
 import { getBrowserAndPage } from '@/utils';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Evolution, PokemonsOfDatabase, PokemonsOfWiki } from './crawling';
 import { IEvolution, IPokemonsOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
 import { EVOLUTION_TYPE } from './pokemon.type';
@@ -32,13 +32,16 @@ export class PokemonService {
 
   public getEvolutionOfDatabase = async (): Promise<IEvolution[]> => {
     const url = (type: EVOLUTION_TYPE) => `https://pokemondb.net/evolution/${type}`;
-    const selector = '#evolution > tbody > tr';
-    const browserAndPages = Object.values(EVOLUTION_TYPE).map(type => getBrowserAndPage(url(type), selector));
-
+    const selector = '#evolution';
     let evolutions: IEvolution[][] = [];
-    for (const { browser, page } of await Promise.all(browserAndPages)) {
-      const [evolutionType] = page.url().match(/(?<=\/)(\w+)$/)! as [EVOLUTION_TYPE];
+    for (const type of Object.values(EVOLUTION_TYPE)) {
+      if (type === 'none') break;
 
+      const { browser, page } = await getBrowserAndPage(url(type), selector);
+      const match = page.url().match(/(?<=\/)\w+$/);
+      if (!match) return [];
+
+      const evolutionType = match[0] as EVOLUTION_TYPE;
       const { crawling } = new Evolution(page, evolutionType);
       const pokemons = await crawling();
       evolutions = [...evolutions, pokemons];

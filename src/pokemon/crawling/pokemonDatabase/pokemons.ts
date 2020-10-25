@@ -88,7 +88,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
 
     const array = <T>($el: Iterable<T>): T[] => Array.from($el);
     const children = ($el: Element | null) => ($el ? Array.from($el.children) : []);
-    const getText = ($el: Element | null): string => $el?.textContent?.trim() ?? '';
+    const getText = ($el: Element | null): string => $el?.textContent?.trim().replace(/é/gi, 'e') ?? '';
     const getTexts = ($el: NodeListOf<Element> | Element[]): string[] =>
       Array.from($el).reduce<string[]>((acc, $el, _, __, text = getText($el)) => (text ? [...acc, text] : acc), []);
 
@@ -142,7 +142,6 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       types: getTypes(raw.types),
       abilities: raw.abilities.map(getAbility),
       hiddenAbility: getAbility(raw.hiddenAbility),
-      species: raw.species.replace(/é/g, 'e'),
       height: raw.height.match(/(\w.*)(?=\s\()/)?.[1] ?? null,
       weight: raw.weight.match(/(\w.*)(?=\s\()/)?.[1] ?? null,
       evYield: getEvYield(raw.evYield),
