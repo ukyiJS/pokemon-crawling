@@ -12,4 +12,9 @@ describe('PokemonService', () => {
 
     service = module.get<PokemonService>(PokemonService);
   });
+
+  it('Evolution Test', async () => {
+    const evolutions = await service.getEvolutionOfDatabase();
+    expect(evolutions).not.toBeUndefined();
+  });
 });
