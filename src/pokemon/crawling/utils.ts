@@ -251,31 +251,31 @@ export class CrawlingUtil {
       const findCondition = (condition: string | null, conditionType: CONDITIONS): string | null => {
         if (!condition) return null;
 
-        const _condition = condition.replace(/\s/g, '');
-        const [, result] = Object.entries(conditionType).find(([key]) => {
-          const _key = key.replace(/_/g, '');
-          return new RegExp(_key, 'gi').test(_condition);
+        const blankRemovedCondition = condition.replace(/\s/g, '');
+        const [, convertedCondition] = Object.entries(conditionType).find(([key]) => {
+          return new RegExp(key.replace(/_/g, ''), 'gi').test(blankRemovedCondition);
         })!;
-        return result;
+        return convertedCondition;
       };
 
-      const [condition1, condition2] = conditions.filter(c => {
-        return !EXCEPTIONAL_CONDITION.some(e => c && new RegExp(e, 'gi').test(c));
-      });
-      const [convertedCondition1, convertedCondition2 = null] =
-        EVOLUTION_TYPE === 'level'
-          ? [
-              condition1,
-              condition2
-                ?.split(', ')
-                .reduce((acc, c, i) => `${acc} ${findCondition(c, i ? ADDITIONAL_CONDITION : CONDITIONS)}`, ''),
-            ]
-          : [findCondition(condition1, CONDITIONS), findCondition(condition2, ADDITIONAL_CONDITION)];
-
       try {
+        const hasExceptionalCondition = (condition: string | null): boolean =>
+          EXCEPTIONAL_CONDITION.some(e => condition && new RegExp(e, 'gi').test(condition));
+        const convertToConditions = ([condition1, condition2]: (string | null)[]): (string | null)[] => {
+          if (EVOLUTION_TYPE === 'level') {
+            const convertedCondition = condition2
+              ?.split(', ')
+              .reduce((acc, c, i) => `${acc} ${findCondition(c, i ? ADDITIONAL_CONDITION : CONDITIONS)}`, '');
+            return [condition1, convertedCondition ?? null];
+          }
+          return [findCondition(condition1, CONDITIONS), findCondition(condition2, ADDITIONAL_CONDITION)];
+        };
+        const filteredConditions = conditions.filter(c => !hasExceptionalCondition(c));
+        const [convertedCondition1, convertedCondition2 = null] = convertToConditions(filteredConditions);
+
         switch (EVOLUTION_TYPE) {
           case 'level':
-            return [condition1 ? `레벨 ${condition1}` : null, convertedCondition2];
+            return [convertedCondition1 ? `레벨 ${convertedCondition1}` : null, convertedCondition2];
           case 'stone':
             return [`${convertedCondition1} 사용`, convertedCondition2];
           case 'trade':
