@@ -13,6 +13,11 @@ describe('PokemonService', () => {
     service = module.get<PokemonService>(PokemonService);
   });
 
+  it.only('Pokemons of Database Test', async () => {
+    const pokemons = await service.getPokemonsOfDatabase();
+    expect(pokemons).not.toBeUndefined();
+  });
+
   it('Evolution Test', async () => {
     const evolutions = await service.getEvolutionOfDatabase();
     expect(evolutions).not.toBeUndefined();
