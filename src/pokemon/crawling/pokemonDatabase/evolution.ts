@@ -1,5 +1,5 @@
 import { CrawlingUtil } from '@/pokemon/crawling/utils';
-import { IConditions, IEvolution, IEvolvingTo } from '@/pokemon/pokemon.interface';
+import { IConditions, IEvolution } from '@/pokemon/pokemon.interface';
 import {
   ADDITIONAL_CONDITION,
   DIFFERENT_FORM,
