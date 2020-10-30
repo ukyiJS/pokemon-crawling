@@ -1,12 +1,20 @@
 import { getBrowserAndPage } from '@/utils';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MongoRepository } from 'typeorm';
 import { Evolution, PokemonsOfDatabase, PokemonsOfWiki } from './crawling';
 import { CrawlingUtil } from './crawling/utils';
+import { PokemonOfDatabase } from './model/pokemonOfDatabase.entity';
 import { IEvolution, IPokemonOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
 import { EVOLUTION_TYPE } from './pokemon.type';
 
 @Injectable()
 export class PokemonService {
+  constructor(
+    @InjectRepository(PokemonOfDatabase)
+    private readonly pokemonOfDatabaseRepository: MongoRepository<PokemonOfDatabase>,
+  ) {}
+
   public async getPokemonsOfWiki(): Promise<IPokemonsOfWiki[]> {
     const url = 'https://pokemon.fandom.com/ko/wiki/이상해씨';
     const selector = '.infobox-pokemon';
@@ -63,4 +71,16 @@ export class PokemonService {
       }, [])
       .sort((a, b) => +a.no - +b.no);
   };
+
+  public async findPokemonOfDatabases(search?: { page?: number; display?: number }): Promise<PokemonOfDatabase[]> {
+    const page = search?.page ?? 1;
+    const display = search?.display ?? 10;
+
+    return this.pokemonOfDatabaseRepository.find({
+      skip: (page - 1) * display,
+      take: display,
+      order: { no: 'ASC' },
+      cache: true,
+    });
+  }
 }
