@@ -7,5 +7,5 @@ export class EggCycle implements IEggCycle {
   cycle: number;
 
   @Field({ nullable: true })
-  step: string | null;
+  step: string;
 }
