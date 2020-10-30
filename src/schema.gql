@@ -2,6 +2,54 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type EggCycle {
+  cycle: Int!
+  step: String
+}
+
+type Gender {
+  name: String!
+  ratio: Int!
+}
+
+type Stats {
+  name: String!
+  value: Int!
+}
+
+type TypeDefense {
+  type: String!
+  damage: Float!
+}
+
+type pokemon {
+  _id: String!
+  no: String!
+  name: String!
+  engName: String!
+  image: String!
+  stats: [Stats!]!
+  types: [String!]!
+  typeDefenses: [TypeDefense!]!
+  species: String!
+  height: String!
+  weight: String!
+  abilities: [String!]!
+  hiddenAbility: String
+  evYield: String
+  catchRate: Int!
+  friendship: Int!
+  exp: Int!
+  eegGroups: [String!]!
+  gender: [Gender!]!
+  eggCycles: EggCycle!
+  form: String
+  differentForm: [pokemon!]!
+  createdAt: Int!
+  searchCount: Int!
+}
+
 type Query {
   getHello: String!
+  getPokemons: [pokemon!]!
 }
