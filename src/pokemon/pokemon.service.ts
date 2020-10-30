@@ -1,5 +1,5 @@
-import { getBrowserAndPage } from '@/utils';
-import { Injectable } from '@nestjs/common';
+import { getBrowserAndPage, getJson } from '@/utils';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { Evolution, PokemonsOfDatabase, PokemonsOfWiki } from './crawling';
@@ -72,15 +72,23 @@ export class PokemonService {
       .sort((a, b) => +a.no - +b.no);
   };
 
-  public async findPokemonOfDatabases(search?: { page?: number; display?: number }): Promise<PokemonOfDatabase[]> {
-    const page = search?.page ?? 1;
-    const display = search?.display ?? 10;
-
+  public async findPokemonOfDatabases(page = 1, display = 10): Promise<PokemonOfDatabase[]> {
     return this.pokemonOfDatabaseRepository.find({
       skip: (page - 1) * display,
       take: display,
       order: { no: 'ASC' },
       cache: true,
     });
+  }
+
+  public async addPokemonOfDatabases(): Promise<boolean> {
+    const pokemons = getJson<PokemonOfDatabase[]>({ fileName: 'pokemonsOfDatabase.json' });
+    try {
+      await Promise.all(pokemons.map(pokemon => this.pokemonOfDatabaseRepository.save(new PokemonOfDatabase(pokemon))));
+    } catch (error) {
+      Logger.error(error.message, undefined, error);
+      return false;
+    }
+    return true;
   }
 }
