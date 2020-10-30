@@ -1,5 +1,5 @@
 import { CrawlingUtil } from '@/pokemon/crawling/utils';
-import { IEggCycle, IGender, IPokemonsOfDatabase, IStats, ITypeDefense } from '@/pokemon/pokemon.interface';
+import { IEggCycle, IGender, IPokemonOfDatabase, IStat, ITypeDefense } from '@/pokemon/pokemon.interface';
 import { ABILITY, EGG_GROUP, POKEMON, POKEMON_TYPE, STAT, UtilString } from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
@@ -23,11 +23,11 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     ]);
   }
 
-  public crawling = async (): Promise<IPokemonsOfDatabase[]> => {
+  public crawling = async (): Promise<IPokemonOfDatabase[]> => {
     await this.promiseLocalStorage;
 
     let currentCount = 0;
-    let pokemons: IPokemonsOfDatabase[] = [];
+    let pokemons: IPokemonOfDatabase[] = [];
     const waitForNavigation = this.page.waitForNavigation();
     const nextClickSelector = '.entity-nav-next';
 
@@ -54,7 +54,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     return pokemons;
   };
 
-  private getPokemons = (i = 0): IPokemonsOfDatabase => {
+  private getPokemons = (i = 0): IPokemonOfDatabase => {
     const $element = document.querySelector('#main')!;
 
     const getItem = <T>(key: string): T => JSON.parse(localStorage.getItem(key) ?? '{}');
@@ -74,7 +74,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     const util = getItem<UtilString>('util');
 
     const getName = (name: string): POKEMON => parseFunction(util.getName)?.call(null, name, POKEMON);
-    const getTypes = (types: string[]): POKEMON_TYPE[] => parseFunction(util.getTypes)?.call(null, types, POKEMON_TYPE);
+    const getType = (types: string[]): POKEMON_TYPE[] => parseFunction(util.getType)?.call(null, types, POKEMON_TYPE);
     const getAbility = (ability: string | null): string | null =>
       parseFunction(util.getAbility)?.call(null, ability, ABILITY);
     const getEvYield = (evYield: string): string => parseFunction(util.getEvYield)?.call(null, evYield, STAT);
@@ -82,7 +82,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       parseFunction(util.getEggGroups)?.call(null, eegGroups, EGG_GROUP);
     const getGender = (gender: string): IGender[] => parseFunction(util.getGender)?.call(null, gender);
     const getEggCycles = (eggCycles: string): IEggCycle => parseFunction(util.getEggCycles)?.call(null, eggCycles);
-    const getStats = (stats: string[]): IStats[] => parseFunction(util.getStats)?.call(null, stats, STAT);
+    const getStat = (stats: string[]): IStat[] => parseFunction(util.getStat)?.call(null, stats, STAT);
     const getTypeDefenses = (typeDefenses: string[]): ITypeDefense[] =>
       parseFunction(util.getTypeDefenses)?.call(null, typeDefenses, POKEMON_TYPE);
 
@@ -139,7 +139,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       ...raw,
       name: getName(raw.name),
       engName: raw.name,
-      types: getTypes(raw.types),
+      types: getType(raw.types),
       abilities: raw.abilities.map(getAbility),
       hiddenAbility: getAbility(raw.hiddenAbility),
       height: raw.height.match(/(\w.*)(?=\s\()/)?.[1] ?? null,
@@ -151,12 +151,12 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       eegGroups: getEggGroups(raw.eegGroups),
       gender: getGender(raw.gender),
       eggCycles: getEggCycles(raw.eggCycles),
-      stats: getStats(raw.stats),
+      stats: getStat(raw.stats),
       typeDefenses: getTypeDefenses(raw.typeDefenses),
-    } as IPokemonsOfDatabase;
+    } as IPokemonOfDatabase;
   };
 
-  private getDifferentForm = async (): Promise<IPokemonsOfDatabase[]> => {
+  private getDifferentForm = async (): Promise<IPokemonOfDatabase[]> => {
     let forms = await this.page.$$eval('.tabset-basics > .tabs-tab-list > .tabs-tab', $el => {
       return Array.from($el)
         .map($el => $el.textContent!)

@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import { blueBright, redBright, yellowBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { ObjectLiteral } from 'typeorm';
-import { IEggCycle, IEvolution, IGender, IStats, ITypeDefense } from '../pokemon.interface';
+import { IEggCycle, IEvolution, IGender, IStat, ITypeDefense } from '../pokemon.interface';
 import {
   ABILITY,
   ADDITIONAL_CONDITION,
@@ -84,9 +84,9 @@ export class CrawlingUtil {
       return result as POKEMON;
     }}`;
 
-    const getTypes = `${function(types: string[], POKEMON_TYPE: POKEMON_TYPE): POKEMON_TYPE[] | null {
+    const getType = `${function(types: string[], POKEMON_TYPE: POKEMON_TYPE): POKEMON_TYPE[] | null {
       const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
-      if (isEmpty(POKEMON_TYPE)) throw new Error('getTypes POKEMON_TYPE Does Not Exist!');
+      if (isEmpty(POKEMON_TYPE)) throw new Error('getType POKEMON_TYPE Does Not Exist!');
 
       return types.map(type => {
         let result: string;
@@ -179,9 +179,9 @@ export class CrawlingUtil {
       return { cycle: +cycle, step };
     }}`;
 
-    const getStats = `${function(stats: string[], STAT: STAT): IStats[] {
+    const getStat = `${function(stats: string[], STAT: STAT): IStat[] {
       const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
-      if (isEmpty(STAT)) throw new Error('getStats param STAT Does Not Exist!');
+      if (isEmpty(STAT)) throw new Error('getStat param STAT Does Not Exist!');
 
       return stats
         .filter((_, i) => !(i % 4))
@@ -294,13 +294,13 @@ export class CrawlingUtil {
 
     return {
       getName,
-      getTypes,
+      getType,
       getAbility,
       getEvYield,
       getEggGroups,
       getGender,
       getEggCycles,
-      getStats,
+      getStat,
       getTypeDefenses,
       getForm,
       getCondition,

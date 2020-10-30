@@ -2,15 +2,15 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { Expose, plainToClass } from 'class-transformer';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { v4 } from 'uuid';
-import { IPokemonsOfDatabase } from '../pokemon.interface';
+import { IPokemonOfDatabase } from '../pokemon.interface';
 import { EggCycle } from './eggCycle.entity';
 import { Gender } from './gender.entity';
-import { Stats } from './stats.entity';
+import { Stats } from './stat.entity';
 import { TypeDefense } from './typeDefense.entity';
 
 @Entity()
 @ObjectType()
-export class Pokemon implements IPokemonsOfDatabase {
+export class PokemonOfDatabase implements IPokemonOfDatabase {
   @Expose()
   @ObjectIdColumn()
   @Field()
@@ -118,8 +118,8 @@ export class Pokemon implements IPokemonsOfDatabase {
 
   @Expose()
   @Column()
-  @Field(() => [Pokemon])
-  differentForm: Pokemon[];
+  @Field(() => [PokemonOfDatabase])
+  differentForm: PokemonOfDatabase[];
 
   @Expose()
   @Column()
@@ -131,9 +131,9 @@ export class Pokemon implements IPokemonsOfDatabase {
   @Field(() => Int)
   searchCount: number;
 
-  constructor(pokemon: Partial<Pokemon>) {
+  constructor(pokemon: Partial<PokemonOfDatabase>) {
     if (pokemon?.no) {
-      Object.assign(this, plainToClass(Pokemon, pokemon, { excludeExtraneousValues: true }));
+      Object.assign(this, plainToClass(PokemonOfDatabase, pokemon, { excludeExtraneousValues: true }));
       this._id = this._id ?? v4();
       this.createdAt = this.createdAt ?? +new Date();
       this.searchCount = this.searchCount ?? 0;

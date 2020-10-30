@@ -1459,13 +1459,13 @@ export type POKEMON = typeof POKEMON[keyof typeof POKEMON];
 
 export type UtilString = {
   getName: string;
-  getTypes: string;
+  getType: string;
   getAbility: string;
   getEvYield: string;
   getEggGroups: string;
   getGender: string;
   getEggCycles: string;
-  getStats: string;
+  getStat: string;
   getTypeDefenses: string;
   getForm: string;
   getCondition: string;

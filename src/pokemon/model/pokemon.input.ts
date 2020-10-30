@@ -1,12 +1,12 @@
 import { Field, InputType, Int } from '@nestjs/graphql';
-import { IPokemonsOfDatabase } from '../pokemon.interface';
+import { IPokemonOfDatabase } from '../pokemon.interface';
 import { EggCycleInput } from './eggCycle.input';
 import { GenderInput } from './gender.input';
-import { StatsInput } from './stats.input';
+import { StatsInput } from './stat.input';
 import { TypeDefenseInput } from './typeDefense.input';
 
 @InputType()
-export class PokemonInput implements IPokemonsOfDatabase {
+export class PokemonOfDatabaseInput implements IPokemonOfDatabase {
   @Field()
   no: string;
 
@@ -67,6 +67,6 @@ export class PokemonInput implements IPokemonsOfDatabase {
   @Field({ nullable: true })
   form: string | null;
 
-  @Field(() => [PokemonInput])
-  differentForm: PokemonInput[];
+  @Field(() => [PokemonOfDatabaseInput])
+  differentForm: PokemonOfDatabaseInput[];
 }

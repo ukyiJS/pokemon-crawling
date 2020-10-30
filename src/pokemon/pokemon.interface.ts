@@ -8,7 +8,7 @@ import {
   TRADING_CONDITION,
 } from './pokemon.type';
 
-export interface IStats {
+export interface IStat {
   name: string;
   value: number;
 }
@@ -68,12 +68,12 @@ export interface IEggCycle {
   step: string | null;
 }
 
-export interface IPokemonsOfDatabase {
+export interface IPokemonOfDatabase {
   no: string;
   name: string;
   engName: string;
   image: string;
-  stats: IStats[];
+  stats: IStat[];
   types: string[];
   typeDefenses: ITypeDefense[];
   species: string;
@@ -89,7 +89,7 @@ export interface IPokemonsOfDatabase {
   gender: IGender[];
   eggCycles: IEggCycle;
   form: string | null;
-  differentForm: IPokemonsOfDatabase[];
+  differentForm: IPokemonOfDatabase[];
 }
 
 export interface IEvolvingTo extends IEvolution {
