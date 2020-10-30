@@ -74,12 +74,12 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
   @Expose()
   @Column()
   @Field({ nullable: true })
-  hiddenAbility: string | null;
+  hiddenAbility: string;
 
   @Expose()
   @Column()
   @Field({ nullable: true })
-  evYield: string | null;
+  evYield: string;
 
   @Expose()
   @Column()
@@ -114,7 +114,7 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
   @Expose()
   @Column()
   @Field({ nullable: true })
-  form: string | null;
+  form: string;
 
   @Expose()
   @Column()

@@ -41,10 +41,10 @@ export class PokemonOfDatabaseInput implements IPokemonOfDatabase {
   abilities: string[];
 
   @Field({ nullable: true })
-  hiddenAbility: string | null;
+  hiddenAbility: string;
 
   @Field({ nullable: true })
-  evYield: string | null;
+  evYield: string;
 
   @Field(() => Int)
   catchRate: number;
@@ -65,7 +65,7 @@ export class PokemonOfDatabaseInput implements IPokemonOfDatabase {
   eggCycles: EggCycleInput;
 
   @Field({ nullable: true })
-  form: string | null;
+  form: string;
 
   @Field(() => [PokemonOfDatabaseInput])
   differentForm: PokemonOfDatabaseInput[];
