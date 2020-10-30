@@ -9,10 +9,10 @@ type EggCycle {
 
 type Gender {
   name: String!
-  ratio: Int!
+  ratio: Float!
 }
 
-type Stats {
+type Stat {
   name: String!
   value: Int!
 }
@@ -22,13 +22,12 @@ type TypeDefense {
   damage: Float!
 }
 
-type pokemon {
-  _id: String!
+type DifferentForm {
   no: String!
   name: String!
   engName: String!
   image: String!
-  stats: [Stats!]!
+  stats: [Stat!]!
   types: [String!]!
   typeDefenses: [TypeDefense!]!
   species: String!
@@ -44,12 +43,41 @@ type pokemon {
   gender: [Gender!]!
   eggCycles: EggCycle!
   form: String
-  differentForm: [pokemon!]!
+  differentForm: [DifferentForm!]!
+}
+
+type PokemonOfDatabase {
+  _id: String!
+  no: String!
+  name: String!
+  engName: String!
+  image: String!
+  stats: [Stat!]!
+  types: [String!]!
+  typeDefenses: [TypeDefense!]!
+  species: String!
+  height: String!
+  weight: String!
+  abilities: [String!]!
+  hiddenAbility: String
+  evYield: String
+  catchRate: Int!
+  friendship: Int!
+  exp: Int!
+  eegGroups: [String!]!
+  gender: [Gender!]!
+  eggCycles: EggCycle!
+  form: String
+  differentForm: [DifferentForm!]!
   createdAt: Int!
   searchCount: Int!
 }
 
 type Query {
   getHello: String!
-  findPokemonOfDatabases: [pokemon!]!
+  findPokemonOfDatabases(display: Int, page: Int): [PokemonOfDatabase!]!
+}
+
+type Mutation {
+  addPokemonOfDatabases: Boolean!
 }
