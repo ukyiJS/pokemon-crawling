@@ -85,7 +85,6 @@ export interface IPokemonsOfDatabase {
   catchRate: number;
   friendship: number;
   exp: number;
-  moves: IMoves;
   eegGroups: string[];
   gender: IGender[];
   eggCycles: IEggCycle;
