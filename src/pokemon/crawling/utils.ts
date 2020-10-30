@@ -4,7 +4,7 @@ import { Logger } from '@nestjs/common';
 import { blueBright, redBright, yellowBright } from 'chalk';
 import { Page } from 'puppeteer';
 import { ObjectLiteral } from 'typeorm';
-import { IEggCycle, IGender, IStats, ITypeDefense } from '../pokemon.interface';
+import { IEggCycle, IEvolution, IGender, IStats, ITypeDefense } from '../pokemon.interface';
 import {
   ABILITY,
   ADDITIONAL_CONDITION,
@@ -31,8 +31,8 @@ export class CrawlingUtil {
 
   protected promiseLocalStorage: Promise<void>;
 
-  constructor(page: Page) {
-    this.page = page;
+  constructor(page?: Page) {
+    if (page) this.page = page;
   }
 
   protected getPrettyJson = <T>(json: T): string =>
@@ -257,6 +257,7 @@ export class CrawlingUtil {
         })!;
         return convertedCondition;
       };
+      const cleanText = (condition: string | null) => `${condition}`.replace(/null\s/g, '');
 
       try {
         const hasExceptionalCondition = (condition: string | null): boolean =>
@@ -270,18 +271,18 @@ export class CrawlingUtil {
           }
           return [findCondition(condition1, CONDITIONS), findCondition(condition2, ADDITIONAL_CONDITION)];
         };
+
         const filteredConditions = conditions.filter(c => !hasExceptionalCondition(c));
         const [convertedCondition1, convertedCondition2 = null] = convertToConditions(filteredConditions);
-
         switch (EVOLUTION_TYPE) {
           case 'level':
-            return [convertedCondition1 ? `레벨 ${convertedCondition1}` : null, convertedCondition2];
+            return [`레벨 ${convertedCondition1}`, convertedCondition2];
           case 'stone':
             return [`${convertedCondition1} 사용`, convertedCondition2];
           case 'trade':
-            return [`${convertedCondition1 ?? ''} 통신교환`.trim(), convertedCondition2];
+            return [cleanText(`${convertedCondition1} 통신교환`), convertedCondition2];
           case 'friendship':
-            return [`친밀도가 220이상일 때 ${convertedCondition1} 레벨업`, convertedCondition2];
+            return [cleanText(`친밀도가 220이상일 때 ${convertedCondition1} 레벨업`), convertedCondition2];
           default:
             return [convertedCondition1, convertedCondition2];
         }
@@ -339,5 +340,61 @@ export class CrawlingUtil {
       throw error;
     }
     return result;
+  };
+
+  public addTwiceEvolution = (previousPokemons: IEvolution[], evolution: IEvolution): boolean => {
+    const { no, differentForm, evolvingTo } = evolution;
+
+    const hasEvolvingTo = <T extends IEvolution>(pokemon: T): boolean => {
+      return pokemon.evolvingTo.some(pokemon => pokemon.no === no);
+    };
+
+    const differentFormIndex = previousPokemons.findIndex(p => p.differentForm.some(hasEvolvingTo));
+    const evolutionIndex = previousPokemons.findIndex(hasEvolvingTo);
+    const middleEvolutionIndex = previousPokemons.findIndex(p => evolvingTo.some(to => to.no === p.no));
+
+    const index = [differentFormIndex, evolutionIndex, middleEvolutionIndex].find(i => i > -1) ?? -1;
+    if (index === -1) return false;
+
+    const previousPokemon = previousPokemons[index];
+
+    if (differentFormIndex > -1) {
+      const evolvingTo = differentForm.flatMap(d => d.evolvingTo);
+      previousPokemon.differentForm = previousPokemon.differentForm.map(pokemon => ({
+        ...pokemon,
+        evolvingTo: previousPokemon.evolvingTo.map(to => ({ ...to, evolvingTo })),
+      }));
+    } else if (evolutionIndex > -1) {
+      previousPokemon.evolvingTo = previousPokemon.evolvingTo.map(pokemon => ({ ...pokemon, ...evolution }));
+    } else if (middleEvolutionIndex > -1) {
+      const evolvingTo = evolution.evolvingTo.map(pokemon => ({ ...pokemon, ...previousPokemon }));
+      previousPokemons[index] = { ...evolution, evolvingTo };
+    }
+    return true;
+  };
+
+  public addMoreThanTwoKindsEvolution = (previousPokemons: IEvolution[], evolution: IEvolution): boolean => {
+    const { no, evolvingTo } = evolution;
+
+    const index = previousPokemons.findIndex(e => e.no === no);
+    if (index === -1) return false;
+
+    const previousPokemon = previousPokemons[index];
+    previousPokemon.evolvingTo = [...previousPokemon.evolvingTo, ...evolvingTo];
+
+    return true;
+  };
+
+  public addDifferentForm = (previousPokemons: IEvolution[], evolution: IEvolution): boolean => {
+    const { no, form } = evolution;
+    if (!form) return false;
+
+    const index = previousPokemons.findIndex(p => p.no === no);
+    if (index === -1) return false;
+
+    const previousPokemon = previousPokemons[index];
+    previousPokemon.differentForm = [...previousPokemon.differentForm, evolution];
+
+    return true;
   };
 }

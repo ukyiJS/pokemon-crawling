@@ -1,6 +1,7 @@
 import { getBrowserAndPage } from '@/utils';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Evolution, PokemonsOfDatabase, PokemonsOfWiki } from './crawling';
+import { CrawlingUtil } from './crawling/utils';
 import { IEvolution, IPokemonsOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
 import { EVOLUTION_TYPE } from './pokemon.type';
 
@@ -33,22 +34,33 @@ export class PokemonService {
   public getEvolutionOfDatabase = async (): Promise<IEvolution[]> => {
     const url = (type: EVOLUTION_TYPE) => `https://pokemondb.net/evolution/${type}`;
     const selector = '#evolution';
-    let evolutions: IEvolution[][] = [];
+    const { addTwiceEvolution, addMoreThanTwoKindsEvolution, addDifferentForm } = new CrawlingUtil();
+
+    let evolutions: IEvolution[] = [];
     for (const type of Object.values(EVOLUTION_TYPE)) {
-      if (type === 'none') break;
+      if (type === EVOLUTION_TYPE.NONE) continue;
 
       const { browser, page } = await getBrowserAndPage(url(type), selector);
-      const match = page.url().match(/(?<=\/)\w+$/);
+      const [match] = page.url().match(/(?<=\/)\w+$/) ?? [];
       if (!match) return [];
 
-      const evolutionType = match[0] as EVOLUTION_TYPE;
+      const evolutionType = match as EVOLUTION_TYPE;
       const { crawling } = new Evolution(page, evolutionType);
       const pokemons = await crawling();
-      evolutions = [...evolutions, pokemons];
+
+      evolutions = [...evolutions, ...pokemons];
 
       await browser.close();
     }
 
-    return evolutions.flat();
+    return evolutions
+      .reduce<IEvolution[]>((acc, evolution) => {
+        if (addTwiceEvolution(acc, evolution)) return acc;
+        if (addMoreThanTwoKindsEvolution(acc, evolution)) return acc;
+        if (addDifferentForm(acc, evolution)) return acc;
+
+        return [...acc, evolution];
+      }, [])
+      .sort((a, b) => +a.no - +b.no);
   };
 }
