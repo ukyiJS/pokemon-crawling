@@ -9,7 +9,7 @@ import { Stats } from './stat.entity';
 import { TypeDefense } from './typeDefense.entity';
 
 @Entity()
-@ObjectType()
+@ObjectType('pokemon')
 export class PokemonOfDatabase implements IPokemonOfDatabase {
   @Expose()
   @ObjectIdColumn()
@@ -43,7 +43,7 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
 
   @Expose()
   @Column()
-  @Field()
+  @Field(() => [String])
   types: string[];
 
   @Expose()
@@ -68,7 +68,7 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
 
   @Expose()
   @Column()
-  @Field()
+  @Field(() => [String])
   abilities: string[];
 
   @Expose()
@@ -98,7 +98,7 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
 
   @Expose()
   @Column()
-  @Field()
+  @Field(() => [String])
   eegGroups: string[];
 
   @Expose()

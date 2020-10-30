@@ -5,7 +5,7 @@ import { GenderInput } from './gender.input';
 import { StatsInput } from './stat.input';
 import { TypeDefenseInput } from './typeDefense.input';
 
-@InputType()
+@InputType('pokemon')
 export class PokemonOfDatabaseInput implements IPokemonOfDatabase {
   @Field()
   no: string;
@@ -22,7 +22,7 @@ export class PokemonOfDatabaseInput implements IPokemonOfDatabase {
   @Field(() => [StatsInput])
   stats: StatsInput[];
 
-  @Field()
+  @Field(() => [String])
   types: string[];
 
   @Field(() => [TypeDefenseInput])
@@ -37,7 +37,7 @@ export class PokemonOfDatabaseInput implements IPokemonOfDatabase {
   @Field()
   weight: string;
 
-  @Field()
+  @Field(() => [String])
   abilities: string[];
 
   @Field({ nullable: true })
@@ -55,7 +55,7 @@ export class PokemonOfDatabaseInput implements IPokemonOfDatabase {
   @Field(() => Int)
   exp: number;
 
-  @Field()
+  @Field(() => [String])
   eegGroups: string[];
 
   @Field(() => [GenderInput])
