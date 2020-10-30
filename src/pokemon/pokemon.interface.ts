@@ -105,6 +105,7 @@ export interface IEvolution {
   image: string;
   form: string | null;
   evolvingTo: IEvolvingTo[];
+  differentForm: IEvolution[];
 }
 
 export interface IConditions {
