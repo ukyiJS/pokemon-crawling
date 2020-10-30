@@ -2,7 +2,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 import { IStat } from '../pokemon.interface';
 
 @ObjectType()
-export class Stats implements IStat {
+export class Stat implements IStat {
   @Field()
   name: string;
 
