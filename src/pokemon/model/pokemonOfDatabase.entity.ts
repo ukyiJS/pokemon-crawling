@@ -3,21 +3,22 @@ import { Expose, plainToClass } from 'class-transformer';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { v4 } from 'uuid';
 import { IPokemonOfDatabase } from '../pokemon.interface';
+import { DifferentForm } from './differentForm.entity';
 import { EggCycle } from './eggCycle.entity';
 import { Gender } from './gender.entity';
-import { Stats } from './stat.entity';
+import { Stat } from './stat.entity';
 import { TypeDefense } from './typeDefense.entity';
 
 @Entity()
-@ObjectType('pokemon')
+@ObjectType()
 export class PokemonOfDatabase implements IPokemonOfDatabase {
   @Expose()
   @ObjectIdColumn()
   @Field()
-  _id: string;
+  _id?: string;
 
   @Expose()
-  @Column()
+  @Column({ unique: true })
   @Field()
   no: string;
 
@@ -38,8 +39,8 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
 
   @Expose()
   @Column()
-  @Field(() => [Stats])
-  stats: Stats[];
+  @Field(() => [Stat])
+  stats: Stat[];
 
   @Expose()
   @Column()
@@ -118,8 +119,8 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
 
   @Expose()
   @Column()
-  @Field(() => [PokemonOfDatabase])
-  differentForm: PokemonOfDatabase[];
+  @Field(() => [DifferentForm])
+  differentForm: DifferentForm[];
 
   @Expose()
   @Column()
