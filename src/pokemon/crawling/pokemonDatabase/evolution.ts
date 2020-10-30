@@ -66,69 +66,98 @@ export class Evolution extends CrawlingUtil {
     const POKEMON = getItem<POKEMON>('POKEMON');
     const DIFFERENT_FORM = getItem<DIFFERENT_FORM>('DIFFERENT_FORM');
     const CONDITIONS = getItem<IConditions>('CONDITIONS');
+    const CONDITION = (() => {
+      switch (type) {
+        case 'level':
+          return CONDITIONS.LEVEL_CONDITION;
+        case 'stone':
+          return CONDITIONS.ELEMENTAL_STONE_CONDITION;
+        case 'trade':
+          return CONDITIONS.TRADING_CONDITION;
+        case 'friendship':
+          return CONDITIONS.FRIENDSHIP_CONDITION;
+        default:
+          return CONDITIONS.OTHER_CONDITION;
+      }
+    })();
     const util = getItem<UtilString>('util');
-
-    const getConditionParams = (conditions: (string | null)[]) => {
-      const condition = (() => {
-        switch (type) {
-          case 'level':
-            return CONDITIONS.LEVEL_CONDITION;
-          case 'stone':
-            return CONDITIONS.ELEMENTAL_STONE_CONDITION;
-          case 'trade':
-            return CONDITIONS.TRADING_CONDITION;
-          case 'friendship':
-            return CONDITIONS.FRIENDSHIP_CONDITION;
-          default:
-            return CONDITIONS.OTHER_CONDITION;
-        }
-      })();
-      const [c1, c2, ...c] = conditions.flatMap(c => (conditions.length < 2 ? c?.split(', ') ?? c : c));
-      const _conditions = [c1, c.length ? `${c2}, ${c.join('')}` : c2].filter(c => c);
-      return [_conditions, type, condition, CONDITIONS.ADDITIONAL_CONDITION, CONDITIONS.EXCEPTIONAL_CONDITION];
-    };
 
     const getName = (name: string): POKEMON => parseFunction(util.getName)?.call(null, name, POKEMON);
     const getForm = (form: string | null): DIFFERENT_FORM =>
       parseFunction(util.getForm)?.call(null, form, DIFFERENT_FORM);
-    const getCondition = (conditions: (string | null)[]): string[] =>
-      parseFunction(util.getCondition)?.apply(null, getConditionParams(conditions));
+    const getCondition = (conditions: (string | null)[]): string[] => {
+      const [c1, c2, ...c] = conditions.flatMap(c => (conditions.length < 2 ? c?.split(', ') ?? c : c));
+      const isAdditionalConditions = c.length > 0;
+      const additionalConditions = isAdditionalConditions ? `${c2}, ${c.join('')}` : c2;
+
+      const _conditions = [c1, additionalConditions].filter(c => c);
+      const params = [_conditions, type, CONDITION, CONDITIONS.ADDITIONAL_CONDITION, CONDITIONS.EXCEPTIONAL_CONDITION];
+
+      return parseFunction(util.getCondition)?.apply(null, params);
+    };
+
+    const getPokemonInfo = ($pokemon: Element[]): IEvolution[] => {
+      return $pokemon.map<IEvolution>($td => {
+        const image = $td.querySelector<HTMLSpanElement>('.icon-pkmn')?.dataset.src ?? '';
+        const [, no, name] = $td.querySelector('a')?.title.match(/(\d+).(\w.*)/) ?? [];
+        const form = $td.querySelector('small')?.textContent ?? null;
+        return { no, name: getName(name), image, form: getForm(form), evolvingTo: [], differentForm: [] };
+      });
+    };
+    const hasExceptionalConditions = (conditions: (string | null)[]): boolean => {
+      return type === 'status' && conditions.some(c => c && /^\d|^use|^trade/.test(c));
+    };
+    const addDifferentForm = (previousPokemons: IEvolution[], evolution: IEvolution): boolean => {
+      const { no, form } = evolution;
+
+      const index = previousPokemons.findIndex(p => p.no === no && form);
+      if (index === -1) return false;
+
+      const previousPokemon = previousPokemons[index];
+      previousPokemon.differentForm = [...previousPokemon.differentForm, evolution];
+
+      return true;
+    };
+    const addTwiceEvolution = (previousPokemons: IEvolution[], evolution: IEvolution): boolean => {
+      const { no, evolvingTo } = evolution;
+      const index = previousPokemons.findIndex(p => p.evolvingTo.some(to => to.no === no));
+      if (index === -1) return false;
+
+      const previousPokemon = previousPokemons[index];
+      previousPokemon.evolvingTo = previousPokemon.evolvingTo.map(to => ({ ...to, evolvingTo }));
+
+      return true;
+    };
+    const addMoreThanTwoKindsEvolution = (previousPokemons: IEvolution[], evolution: IEvolution): boolean => {
+      const { no, form, evolvingTo } = evolution;
+      const index = previousPokemons.findIndex(e => e.no === no && e.form === form);
+
+      if (index === -1) return false;
+
+      const previousPokemon = previousPokemons[index];
+      previousPokemon.evolvingTo = [...previousPokemon.evolvingTo, ...evolvingTo];
+
+      return true;
+    };
 
     const $trList = array(document.querySelectorAll('#evolution > tbody > tr'));
-
     return $trList.reduce<IEvolution[]>((acc, $tr) => {
       const $pokemon = array($tr.querySelectorAll('td:nth-child(-2n + 3)'));
       const $condition = array($tr.querySelectorAll('td:nth-child(n + 4)'));
 
-      const [from, to] = $pokemon.map<IEvolution>($td => {
-        const image = $td.querySelector<HTMLSpanElement>('.icon-pkmn')?.dataset.src ?? '';
-        const [, no, name] = $td.querySelector('a')?.title.match(/(\d+).(\w.*)/) ?? [];
-        const form = $td.querySelector('small')?.textContent ?? null;
-        return { no, name: getName(name), image, form: getForm(form), evolvingTo: [] };
-      });
+      const [from, to] = getPokemonInfo($pokemon);
       const conditions = getTexts($condition);
-      if (type === 'status' && conditions.some(c => c && /^\d|^use|^trade/.test(c))) return acc;
+      if (hasExceptionalConditions(conditions)) return acc;
 
       const [condition, additionalCondition] = getCondition(conditions);
+      const evolvingTo = { ...to, type, condition, additionalCondition };
+      const evolution: IEvolution = { ...from, evolvingTo: [evolvingTo] };
 
-      const evolvingTo: IEvolvingTo[] = [{ ...to, type, condition, additionalCondition }];
-      const pokemon = { ...from, evolvingTo };
+      if (addTwiceEvolution(acc, evolution)) return acc;
+      if (addMoreThanTwoKindsEvolution(acc, evolution)) return acc;
+      if (addDifferentForm(acc, evolution)) return acc;
 
-      const twiceEvolutionIndex = acc.findIndex(e => e.evolvingTo.some(to => to.no === from.no));
-      if (twiceEvolutionIndex > -1) {
-        const previousPokemon = acc[twiceEvolutionIndex];
-        previousPokemon.evolvingTo = previousPokemon.evolvingTo.map(to => ({ ...to, evolvingTo }));
-        return acc;
-      }
-
-      const moreThanTwoKindsEvolutionIndex = acc.findIndex(e => e.no === from.no && e.form === from.form);
-      if (moreThanTwoKindsEvolutionIndex > -1) {
-        const previousPokemon = acc[moreThanTwoKindsEvolutionIndex];
-        previousPokemon.evolvingTo = previousPokemon.evolvingTo.concat(evolvingTo);
-        return acc;
-      }
-
-      return [...acc, pokemon] as IEvolution[];
+      return [...acc, evolution];
     }, []);
   };
 }
