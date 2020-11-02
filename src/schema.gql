@@ -69,7 +69,7 @@ type PokemonOfDatabase {
   eggCycles: EggCycle!
   form: String
   differentForm: [DifferentForm!]
-  createdAt: Int!
+  createdAt: Float!
   searchCount: Int!
 }
 
