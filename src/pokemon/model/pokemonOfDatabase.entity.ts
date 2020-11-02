@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql';
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
 import { Expose, plainToClass } from 'class-transformer';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { v4 } from 'uuid';
@@ -124,7 +124,7 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
 
   @Expose()
   @Column()
-  @Field(() => Int)
+  @Field(() => Float)
   createdAt: number;
 
   @Expose()
