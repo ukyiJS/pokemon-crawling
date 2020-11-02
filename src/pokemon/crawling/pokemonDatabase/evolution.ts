@@ -18,7 +18,7 @@ import {
 import { Page } from 'puppeteer';
 
 export class Evolution extends CrawlingUtil {
-  evolutionType: EvolutionType;
+  public evolutionType: EvolutionType;
 
   constructor(page: Page, evolutionType: EvolutionType) {
     super(page);
