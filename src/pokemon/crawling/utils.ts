@@ -36,7 +36,7 @@ export class CrawlingUtil {
     if (page) this.page = page;
   }
 
-  protected getPrettyJson = <T>(json: T): string =>
+  public getPrettyJson = <T>(json: T): string =>
     `${JSON.stringify(json)}`
       .replace(/("(?=n|e|i|t|s|c|a|h|f|w|g|r|d|v)(\w)+")/g, (_, m1) => m1.replace(/"/g, ''))
       .replace(/([:,{](?!\/))/g, '$1 ')
@@ -45,17 +45,17 @@ export class CrawlingUtil {
       .replace(/(\w+:(?!\/))/g, yellowBright('$1'))
       .replace(/(null)/g, redBright('$1'));
 
-  protected initLoading = (size: number, type: LoadingType = STDOUT): void => {
+  public initLoading = (size: number, type: LoadingType = STDOUT): void => {
     this.loadingSize = size;
     this.loadingBar = new LoadingBar(type);
   };
 
-  protected get loading(): Loading {
+  public get loading(): Loading {
     if (!this.loadingBar) throw redBright('loading has not been initialized.');
     return { update: (curser: number): void => this.loadingBar.update((curser / this.loadingSize) * 100) };
   }
 
-  protected initLocalStorage = async (localStorageItems: ObjectLiteral[]): Promise<void> => {
+  public initLocalStorage = async (localStorageItems: ObjectLiteral[]): Promise<void> => {
     await this.page.evaluate<(items: ObjectLiteral[]) => void>(items => {
       items.forEach(item =>
         Object.entries(item).forEach(([key, value]) => localStorage.setItem(key, JSON.stringify(value))),
@@ -66,7 +66,7 @@ export class CrawlingUtil {
     Logger.log('Page is Reloaded', 'Reload');
   };
 
-  protected funcString = (): FuncString => {
+  public funcString = (): FuncString => {
     const getName = `${function(name: string, pokemonName: PokemonName): PokemonName {
       const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
       if (isEmpty(pokemonName)) throw new Error('getName pokemonName Does Not Exist!');
@@ -309,7 +309,7 @@ export class CrawlingUtil {
     };
   };
 
-  protected getForm = (form: string): DifferentFormName => {
+  public getForm = (form: string): DifferentFormName => {
     const convertKeyToRegExp = (key: string): RegExp => {
       switch (key) {
         case exceptionalFormName.MEGA_X:
