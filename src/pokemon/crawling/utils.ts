@@ -6,18 +6,19 @@ import { Page } from 'puppeteer';
 import { ObjectLiteral } from 'typeorm';
 import { IEggCycle, IEvolution, IGender, IStat, ITypeDefense } from '../pokemon.interface';
 import {
-  ABILITY,
-  ADDITIONAL_CONDITION,
-  CONDITIONS,
-  DIFFERENT_FORM,
-  EGG_GROUP,
-  EVOLUTION_TYPE,
-  EXCEPTIONAL_CONDITION,
-  EXCEPTIONAL_FORM_KEY,
-  POKEMON,
-  POKEMON_TYPE,
-  STAT,
-  UtilString,
+  AbilityName,
+  AdditionalCondition,
+  ConditionType,
+  differentFormName,
+  DifferentFormName,
+  EggGroupName,
+  EvolutionType,
+  ExceptionalCondition,
+  exceptionalFormName,
+  PokemonName,
+  PokemonTypeName,
+  StatName,
+  FuncString,
 } from '../pokemon.type';
 
 type Loading = { update: (curser: number) => void };
@@ -65,10 +66,10 @@ export class CrawlingUtil {
     Logger.log('Page is Reloaded', 'Reload');
   };
 
-  protected utilString = (): UtilString => {
-    const getName = `${function(name: string, POKEMON: POKEMON): POKEMON {
+  protected funcString = (): FuncString => {
+    const getName = `${function(name: string, pokemonName: PokemonName): PokemonName {
       const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
-      if (isEmpty(POKEMON)) throw new Error('getName POKEMON Does Not Exist!');
+      if (isEmpty(pokemonName)) throw new Error('getName pokemonName Does Not Exist!');
 
       let result: string;
       try {
@@ -76,33 +77,33 @@ export class CrawlingUtil {
           .replace(/(\w.*)(♂|♀)/g, (_, g1, g2) => `${g1}${g2 === '♂' ? 'm' : 'f'}`)
           .replace(/[^a-z]/gi, '');
         const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
-        [, result] = Object.entries(POKEMON).find(([key]) => regExp(key).test(_name))!;
+        [, result] = Object.entries(pokemonName).find(([key]) => regExp(key).test(_name))!;
       } catch (error) {
         console.error('No Matching Name Found', name);
         throw error;
       }
-      return result as POKEMON;
+      return result as PokemonName;
     }}`;
 
-    const getType = `${function(types: string[], POKEMON_TYPE: POKEMON_TYPE): POKEMON_TYPE[] | null {
+    const getType = `${function(types: string[], pokemonTypeName: PokemonTypeName): PokemonTypeName[] | null {
       const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
-      if (isEmpty(POKEMON_TYPE)) throw new Error('getType POKEMON_TYPE Does Not Exist!');
+      if (isEmpty(pokemonTypeName)) throw new Error('getType pokemonTypeName Does Not Exist!');
 
       return types.map(type => {
         let result: string;
         try {
-          [, result] = Object.entries(POKEMON_TYPE).find(([key]) => new RegExp(key, 'gi').test(type))!;
+          [, result] = Object.entries(pokemonTypeName).find(([key]) => new RegExp(key, 'gi').test(type))!;
         } catch (error) {
           console.error('No Matching Type Found', types);
           throw error;
         }
-        return result as POKEMON_TYPE;
+        return result as PokemonTypeName;
       });
     }}`;
 
-    const getAbility = `${function(ability: string, ABILITY: ABILITY): ABILITY | null {
+    const getAbility = `${function(ability: string, abilityName: AbilityName): AbilityName | null {
       const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
-      if (isEmpty(ABILITY)) throw new Error('getAbility ABILITY Does Not Exist!');
+      if (isEmpty(abilityName)) throw new Error('getAbility abilityName Does Not Exist!');
 
       if (!ability) return null;
 
@@ -110,17 +111,17 @@ export class CrawlingUtil {
       try {
         const _ability = ability.replace(/[^a-z]/gi, '');
         const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
-        [, result] = Object.entries(ABILITY).find(([key]) => regExp(key).test(_ability))!;
+        [, result] = Object.entries(abilityName).find(([key]) => regExp(key).test(_ability))!;
       } catch (error) {
         console.error('No Matching Ability Found', ability);
         throw error;
       }
-      return result as ABILITY;
+      return result as AbilityName;
     }}`;
 
-    const getEvYield = `${function(evYield: string, STAT: STAT): string | null {
+    const getEvYield = `${function(evYield: string, statName: StatName): string | null {
       const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
-      if (isEmpty(STAT)) throw new Error('getEvYield STAT Does Not Exist!');
+      if (isEmpty(statName)) throw new Error('getEvYield statName Does Not Exist!');
 
       const _evYield = evYield.replace(/—/g, '');
       if (!_evYield) return null;
@@ -128,7 +129,7 @@ export class CrawlingUtil {
       return _evYield.replace(/(\d+).(\w.*)/, (_, g1, g2) => {
         let result: string;
         try {
-          [, result] = Object.entries(STAT).find(([key]) => new RegExp(key, 'gi').test(g2))!;
+          [, result] = Object.entries(statName).find(([key]) => new RegExp(key, 'gi').test(g2))!;
         } catch (error) {
           console.error('No Matching EvYield Found', evYield);
           throw error;
@@ -137,9 +138,9 @@ export class CrawlingUtil {
       });
     }}`;
 
-    const getEggGroups = `${function(eggGroups: string, EGG_GROUP: EGG_GROUP): EGG_GROUP[] {
+    const getEggGroups = `${function(eggGroups: string, eggGroupName: EggGroupName): EggGroupName[] {
       const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
-      if (isEmpty(EGG_GROUP)) throw new Error('getEggGroups EGG_GROUP Does Not Exist!');
+      if (isEmpty(eggGroupName)) throw new Error('getEggGroups eggGroupName Does Not Exist!');
 
       const _eggGroups = eggGroups.replace(/[^a-z0-9-,]/gi, '');
       if (!_eggGroups) return [];
@@ -150,12 +151,12 @@ export class CrawlingUtil {
         const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
         try {
           const _eggGroup = eggGroup.replace(/[^a-z]/gi, '');
-          [key, value] = Object.entries(EGG_GROUP).find(([key]) => regExp(key).test(_eggGroup))!;
+          [key, value] = Object.entries(eggGroupName).find(([key]) => regExp(key).test(_eggGroup))!;
         } catch (error) {
-          console.error('No Matching EggGroup Found', eggGroups);
+          console.error('No Matching EggGroups Found', eggGroups);
           throw error;
         }
-        return value.replace(regExp(key), value) as EGG_GROUP;
+        return value.replace(regExp(key), value) as EggGroupName;
       });
     }}`;
 
@@ -179,31 +180,32 @@ export class CrawlingUtil {
       return { cycle: +cycle, step };
     }}`;
 
-    const getStat = `${function(stats: string[], STAT: STAT): IStat[] {
+    const getStat = `${function(stats: string[], statName: StatName): IStat[] {
       const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
-      if (isEmpty(STAT)) throw new Error('getStat param STAT Does Not Exist!');
+      if (isEmpty(statName)) throw new Error('getStat param statName Does Not Exist!');
 
       return stats
         .filter((_, i) => !(i % 4))
         .map((value, i) => ({
-          name: Object.values(STAT)[i],
+          name: Object.values(statName)[i],
           value: +value,
         }));
     }}`;
 
-    const getTypeDefenses = `${function(typeDefenses: string[], POKEMON_TYPE: POKEMON_TYPE): ITypeDefense[] {
+    const getTypeDefenses = `${function(typeDefenses: string[], pokemonTypeName: PokemonTypeName): ITypeDefense[] {
       const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
-      if (isEmpty(POKEMON_TYPE)) throw new Error('getTypeDefenses param POKEMON_TYPE Does Not Exist!');
+      if (isEmpty(pokemonTypeName)) throw new Error('getTypeDefenses param pokemonTypeName Does Not Exist!');
+      if (typeDefenses.length < 18) throw new Error('getTypeDefenses be short of type! Check typeDefenses param');
 
       return typeDefenses.map((typeDefense, i) => ({
-        type: Object.values(POKEMON_TYPE)[i],
-        damage: +(typeDefense || '1').replace(/(½)|(¼)/g, (_, g1, g2) => (g1 && '0.5') || (g2 && '0.25')),
+        type: Object.values(pokemonTypeName)[i],
+        damage: +typeDefense.replace(/(½)|(¼)/g, (_, g1, g2) => (g1 && '0.5') || (g2 && '0.25')),
       }));
     }}`;
 
-    const getForm = `${function(form: string | null, DIFFERENT_FORM: DIFFERENT_FORM): DIFFERENT_FORM | null {
+    const getForm = `${function(form: string | null, differentFormName: DifferentFormName): DifferentFormName | null {
       const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
-      if (isEmpty(DIFFERENT_FORM)) throw new Error('getForm param DIFFERENT_FORM Does Not Exist!');
+      if (isEmpty(differentFormName)) throw new Error('getForm param differentFormName Does Not Exist!');
 
       if (!form) return null;
 
@@ -229,7 +231,7 @@ export class CrawlingUtil {
       };
       let result: string;
       try {
-        [, result] = Object.entries(DIFFERENT_FORM).find(([key]) => {
+        [, result] = Object.entries(differentFormName).find(([key]) => {
           const regExp = new RegExp(convertKeyToRegExp(key), 'gi');
           const _form = form.replace(/[^a-z0-9]/gi, '');
           return regExp.test(_form);
@@ -238,17 +240,17 @@ export class CrawlingUtil {
         console.error(`No Matching Form Found ${form}`, undefined, 'Error');
         throw error;
       }
-      return result as DIFFERENT_FORM;
+      return result as DifferentFormName;
     }}`;
 
     const getCondition = `${function(
       conditions: (string | null)[],
-      EVOLUTION_TYPE: EVOLUTION_TYPE,
-      CONDITIONS: CONDITIONS,
-      ADDITIONAL_CONDITION: ADDITIONAL_CONDITION,
-      EXCEPTIONAL_CONDITION: EXCEPTIONAL_CONDITION,
+      evolutionType: EvolutionType,
+      conditionType: ConditionType,
+      additionalCondition: AdditionalCondition,
+      exceptionalCondition: ExceptionalCondition,
     ): (string | null)[] {
-      const findCondition = (condition: string | null, conditionType: CONDITIONS): string | null => {
+      const findCondition = (condition: string | null, conditionType: ConditionType): string | null => {
         if (!condition) return null;
 
         const blankRemovedCondition = condition.replace(/\s/g, '');
@@ -261,20 +263,20 @@ export class CrawlingUtil {
 
       try {
         const hasExceptionalCondition = (condition: string | null): boolean =>
-          EXCEPTIONAL_CONDITION.some(e => condition && new RegExp(e, 'gi').test(condition));
+          exceptionalCondition.some(e => condition && new RegExp(e, 'gi').test(condition));
         const convertToConditions = ([condition1, condition2]: (string | null)[]): (string | null)[] => {
-          if (EVOLUTION_TYPE === 'level') {
+          if (evolutionType === 'level') {
             const convertedCondition = condition2
               ?.split(', ')
-              .reduce((acc, c, i) => `${acc} ${findCondition(c, i ? ADDITIONAL_CONDITION : CONDITIONS)}`, '');
+              .reduce((acc, c, i) => `${acc} ${findCondition(c, i ? additionalCondition : conditionType)}`, '');
             return [condition1, convertedCondition ?? null];
           }
-          return [findCondition(condition1, CONDITIONS), findCondition(condition2, ADDITIONAL_CONDITION)];
+          return [findCondition(condition1, conditionType), findCondition(condition2, additionalCondition)];
         };
 
         const filteredConditions = conditions.filter(c => !hasExceptionalCondition(c));
         const [convertedCondition1, convertedCondition2 = null] = convertToConditions(filteredConditions);
-        switch (EVOLUTION_TYPE) {
+        switch (evolutionType) {
           case 'level':
             return [`레벨 ${convertedCondition1}`, convertedCondition2];
           case 'stone':
@@ -287,7 +289,7 @@ export class CrawlingUtil {
             return [convertedCondition1, convertedCondition2];
         }
       } catch (error) {
-        console.error(`No Matching ${EVOLUTION_TYPE} conditions Found ${conditions}`);
+        console.error(`No Matching ${evolutionType} conditions Found ${conditions}`);
         throw error;
       }
     }}`;
@@ -307,30 +309,30 @@ export class CrawlingUtil {
     };
   };
 
-  protected getForm = (form: string): DIFFERENT_FORM => {
+  protected getForm = (form: string): DifferentFormName => {
     const convertKeyToRegExp = (key: string): RegExp => {
       switch (key) {
-        case EXCEPTIONAL_FORM_KEY.MEGA_X:
+        case exceptionalFormName.MEGA_X:
           return /mega.*x$/;
-        case EXCEPTIONAL_FORM_KEY.MEGA_Y:
+        case exceptionalFormName.MEGA_Y:
           return /mega.*y$/;
-        case EXCEPTIONAL_FORM_KEY.GALARIAN_STANDARD_MODE:
+        case exceptionalFormName.GALARIAN_STANDARD_MODE:
           return /galar.*standardmode/;
-        case EXCEPTIONAL_FORM_KEY.GALARIAN_ZEN_MODE:
+        case exceptionalFormName.GALARIAN_ZEN_MODE:
           return /galar.*zenmode/;
-        case EXCEPTIONAL_FORM_KEY.FIFTY_PERCENT_FORM:
+        case exceptionalFormName.FIFTY_PERCENT_FORM:
           return /50forme/;
-        case EXCEPTIONAL_FORM_KEY.TEN_PERCENT_FORM:
+        case exceptionalFormName.TEN_PERCENT_FORM:
           return /10forme/;
-        case EXCEPTIONAL_FORM_KEY.HUNGRY_MODE:
+        case exceptionalFormName.HUNGRY_MODE:
           return /hangrymode|hungrymode/;
         default:
           return new RegExp(key.replace(/[^a-z]/gi, ''));
       }
     };
-    let result: DIFFERENT_FORM;
+    let result: DifferentFormName;
     try {
-      [, result] = Object.entries(DIFFERENT_FORM).find(([key]) => {
+      [, result] = Object.entries(differentFormName).find(([key]) => {
         const regExp = new RegExp(convertKeyToRegExp(key), 'gi');
         const _form = form.replace(/[^a-z0-9]/gi, '');
         return regExp.test(_form);

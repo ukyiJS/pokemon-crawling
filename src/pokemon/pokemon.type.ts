@@ -1,4 +1,4 @@
-export const DIFFERENT_FORM = {
+export const differentFormName = {
   MEGA_X: '메가진화 X',
   MEGA_Y: '메가진화 Y',
   MEGA: '메가진화',
@@ -80,9 +80,9 @@ export const DIFFERENT_FORM = {
   RED_STRIPED_FORM: '적색근의 모습',
   BLUE_STRIPED_FORM: '청색근의 모습',
 } as const;
-export type DIFFERENT_FORM = typeof DIFFERENT_FORM[keyof typeof DIFFERENT_FORM];
+export type DifferentFormName = typeof differentFormName[keyof typeof differentFormName];
 
-export const EVOLUTION_TYPE = {
+export const evolutionType = {
   LEVEL: 'level',
   STONE: 'stone',
   TRADE: 'trade',
@@ -90,17 +90,17 @@ export const EVOLUTION_TYPE = {
   STATUS: 'status',
   NONE: 'none',
 } as const;
-export type EVOLUTION_TYPE = typeof EVOLUTION_TYPE[keyof typeof EVOLUTION_TYPE];
+export type EvolutionType = typeof evolutionType[keyof typeof evolutionType];
 
-export type CONDITIONS =
-  | LEVEL_CONDITION
-  | ELEMENTAL_STONE_CONDITION
-  | TRADING_CONDITION
-  | FRIENDSHIP_CONDITION
-  | OTHER_CONDITION
-  | ADDITIONAL_CONDITION;
+export type ConditionType =
+  | LevelCondition
+  | ElementalStoneCondition
+  | TradingCondition
+  | FriendshipCondition
+  | OtherCondition
+  | AdditionalCondition;
 
-export const ADDITIONAL_CONDITION = {
+export const additionalCondition = {
   IN_ALOLA: '알로라 지방에서',
   IN_GALAR: '가라르 지방에서',
   IN_GRASS: '풀숲에서',
@@ -117,17 +117,17 @@ export const ADDITIONAL_CONDITION = {
   NIGHTTIME: '밤에',
   DAYTIME: '낮에',
 } as const;
-export type ADDITIONAL_CONDITION = typeof ADDITIONAL_CONDITION[keyof typeof ADDITIONAL_CONDITION];
+export type AdditionalCondition = typeof additionalCondition[keyof typeof additionalCondition];
 
-export const EXCEPTIONAL_CONDITION = [
+export const exceptionalCondition = [
   'outside',
   'in Ultra Sun/Moon',
   'or level up with max Beauty',
   '400 Meltan Candies',
 ] as const;
-export type EXCEPTIONAL_CONDITION = typeof EXCEPTIONAL_CONDITION;
+export type ExceptionalCondition = typeof exceptionalCondition;
 
-export const LEVEL_CONDITION = {
+export const levelCondition = {
   NIGHTTIME: '밤에',
   IN_ALOLA: '알로라 지방에서',
   'ATTACK>DEFENSE': '공격 > 방어일 때',
@@ -149,9 +149,9 @@ export const LEVEL_CONDITION = {
     '노력, 고집, 개구쟁이, 용감, 온순, 장난꾸러기, 촐랑, 덜렁, 변덕, 건방, 성급, 명랑, 천진난만 성격일 때',
   WITH_AN_AMPEDNATURE: '외로움, 대담, 무사태평, 조심, 의젓, 수줍음, 냉정, 차분, 얌전, 신중, 겁쟁이, 성실 성격일 때',
 } as const;
-export type LEVEL_CONDITION = typeof LEVEL_CONDITION[keyof typeof LEVEL_CONDITION];
+export type LevelCondition = typeof levelCondition[keyof typeof levelCondition];
 
-export const ELEMENTAL_STONE_CONDITION = {
+export const elementalStoneCondition = {
   THUNDER_STONE: '천둥의돌',
   ICE_STONE: '얼음의돌',
   MOON_STONE: '달의돌',
@@ -168,9 +168,9 @@ export const ELEMENTAL_STONE_CONDITION = {
   SWEET_APPLE: '달콤한 사과',
   CRACKED_POT: '깨진 포트 or 이빠진 포트',
 } as const;
-export type ELEMENTAL_STONE_CONDITION = typeof ELEMENTAL_STONE_CONDITION[keyof typeof ELEMENTAL_STONE_CONDITION];
+export type ElementalStoneCondition = typeof elementalStoneCondition[keyof typeof elementalStoneCondition];
 
-export const TRADING_CONDITION = {
+export const tradingCondition = {
   KINGS_ROCK: '왕의징표석을 지니게 한 뒤',
   METAL_COAT: '금속코트를 지니게 한 뒤',
   PROTECTOR: '프로텍터를 지니게 한 뒤',
@@ -189,12 +189,12 @@ export const TRADING_CONDITION = {
   SACHET: '향기주머니를 지니게 한 뒤',
   WHIPPED_DREAM: '휘핑팝을 지니게 한 뒤',
 } as const;
-export type TRADING_CONDITION = typeof TRADING_CONDITION[keyof typeof TRADING_CONDITION];
+export type TradingCondition = typeof tradingCondition[keyof typeof tradingCondition];
 
-export const FRIENDSHIP_CONDITION = { ...LEVEL_CONDITION } as const;
-export type FRIENDSHIP_CONDITION = typeof FRIENDSHIP_CONDITION[keyof typeof FRIENDSHIP_CONDITION];
+export const friendshipCondition = { ...levelCondition } as const;
+export type FriendshipCondition = typeof friendshipCondition[keyof typeof friendshipCondition];
 
-export const OTHER_CONDITION = {
+export const otherCondition = {
   LEVEL_UP_IN_A_MAGNETIC_FIELD_AREA:
     '천관산(DPPt), 전기돌동굴(BW/BW2), 13번 도로-발전소가 있는 곳(XY), 뉴보라(ORAS), 포니대협곡(SM/USUM), 화끈산(USUM)에서 레벨업',
   AFTER_ROLLOUT_LEARNED: '구르기를 배운뒤 레벨업',
@@ -224,9 +224,9 @@ export const OTHER_CONDITION = {
   IN_TOWER_OF_DARKNESS: '악의탑 제페',
   IN_TOWER_OF_WATER: '물의탑 제패',
 } as const;
-export type OTHER_CONDITION = typeof OTHER_CONDITION[keyof typeof OTHER_CONDITION];
+export type OtherCondition = typeof otherCondition[keyof typeof otherCondition];
 
-export const EXCEPTIONAL_FORM_KEY = {
+export const exceptionalFormName = {
   MEGA_X: 'MEGA_X',
   MEGA_Y: 'MEGA_Y',
   GALARIAN_STANDARD_MODE: 'GALARIAN_STANDARD_MODE',
@@ -238,9 +238,9 @@ export const EXCEPTIONAL_FORM_KEY = {
   POM_POM_STYLE: 'POM_POM_STYLE',
   HUNGRY_MODE: 'HUNGRY_MODE',
 } as const;
-export type EXCEPTIONAL_FORM_KEY = typeof EXCEPTIONAL_FORM_KEY[keyof typeof EXCEPTIONAL_FORM_KEY];
+export type ExceptionalFormName = typeof exceptionalFormName[keyof typeof exceptionalFormName];
 
-export const POKEMON_TYPE = {
+export const pokemonTypeName = {
   NORMAL: '노말',
   FIRE: '불',
   WATER: '물',
@@ -260,9 +260,9 @@ export const POKEMON_TYPE = {
   STEEL: '강철',
   FAIRY: '페어리',
 } as const;
-export type POKEMON_TYPE = typeof POKEMON_TYPE[keyof typeof POKEMON_TYPE];
+export type PokemonTypeName = typeof pokemonTypeName[keyof typeof pokemonTypeName];
 
-export const STAT = {
+export const statName = {
   HP: 'HP',
   ATTACK: '공격',
   DEFENSE: '방어',
@@ -271,9 +271,9 @@ export const STAT = {
   SPEED: '스피드',
   TOTAL: '총합',
 } as const;
-export type STAT = typeof STAT[keyof typeof STAT];
+export type StatName = typeof statName[keyof typeof statName];
 
-export const ABILITY = {
+export const abilityName = {
   STENCH: '악취',
   DRIZZLE: '잔비',
   SPEED_BOOST: '가속',
@@ -538,9 +538,24 @@ export const ABILITY = {
   BATTLE_BOND: '유대변화',
   NEUROFORCE: '브레인포스',
 } as const;
-export type ABILITY = typeof ABILITY[keyof typeof ABILITY];
+export type AbilityName = typeof abilityName[keyof typeof abilityName];
 
-export const EGG_GROUP = {
+export const exceptionalAbilityName = [
+  'Thick Fat',
+  'Levitate',
+  'Storm Drain',
+  'Lightning Rod',
+  'Motor Drive',
+  'Sap Sipper',
+  'Dry Skin',
+  'Water Absorb',
+  'Volt Absorb',
+  'Flash Fire',
+  'Fluffy',
+] as const;
+export type ExceptionalAbilityName = typeof exceptionalAbilityName;
+
+export const eggGroupName = {
   MONSTER: '괴수',
   WATER: '수중',
   BUG: '벌레',
@@ -555,9 +570,9 @@ export const EGG_GROUP = {
   DRAGON: '드래곤',
   UNDISCOVERED: '미발견',
 } as const;
-export type EGG_GROUP = typeof EGG_GROUP[keyof typeof EGG_GROUP];
+export type EggGroupName = typeof eggGroupName[keyof typeof eggGroupName];
 
-export const POKEMON = {
+export const pokemonName = {
   BULBASAUR: '이상해씨',
   IVYSAUR: '이상해풀',
   VENUSAUR: '이상해꽃',
@@ -1455,9 +1470,9 @@ export const POKEMON = {
   REGIELEKI: '레지에레키',
   REGIDRAGO: '레지드래고',
 } as const;
-export type POKEMON = typeof POKEMON[keyof typeof POKEMON];
+export type PokemonName = typeof pokemonName[keyof typeof pokemonName];
 
-export type UtilString = {
+export type FuncString = {
   getName: string;
   getType: string;
   getAbility: string;

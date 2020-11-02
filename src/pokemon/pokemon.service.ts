@@ -6,7 +6,7 @@ import { Evolution, PokemonsOfDatabase, PokemonsOfWiki } from './crawling';
 import { CrawlingUtil } from './crawling/utils';
 import { PokemonOfDatabase } from './model/pokemonOfDatabase.entity';
 import { IEvolution, IPokemonOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
-import { EVOLUTION_TYPE } from './pokemon.type';
+import { evolutionType, EvolutionType } from './pokemon.type';
 
 @Injectable()
 export class PokemonService {
@@ -40,20 +40,19 @@ export class PokemonService {
   };
 
   public getEvolutionOfDatabase = async (): Promise<IEvolution[]> => {
-    const url = (type: EVOLUTION_TYPE) => `https://pokemondb.net/evolution/${type}`;
+    const url = (type: EvolutionType) => `https://pokemondb.net/evolution/${type}`;
     const selector = '#evolution';
     const { addTwiceEvolution, addMoreThanTwoKindsEvolution, addDifferentForm } = new CrawlingUtil();
 
     let evolutions: IEvolution[] = [];
-    for (const type of Object.values(EVOLUTION_TYPE)) {
-      if (type === EVOLUTION_TYPE.NONE) continue;
+    for (const type of Object.values(evolutionType)) {
+      if (type === evolutionType.NONE) continue;
 
       const { browser, page } = await getBrowserAndPage(url(type), selector);
       const [match] = page.url().match(/(?<=\/)\w+$/) ?? [];
       if (!match) return [];
 
-      const evolutionType = match as EVOLUTION_TYPE;
-      const { crawling } = new Evolution(page, evolutionType);
+      const { crawling } = new Evolution(page, match as EvolutionType);
       const pokemons = await crawling();
 
       evolutions = [...evolutions, ...pokemons];
@@ -87,7 +86,7 @@ export class PokemonService {
       await Promise.all(pokemons.map(pokemon => this.pokemonOfDatabaseRepository.save(new PokemonOfDatabase(pokemon))));
     } catch (error) {
       Logger.error(error.message, undefined, error);
-      return false;
+      throw error;
     }
     return true;
   }

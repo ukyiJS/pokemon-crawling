@@ -1,42 +1,44 @@
 import { CrawlingUtil } from '@/pokemon/crawling/utils';
 import { IConditions, IEvolution } from '@/pokemon/pokemon.interface';
 import {
-  ADDITIONAL_CONDITION,
-  DIFFERENT_FORM,
-  ELEMENTAL_STONE_CONDITION,
-  EVOLUTION_TYPE,
-  EXCEPTIONAL_CONDITION,
-  FRIENDSHIP_CONDITION,
-  LEVEL_CONDITION,
-  OTHER_CONDITION,
-  POKEMON,
-  TRADING_CONDITION,
-  UtilString,
+  additionalCondition,
+  differentFormName,
+  DifferentFormName,
+  elementalStoneCondition,
+  EvolutionType,
+  exceptionalCondition,
+  friendshipCondition,
+  levelCondition,
+  otherCondition,
+  PokemonName,
+  pokemonName,
+  tradingCondition,
+  FuncString,
 } from '@/pokemon/pokemon.type';
 import { Page } from 'puppeteer';
 
 export class Evolution extends CrawlingUtil {
-  evolutionType: EVOLUTION_TYPE;
+  evolutionType: EvolutionType;
 
-  constructor(page: Page, evolutionType: EVOLUTION_TYPE) {
+  constructor(page: Page, evolutionType: EvolutionType) {
     super(page);
     this.evolutionType = evolutionType;
 
     this.promiseLocalStorage = this.initLocalStorage([
-      { POKEMON },
-      { DIFFERENT_FORM },
+      { pokemonName },
+      { differentFormName },
       {
-        CONDITIONS: {
-          ADDITIONAL_CONDITION,
-          EXCEPTIONAL_CONDITION,
-          LEVEL_CONDITION,
-          ELEMENTAL_STONE_CONDITION,
-          FRIENDSHIP_CONDITION,
-          TRADING_CONDITION,
-          OTHER_CONDITION,
+        condition: {
+          additionalCondition,
+          exceptionalCondition,
+          levelCondition,
+          elementalStoneCondition,
+          friendshipCondition,
+          tradingCondition,
+          otherCondition,
         },
       },
-      { util: this.utilString() },
+      { funcString: this.funcString() },
     ]);
   }
 
@@ -48,7 +50,7 @@ export class Evolution extends CrawlingUtil {
     return evolutions;
   };
 
-  private getEvolution = (type: EVOLUTION_TYPE): IEvolution[] => {
+  private getEvolution = (type: EvolutionType): IEvolution[] => {
     const array = <T>($el: Iterable<T>): T[] => Array.from($el);
     const getText = ($el: Element): string | null => $el?.textContent?.trim().replace(/é/gi, 'e') || null;
     const getTexts = ($el: NodeListOf<Element> | Element[]): (string | null)[] => array($el).map(getText);
@@ -63,39 +65,45 @@ export class Evolution extends CrawlingUtil {
       return new Function(...[...func.split(','), ...funcs]);
     };
 
-    const POKEMON = getItem<POKEMON>('POKEMON');
-    const DIFFERENT_FORM = getItem<DIFFERENT_FORM>('DIFFERENT_FORM');
-    const CONDITIONS = getItem<IConditions>('CONDITIONS');
-    const CONDITION = (() => {
+    const pokemonName = getItem<PokemonName>('pokemonName');
+    const differentFormName = getItem<DifferentFormName>('differentFormName');
+    const conditionType = getItem<IConditions>('condition');
+    const condition = (() => {
       switch (type) {
         case 'level':
-          return CONDITIONS.LEVEL_CONDITION;
+          return conditionType.levelCondition;
         case 'stone':
-          return CONDITIONS.ELEMENTAL_STONE_CONDITION;
+          return conditionType.elementalStoneCondition;
         case 'trade':
-          return CONDITIONS.TRADING_CONDITION;
+          return conditionType.tradingCondition;
         case 'friendship':
-          return CONDITIONS.FRIENDSHIP_CONDITION;
+          return conditionType.friendshipCondition;
         default:
-          return CONDITIONS.OTHER_CONDITION;
+          return conditionType.otherCondition;
       }
     })();
-    const util = getItem<UtilString>('util');
+    const funcString = getItem<FuncString>('funcString');
 
-    const getName = (name: string): POKEMON => parseFunction(util.getName)?.call(null, name, POKEMON);
-    const getForm = (form: string | null): DIFFERENT_FORM =>
-      parseFunction(util.getForm)?.call(null, form, DIFFERENT_FORM);
+    const getName = (name: string): PokemonName => parseFunction(funcString.getName)?.call(null, name, pokemonName);
+    const getForm = (form: string | null): DifferentFormName => {
+      return parseFunction(funcString.getForm)?.call(null, form, differentFormName);
+    };
     const getCondition = (conditions: (string | null)[]): string[] => {
       const [c1, c2, ...c] = conditions.flatMap(c => (conditions.length < 2 ? c?.split(', ') ?? c : c));
       const isAdditionalConditions = c.length > 0;
       const additionalConditions = isAdditionalConditions ? `${c2}, ${c.join('')}` : c2;
 
       const _conditions = [c1, additionalConditions].filter(c => c);
-      const params = [_conditions, type, CONDITION, CONDITIONS.ADDITIONAL_CONDITION, CONDITIONS.EXCEPTIONAL_CONDITION];
+      const params = [
+        _conditions,
+        type,
+        condition,
+        conditionType.additionalCondition,
+        conditionType.exceptionalCondition,
+      ];
 
-      return parseFunction(util.getCondition)?.apply(null, params);
+      return parseFunction(funcString.getCondition)?.apply(null, params);
     };
-
     const getPokemonInfo = ($pokemon: Element[]): IEvolution[] => {
       return $pokemon.map<IEvolution>($td => {
         const image = $td.querySelector<HTMLSpanElement>('.icon-pkmn')?.dataset.src ?? '';

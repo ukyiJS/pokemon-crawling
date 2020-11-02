@@ -1,6 +1,20 @@
 import { CrawlingUtil } from '@/pokemon/crawling/utils';
 import { IEggCycle, IGender, IPokemonOfDatabase, IStat, ITypeDefense } from '@/pokemon/pokemon.interface';
-import { ABILITY, EGG_GROUP, POKEMON, POKEMON_TYPE, STAT, UtilString } from '@/pokemon/pokemon.type';
+import {
+  AbilityName,
+  abilityName,
+  EggGroupName,
+  eggGroupName,
+  ExceptionalAbilityName,
+  exceptionalAbilityName,
+  PokemonName,
+  pokemonName,
+  PokemonTypeName,
+  pokemonTypeName,
+  StatName,
+  statName,
+  FuncString,
+} from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
 import { whiteBright } from 'chalk';
 import { Page } from 'puppeteer';
@@ -14,12 +28,13 @@ export class PokemonsOfDatabase extends CrawlingUtil {
 
     this.promiseLocalStorage = this.initLocalStorage([
       { gdpr: '0' },
-      { POKEMON },
-      { POKEMON_TYPE },
-      { STAT },
-      { ABILITY },
-      { EGG_GROUP },
-      { util: this.utilString() },
+      { pokemonName },
+      { pokemonTypeName },
+      { statName },
+      { abilityName },
+      { exceptionalAbilityName },
+      { eggGroupName },
+      { funcString: this.funcString() },
     ]);
   }
 
@@ -55,50 +70,153 @@ export class PokemonsOfDatabase extends CrawlingUtil {
   };
 
   private getPokemons = (i = 0): IPokemonOfDatabase => {
-    const $element = document.querySelector('#main')!;
+    const Util = class {
+      private static private = Symbol('util');
 
-    const getItem = <T>(key: string): T => JSON.parse(localStorage.getItem(key) ?? '{}');
-    const parseFunction = (str: string) => {
-      const funcReg = /function *\(([^()]*)\)[ \n\t]*{(.*)}/gim;
-      const match = funcReg.exec(str.replace(/\n/g, ' '));
-      if (!match) return null;
+      private type: {
+        pokemonName: PokemonName;
+        statName: StatName;
+        pokemonTypeName: PokemonTypeName;
+        abilityName: AbilityName;
+        exceptionalAbilityName: ExceptionalAbilityName;
+        eggGroupName: EggGroupName;
+      };
 
-      const [, func, ...funcs] = match;
-      return new Function(...[...func.split(','), ...funcs]);
+      private func: FuncString;
+
+      private $element: Element | null;
+
+      private $elements: Element[];
+
+      static init() {
+        return new Util(this.private);
+      }
+
+      constructor(checker: any) {
+        if (checker !== Util.private) throw new Error('Use Util.init()!');
+
+        this.type = {
+          pokemonName: this.getItem<PokemonName>('pokemonName'),
+          statName: this.getItem<StatName>('statName'),
+          pokemonTypeName: this.getItem<PokemonTypeName>('pokemonTypeName'),
+          abilityName: this.getItem<AbilityName>('abilityName'),
+          exceptionalAbilityName: this.getItem<ExceptionalAbilityName>('exceptionalAbilityName'),
+          eggGroupName: this.getItem<EggGroupName>('eggGroupName'),
+        };
+        this.func = this.getItem<FuncString>('funcString');
+      }
+
+      of = ($element: Element | Element[] | NodeListOf<Element> | null): this => {
+        if (!$element) this.$element = null;
+        else if ($element instanceof Element) this.$element = $element;
+        else this.$elements = Array.from($element);
+
+        return this;
+      };
+
+      getItem = <T>(key: string): T => JSON.parse(localStorage.getItem(key) ?? '{}');
+
+      getColumn = (): Element[][] => {
+        const $panel = this.getElement()!.querySelectorAll('.tabset-basics > .tabs-panel-list > .tabs-panel')[i];
+        const $grid = Array.from($panel.querySelectorAll('.grid-col:not(:nth-child(3))'));
+        const $columns = $grid.reduce<Element[][]>((acc, $element, i, { length }) => {
+          const isTable = $element.querySelector('table');
+          const isTypeDefenses = length - 1 === i;
+          if (isTypeDefenses) return [...acc, Array.from($element.querySelectorAll('.resp-scroll'))];
+
+          const tableDataCell = Array.from($element.querySelectorAll('table td'));
+          return [...acc, isTable ? tableDataCell : [$element]];
+        }, []);
+        return $columns;
+      };
+
+      getElement = (): Element | null => this.$element;
+
+      getElements = (): Element[] => this.$elements;
+
+      getChildren = (): Element[] => (this.$element instanceof Element ? Array.from(this.$element.children) : []);
+
+      getText = (): string => (<Element | null>this.$element)?.textContent?.trim().replace(/é/gi, 'e') ?? '';
+
+      getTexts = (): string[] => {
+        return this.$elements.reduce<string[]>((acc, $element) => {
+          const text = $element.textContent?.trim().replace(/é/gi, 'e') ?? '';
+          return text ? [...acc, text] : acc;
+        }, []);
+      };
+
+      getSrc = (): string => (<HTMLImageElement>this.$element)?.src ?? '';
+
+      matchText = (regExp: RegExp): string => this.getText().match(regExp)?.[1] ?? '';
+
+      replaceText = (searchValue: string | RegExp, replaceValue = ''): string => {
+        return this.getText().replace(new RegExp(searchValue, 'gi'), replaceValue);
+      };
+
+      private parseFunction = (funcString: string) => {
+        const funcReg = /function *\(([^()]*)\)[ \n\t]*{(.*)}/gim;
+        const match = funcReg.exec(funcString.replace(/\n/g, ' '));
+        if (!match) return null;
+
+        const [, func, ...funcs] = match;
+        return new Function(...func.split(',').concat(funcs));
+      };
+
+      getName = (): PokemonName => {
+        return this.parseFunction(this.func.getName)?.call(null, this.getText(), this.type.pokemonName);
+      };
+
+      getTypes = (): PokemonTypeName[] => {
+        return this.parseFunction(this.func.getType)?.call(null, this.getTexts(), this.type.pokemonTypeName);
+      };
+
+      private getAbility = (text: string | null): string => {
+        return text && this.parseFunction(this.func.getAbility)?.call(null, text, this.type.abilityName);
+      };
+
+      getAbilities = (): string[] => this.getElements().map($element => this.getAbility($element.textContent));
+
+      getHiddenAbility = (): string | null => this.getAbility(this.getText() || null);
+
+      getEvYield = (): string => {
+        return this.parseFunction(this.func.getEvYield)?.call(null, this.getText(), this.type.statName);
+      };
+
+      getEggGroups = (): EggGroupName[] => {
+        return this.parseFunction(this.func.getEggGroups)?.call(null, this.getText(), this.type.eggGroupName);
+      };
+
+      getGenders = (): IGender[] => this.parseFunction(this.func.getGender)?.call(null, this.getText());
+
+      getEggCycles = (): IEggCycle => this.parseFunction(this.func.getEggCycles)?.call(null, this.getText());
+
+      getStats = (): IStat[] => this.parseFunction(this.func.getStat)?.call(null, this.getTexts(), this.type.statName);
+
+      getTypeDefenses = ($abilities: NodeListOf<Element>, $hiddenAbility: Element | null): ITypeDefense[] => {
+        let typeDefenseIndex = 0;
+        const $typeDefensesTabs = Array.from(document.querySelectorAll('a.tabs-tab.text-small'));
+        const isTypeDefensesTabs = $typeDefensesTabs.length > 0;
+
+        if (isTypeDefensesTabs) {
+          const mergedAbilities = [...$abilities, $hiddenAbility].filter(e => e) as Element[];
+          const equals = (value1: string, value2: string | null): boolean => {
+            return !!value2 && new RegExp(value1, 'gi').test(value2);
+          };
+
+          const keys = this.type.exceptionalAbilityName.filter(key => {
+            return mergedAbilities.some($ability => equals(key, $ability.textContent));
+          });
+          const index = $typeDefensesTabs.findIndex($tab => keys.some(key => !equals(key, $tab.textContent)));
+          typeDefenseIndex = index > -1 ? index : 0;
+        }
+
+        const $typeDefenseElements = Array.from(this.getElements()[typeDefenseIndex].querySelectorAll('table td'));
+        const typeDefenseTexts = $typeDefenseElements.map($typeDefense => $typeDefense.textContent || '1');
+        return this.parseFunction(this.func.getTypeDefenses)?.call(null, typeDefenseTexts, this.type.pokemonTypeName);
+      };
     };
-    const POKEMON = getItem<POKEMON>('POKEMON');
-    const STAT = getItem<STAT>('STAT');
-    const POKEMON_TYPE = getItem<POKEMON_TYPE>('POKEMON_TYPE');
-    const ABILITY = getItem<ABILITY>('ABILITY');
-    const EGG_GROUP = getItem<EGG_GROUP>('EGG_GROUP');
-    const util = getItem<UtilString>('util');
 
-    const getName = (name: string): POKEMON => parseFunction(util.getName)?.call(null, name, POKEMON);
-    const getType = (types: string[]): POKEMON_TYPE[] => parseFunction(util.getType)?.call(null, types, POKEMON_TYPE);
-    const getAbility = (ability: string | null): string | null =>
-      parseFunction(util.getAbility)?.call(null, ability, ABILITY);
-    const getEvYield = (evYield: string): string => parseFunction(util.getEvYield)?.call(null, evYield, STAT);
-    const getEggGroups = (eegGroups: string): EGG_GROUP[] =>
-      parseFunction(util.getEggGroups)?.call(null, eegGroups, EGG_GROUP);
-    const getGender = (gender: string): IGender[] => parseFunction(util.getGender)?.call(null, gender);
-    const getEggCycles = (eggCycles: string): IEggCycle => parseFunction(util.getEggCycles)?.call(null, eggCycles);
-    const getStat = (stats: string[]): IStat[] => parseFunction(util.getStat)?.call(null, stats, STAT);
-    const getTypeDefenses = (typeDefenses: string[]): ITypeDefense[] =>
-      parseFunction(util.getTypeDefenses)?.call(null, typeDefenses, POKEMON_TYPE);
-
-    const array = <T>($el: Iterable<T>): T[] => Array.from($el);
-    const children = ($el: Element | null) => ($el ? Array.from($el.children) : []);
-    const getText = ($el: Element | null): string => $el?.textContent?.trim().replace(/é/gi, 'e') ?? '';
-    const getTexts = ($el: NodeListOf<Element> | Element[]): string[] =>
-      Array.from($el).reduce<string[]>((acc, $el, _, __, text = getText($el)) => (text ? [...acc, text] : acc), []);
-
-    const $panel = $element.querySelectorAll('.tabset-basics > .tabs-panel-list > .tabs-panel')[i];
-    const $grid = array($panel.querySelectorAll('.grid-col:not(:nth-child(3))'));
-    const $columns = $grid.reduce<Element[][]>((acc, $el) => {
-      const isTable = $el.querySelector('table');
-      const tableDataCell = array($el.querySelectorAll('table td'));
-      return [...acc, isTable ? tableDataCell : [$el]];
-    }, []);
+    const { of } = Util.init();
 
     const [
       [_$image],
@@ -106,54 +224,58 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       [$evYield, $catchRate, $friendship, $exp],
       [$eegGroups, $gender, $eggCycles],
       $stats,
-      $typeDefenses,
-    ] = $columns;
-    const $name = $element.querySelector('h1');
+      _$typeDefenses,
+    ] = of(document.querySelector('#main')).getColumn();
+
+    const $name = document.querySelector('#main > h1');
     const $image = _$image.querySelector('img');
-    const $types = children(_$types);
-    const $abilities = _$abilities.querySelectorAll('span > a');
+    const $types = _$types.childNodes as NodeListOf<Element>;
+    const $abilities = _$abilities.querySelectorAll<Element>('span > a');
     const $hiddenAbility = _$abilities.querySelector('small > a');
 
-    const raw = {
-      no: getText($no),
-      name: getText($name),
-      image: $image?.src ?? '',
-      types: getTexts($types),
-      species: getText($species),
-      height: getText($height),
-      weight: getText($weight),
-      abilities: getTexts($abilities),
-      hiddenAbility: getText($hiddenAbility) || null,
-      evYield: getText($evYield),
-      catchRate: getText($catchRate),
-      friendship: getText($friendship),
-      exp: getText($exp),
-      eegGroups: getText($eegGroups),
-      gender: getText($gender),
-      eggCycles: getText($eggCycles),
-      stats: getTexts($stats),
-      typeDefenses: $typeDefenses.map(getText),
-    };
+    const no = of($no).getText();
+    const korName = of($name).getName();
+    const engName = of($name).getText();
+    const image = of($image).getSrc();
+    const types = of($types).getTypes();
+    const species = of($species).getText();
+    const height = of($height).matchText(/(\w.*)(?=\s\()/);
+    const weight = of($weight).matchText(/(\w.*)(?=\s\()/);
+    const abilities = of($abilities).getAbilities();
+    const hiddenAbility = of($hiddenAbility).getHiddenAbility();
+    const evYield = of($evYield).getEvYield();
+    const catchRate = +of($catchRate).replaceText(/—|\s.*/);
+    const friendship = +of($friendship).replaceText(/—|\s.*/);
+    const exp = +of($exp).replaceText(/—|\s.*/);
+    const eegGroups = of($eegGroups).getTexts();
+    const gender = of($gender).getGenders();
+    const eggCycles = of($eggCycles).getEggCycles();
+    const stats = of($stats).getStats();
+    const typeDefenses = of(_$typeDefenses).getTypeDefenses($abilities, $hiddenAbility);
 
     return {
-      ...raw,
-      name: getName(raw.name),
-      engName: raw.name,
-      types: getType(raw.types),
-      abilities: raw.abilities.map(getAbility),
-      hiddenAbility: getAbility(raw.hiddenAbility),
-      height: raw.height.match(/(\w.*)(?=\s\()/)?.[1] ?? null,
-      weight: raw.weight.match(/(\w.*)(?=\s\()/)?.[1] ?? null,
-      evYield: getEvYield(raw.evYield),
-      catchRate: Number(raw.catchRate.replace(/—|\s.*/g, '')),
-      friendship: Number(raw.friendship.replace(/—|\s.*/g, '')),
-      exp: Number(raw.exp.replace(/—|\s.*/g, '')),
-      eegGroups: getEggGroups(raw.eegGroups),
-      gender: getGender(raw.gender),
-      eggCycles: getEggCycles(raw.eggCycles),
-      stats: getStat(raw.stats),
-      typeDefenses: getTypeDefenses(raw.typeDefenses),
-    } as IPokemonOfDatabase;
+      no,
+      name: korName,
+      engName,
+      image,
+      species,
+      types,
+      abilities,
+      hiddenAbility,
+      height,
+      weight,
+      evYield,
+      catchRate,
+      friendship,
+      exp,
+      eegGroups,
+      gender,
+      eggCycles,
+      stats,
+      typeDefenses,
+      form: null,
+      differentForm: [],
+    };
   };
 
   private getDifferentForm = async (): Promise<IPokemonOfDatabase[]> => {

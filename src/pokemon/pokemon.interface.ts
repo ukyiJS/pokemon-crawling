@@ -1,11 +1,11 @@
 import {
-  ADDITIONAL_CONDITION,
-  ELEMENTAL_STONE_CONDITION,
-  EXCEPTIONAL_CONDITION,
-  FRIENDSHIP_CONDITION,
-  LEVEL_CONDITION,
-  OTHER_CONDITION,
-  TRADING_CONDITION,
+  AdditionalCondition,
+  ElementalStoneCondition,
+  ExceptionalCondition,
+  FriendshipCondition,
+  LevelCondition,
+  OtherCondition,
+  TradingCondition,
 } from './pokemon.type';
 
 export interface IStat {
@@ -108,11 +108,11 @@ export interface IEvolution {
 }
 
 export interface IConditions {
-  LEVEL_CONDITION: LEVEL_CONDITION;
-  ELEMENTAL_STONE_CONDITION: ELEMENTAL_STONE_CONDITION;
-  TRADING_CONDITION: TRADING_CONDITION;
-  FRIENDSHIP_CONDITION: FRIENDSHIP_CONDITION;
-  OTHER_CONDITION: OTHER_CONDITION;
-  ADDITIONAL_CONDITION: ADDITIONAL_CONDITION;
-  EXCEPTIONAL_CONDITION: EXCEPTIONAL_CONDITION;
+  levelCondition: LevelCondition;
+  elementalStoneCondition: ElementalStoneCondition;
+  tradingCondition: TradingCondition;
+  friendshipCondition: FriendshipCondition;
+  otherCondition: OtherCondition;
+  additionalCondition: AdditionalCondition;
+  exceptionalCondition: ExceptionalCondition;
 }
