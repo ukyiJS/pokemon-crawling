@@ -116,3 +116,9 @@ export interface IConditions {
   additionalCondition: AdditionalCondition;
   exceptionalCondition: ExceptionalCondition;
 }
+
+export interface IPokemonImage {
+  no: string;
+  name: string;
+  image: string;
+}
