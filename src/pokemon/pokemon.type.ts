@@ -1465,10 +1465,12 @@ export const pokemonName = {
   ETERNATUS: '무한다이노',
   KUBFU: '치고마',
   URSHIFU: '우라오스',
-  CALYREX: '버드렉스',
   ZARUDE: '자루도',
   REGIELEKI: '레지에레키',
   REGIDRAGO: '레지드래고',
+  GLASTRIER: '블리자포스',
+  SPECTRIER: '레이스포스',
+  CALYREX: '버드렉스',
 } as const;
 export type PokemonName = typeof pokemonName[keyof typeof pokemonName];
 
