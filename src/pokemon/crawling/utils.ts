@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { LoadingBar, LoadingType, STDOUT } from '@/utils';
+import { ProgressBar, ProgressType } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { blueBright, redBright, yellowBright } from 'chalk';
 import { Page } from 'puppeteer';
@@ -26,9 +26,9 @@ import {
 type Loading = { update: (curser: number) => void };
 
 export class CrawlingUtil {
-  protected loadingBar: LoadingBar;
+  protected progressBar: ProgressBar;
 
-  protected loadingSize: number;
+  protected progressBarSize: number;
 
   protected page: Page;
 
@@ -47,14 +47,14 @@ export class CrawlingUtil {
       .replace(/(\w+:(?!\/))/g, yellowBright('$1'))
       .replace(/(null)/g, redBright('$1'));
 
-  public initLoading = (size: number, type: LoadingType = STDOUT): void => {
-    this.loadingSize = size;
-    this.loadingBar = new LoadingBar(type);
+  public initLoading = (size: number, type?: ProgressType): void => {
+    this.progressBarSize = size;
+    this.progressBar = new ProgressBar(type);
   };
 
   public get loading(): Loading {
-    if (!this.loadingBar) throw redBright('loading has not been initialized.');
-    return { update: (curser: number): void => this.loadingBar.update((curser / this.loadingSize) * 100) };
+    if (!this.progressBar) throw redBright('loading has not been initialized.');
+    return { update: (curser: number): void => this.progressBar.update((curser / this.progressBarSize) * 100) };
   }
 
   public initLocalStorage = async (localStorageItems: ObjectLiteral[]): Promise<void> => {
