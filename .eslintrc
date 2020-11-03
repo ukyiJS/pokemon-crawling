@@ -38,6 +38,7 @@
     "no-restricted-syntax": "off",
     "no-continue": "off",
     "no-constant-condition": "off",
-    "max-classes-per-file": "off"
+    "max-classes-per-file": "off",
+    "lines-between-class-members": "off"
   }
 }
