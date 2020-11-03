@@ -3,9 +3,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { Evolution, PokemonsOfDatabase, PokemonsOfWiki } from './crawling';
+import { PokemonIconImages } from './crawling/serebiiNet/pokemonIconImages';
 import { CrawlingUtil } from './crawling/utils';
 import { PokemonOfDatabase } from './model/pokemonOfDatabase.entity';
-import { IEvolution, IPokemonOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
+import { IEvolution, IPokemonImage, IPokemonOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
 import { evolutionType, EvolutionType } from './pokemon.type';
 
 @Injectable()
@@ -89,5 +90,17 @@ export class PokemonService {
       throw error;
     }
     return true;
+  }
+
+  public async getPokemonIconImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
+    const url = 'https://serebii.net/pokemon/nationalpokedex.shtml';
+    const selector = '#content > main';
+    const { browser, page } = await getBrowserAndPage(url, selector);
+    const { crawling } = new PokemonIconImages(page);
+
+    const iconImages = await crawling();
+    await browser.close();
+
+    return iconImages;
   }
 }
