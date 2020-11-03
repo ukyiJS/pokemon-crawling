@@ -43,7 +43,10 @@ export const getBrowserAndPage = async (url: string, waitForSelector: string): P
   page.once('close', () => Logger.log('✅ Page is closed', 'PageClose'));
 
   Logger.log(`############################## Crawling Start ##############################`, 'Start');
-  await page.goto(url);
+  await page.goto(url, {
+    waitUntil: 'load',
+    timeout: 0,
+  });
 
   await page.waitForSelector(waitForSelector);
 
