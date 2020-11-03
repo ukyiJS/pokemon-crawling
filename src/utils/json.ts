@@ -20,9 +20,10 @@ interface MergedJson {
 
 const fileOptions = { encoding: 'utf-8' };
 
-export const getJson = <T>({ fileName, dirName = 'src/assets/json' }: GetJson): T => {
+export const getJson = <T>({ fileName, dirName = 'src/assets/json' }: GetJson): T | null => {
   const dir = join(process.cwd(), dirName, fileName);
-  return JSON.parse(readFileSync(dir, fileOptions)) as T;
+  const isExists = existsSync(dir);
+  return isExists ? <T>JSON.parse(readFileSync(dir, fileOptions)) : null;
 };
 
 export const mergeJson = <T>({ fileNames, dirName = 'src/assets/json' }: MergedJson): T[] => {
