@@ -44,3 +44,6 @@ env*.json
 
 # json file
 **/json/*.json
+
+# download files
+**/download
