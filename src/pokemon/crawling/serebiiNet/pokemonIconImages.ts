@@ -1,20 +1,28 @@
 import { IPokemonImage } from '@/pokemon/pokemon.interface';
-import { FuncString, PokemonName } from '@/pokemon/pokemon.type';
-import { SerebiiNetUtil } from '../utils';
+import { functionString, FunctionString, PokemonName, pokemonName, pokemonTypeName } from '@/pokemon/pokemon.type';
+import { CrawlingUtil } from '@/utils';
 
-export class PokemonIconImages extends SerebiiNetUtil {
+const { getName } = functionString;
+
+export class PokemonIconImages extends CrawlingUtil {
+  protected promiseLocalStorage = this.initLocalStorage([
+    { functionString: { getName } },
+    { pokemonName },
+    { pokemonTypeName },
+  ]);
+
   public crawling = async (): Promise<IPokemonImage[]> => {
     await this.promiseLocalStorage;
 
     const pokemonImages = this.page.evaluate((): IPokemonImage[] => {
       const { of } = new (class {
-        private func: FuncString;
+        private functionString: FunctionString;
         private type: { pokemonName: PokemonName };
         private $element: Element | null;
         private $elements: Element[];
 
         constructor() {
-          this.func = this.getItem<FuncString>('funcString');
+          this.functionString = this.getItem<FunctionString>('functionString');
           this.type = { pokemonName: this.getItem<PokemonName>('pokemonName') };
         }
 
@@ -56,7 +64,7 @@ export class PokemonIconImages extends SerebiiNetUtil {
           return (regExp ? href?.match(regExp)?.[1] : href) ?? '';
         };
         public getName = (): PokemonName => {
-          return this.parseFunction(this.func.getName)?.call(null, this.getText(), this.type.pokemonName);
+          return this.parseFunction(this.functionString.getName)?.call(null, this.getText(), this.type.pokemonName);
         };
       })();
 
