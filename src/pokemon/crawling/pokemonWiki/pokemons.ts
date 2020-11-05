@@ -1,23 +1,16 @@
-import { CrawlingUtil } from '@/pokemon/crawling/utils';
 import { IPokemonsOfWiki } from '@/pokemon/pokemon.interface';
-import { Logger } from '@nestjs/common';
-import { whiteBright } from 'chalk';
-import { Page } from 'puppeteer';
+import { CrawlingUtil, ProgressBar } from '@/utils';
 
 export class PokemonsOfWiki extends CrawlingUtil {
-  private loopCount: number;
-
-  constructor(page: Page, loopCount = 893) {
-    super(page);
-    this.loopCount = loopCount;
-    this.initLoading(loopCount);
-  }
+  protected promiseLocalStorage: Promise<void>;
 
   public crawling = async (): Promise<IPokemonsOfWiki[]> => {
-    let currentCount = 0;
+    let curser = 0;
     let pokemons: IPokemonsOfWiki[] = [];
+    const progressBar = new ProgressBar();
+    const numberOfLoop = 893;
 
-    const isLoop = currentCount < this.loopCount;
+    const isLoop = curser < numberOfLoop;
     const selector = '.infobox-pokemon';
     const nextClickSelector = 'table.w-100.mb-1 td:nth-child(3) td:nth-child(1) > a';
     const navigationPromise = this.page.waitForNavigation();
@@ -40,9 +33,8 @@ export class PokemonsOfWiki extends CrawlingUtil {
 
       pokemons = [...pokemons, pokemon];
 
-      currentCount = +pokemon.no;
-      Logger.log(whiteBright(this.getPrettyJson(pokemon)), 'Result');
-      this.loading.update(currentCount);
+      curser = +pokemon.no;
+      progressBar.update((curser / numberOfLoop) * 100, `${pokemon.no} : ${pokemon.name}`);
 
       if (!isLoop) break;
 

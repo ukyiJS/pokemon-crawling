@@ -20,17 +20,17 @@ describe('PokemonService', () => {
     service = new PokemonService(repository);
   });
 
-  it.skip('Pokemons of Database Test', async () => {
+  it('Pokemons of Database Test', async () => {
     const pokemons = await service.getPokemonsOfDatabase();
     expect(pokemons).not.toBeUndefined();
   });
 
-  it.skip('Evolution Test', async () => {
+  it.only('Evolution Test', async () => {
     const evolutions = await service.getEvolutionOfDatabase();
     expect(evolutions).not.toBeUndefined();
   });
 
-  it.only('Pokemon Icon Images Test', async () => {
+  it('Pokemon Icon Images Test', async () => {
     const iconImages = await service.getPokemonIconImagesOfSerebiiNet();
     expect(iconImages).not.toBeUndefined();
   });

@@ -4,12 +4,6 @@ import { createWriteStream, existsSync, mkdirSync, ReadStream } from 'fs';
 import { join } from 'path';
 import { ProgressBar } from '.';
 
-type Image = {
-  url: string;
-  name: string;
-  dirName?: string;
-};
-
 type DataToDownload = {
   url: string;
   fileName: string;
