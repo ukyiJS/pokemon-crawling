@@ -1,13 +1,3 @@
-import {
-  AdditionalCondition,
-  ElementalStoneCondition,
-  ExceptionalCondition,
-  FriendshipCondition,
-  LevelCondition,
-  OtherCondition,
-  TradingCondition,
-} from './pokemon.type';
-
 export interface IStat {
   name: string;
   value: number;
@@ -88,37 +78,22 @@ export interface IPokemonOfDatabase {
   eegGroups: string[];
   gender: IGender[];
   eggCycles: IEggCycle;
+  evolvingTo?: IEvolvingTo[];
   form: string | null;
   differentForm: IPokemonOfDatabase[];
-}
-
-export interface IEvolvingTo extends IEvolution {
-  type: string;
-  condition: string | null;
-  additionalCondition: string | null;
-}
-
-export interface IEvolution {
-  no: string;
-  name: string;
-  image: string;
-  form: string | null;
-  evolvingTo: IEvolvingTo[];
-  differentForm: IEvolution[];
-}
-
-export interface IConditions {
-  levelCondition: LevelCondition;
-  elementalStoneCondition: ElementalStoneCondition;
-  tradingCondition: TradingCondition;
-  friendshipCondition: FriendshipCondition;
-  otherCondition: OtherCondition;
-  additionalCondition: AdditionalCondition;
-  exceptionalCondition: ExceptionalCondition;
 }
 
 export interface IPokemonImage {
   no: string;
   name: string;
   image: string;
+}
+
+export interface IEvolvingTo {
+  no: string;
+  name: string;
+  image: string;
+  form: string | null;
+  condition?: string;
+  evolvingTo: IEvolvingTo[];
 }
