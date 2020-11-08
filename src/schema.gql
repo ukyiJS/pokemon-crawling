@@ -4,7 +4,7 @@
 
 type EggCycle {
   cycle: Int!
-  step: String
+  step: [Int!]
 }
 
 type Gender {
@@ -68,7 +68,7 @@ type PokemonOfDatabase {
   gender: [Gender!]!
   eggCycles: EggCycle!
   form: String
-  differentForm: [DifferentForm!]
+  differentForm: [DifferentForm!]!
   createdAt: Float!
   searchCount: Int!
 }
