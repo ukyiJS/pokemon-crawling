@@ -6,6 +6,6 @@ export class EggCycle implements IEggCycle {
   @Field(() => Int)
   cycle: number;
 
-  @Field({ nullable: true })
-  step: string;
+  @Field(() => [Int], { nullable: true })
+  step: number[];
 }
