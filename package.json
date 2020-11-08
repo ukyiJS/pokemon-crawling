@@ -36,7 +36,6 @@
     "ejs": "^3.1.5",
     "graphql": "^15.2.0",
     "graphql-tools": "^6.0.12",
-    "hangul-js": "^0.2.6",
     "mongodb": "^3.5.9",
     "puppeteer": "^5.3.0",
     "reflect-metadata": "^0.1.13",
