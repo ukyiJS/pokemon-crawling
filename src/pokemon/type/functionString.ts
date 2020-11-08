@@ -135,10 +135,7 @@ export const functionString = {
     const [, cycle, step] = match;
     return {
       cycle: +cycle,
-      step: step
-        .replace(/\D/g, '')
-        .split(/-/)
-        .map(step => +step),
+      step: step.split('–').map(step => +step.replace(/\D/g, '')),
     };
   }}`,
 
