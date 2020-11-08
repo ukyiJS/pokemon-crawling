@@ -28,7 +28,7 @@ export class PokemonService {
     return pokemons;
   }
 
-  public getPokemonsOfDatabase = async (): Promise<IPokemonOfDatabase[]> => {
+  public async getPokemonsOfDatabase(): Promise<IPokemonOfDatabase[]> {
     const url = 'https://pokemondb.net/pokedex/bulbasaur';
     const selector = '#main';
     const { getBrowserAndPage } = new PuppeteerUtil();
@@ -39,7 +39,7 @@ export class PokemonService {
     await browser.close();
 
     return pokemons;
-  };
+  }
 
   public async findPokemonOfDatabases(page = 1, display = 10): Promise<PokemonOfDatabase[]> {
     return this.pokemonOfDatabaseRepository.find({
@@ -78,7 +78,7 @@ export class PokemonService {
 
     const { multipleDownloads } = new DownloadImage();
     await multipleDownloads(
-      [...pokemonIconImages.slice(0, 10)].map(p => ({
+      pokemonIconImages.map(p => ({
         url: p.image,
         fileName: `${p.no}.png`,
       })),
