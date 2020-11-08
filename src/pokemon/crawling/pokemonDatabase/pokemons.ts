@@ -51,7 +51,6 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       pokemons = [...pokemons, pokemon];
 
       curser = +pokemon.no;
-      Logger.log(`${pokemon.no} ${pokemon.name}`, 'result');
       progressBar.update((curser / numberOfLoop) * 100, `${pokemon.no} : ${pokemon.name}`);
 
       if (curser >= numberOfLoop) break;
