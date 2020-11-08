@@ -119,7 +119,7 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
 
   @Expose()
   @Column()
-  @Field(() => [DifferentForm], { nullable: true })
+  @Field(() => [DifferentForm])
   differentForm: DifferentForm[];
 
   @Expose()
