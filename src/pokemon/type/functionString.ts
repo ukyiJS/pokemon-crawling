@@ -30,7 +30,7 @@ export const functionString = {
         .replace(/(\w.*)(♂|♀)/g, (_, g1, g2) => `${g1}${g2 === '♂' ? 'm' : 'f'}`)
         .replace(/é/g, 'e')
         .replace(/[^a-z0-9]/gi, '');
-      const regExp = (searchValue: string): RegExp => new RegExp(searchValue.replace(/_/g, ''), 'gi');
+      const regExp = (searchValue: string): RegExp => new RegExp(`^${searchValue.replace(/_/g, '')}$`, 'gi');
       [, name] = Object.entries(type).find(([key]) => regExp(key).test(cleanText))!;
     } catch (error) {
       console.error('No Matching Name Found', text);
@@ -133,7 +133,13 @@ export const functionString = {
     if (!match) return null;
 
     const [, cycle, step] = match;
-    return { cycle: +cycle, step };
+    return {
+      cycle: +cycle,
+      step: step
+        .replace(/\D/g, '')
+        .split(/-/)
+        .map(step => +step),
+    };
   }}`,
 
   getStat: `${function(texts: string[], type: typeof statName): IStat[] {

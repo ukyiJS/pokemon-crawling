@@ -55,7 +55,7 @@ export interface ITypeDefense {
 
 export interface IEggCycle {
   cycle: number;
-  step: string | null;
+  step: number[] | null;
 }
 
 export interface IPokemonOfDatabase {
