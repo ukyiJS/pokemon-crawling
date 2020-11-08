@@ -284,7 +284,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       catchRate: +of($catchRate).replaceText(/—|\s.*/),
       friendship: +of($friendship).replaceText(/—|\s.*/),
       exp: +of($exp).replaceText(/—|\s.*/),
-      eegGroups: of($eegGroups).getTexts(),
+      eegGroups: of($eegGroups).getEggGroups(),
       gender: of($gender).getGenders(),
       eggCycles: of($eggCycles).getEggCycles(),
       stats: of($stats).getStats(),
