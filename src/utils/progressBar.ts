@@ -26,7 +26,7 @@ export class ProgressBar {
     const message = `${progressBar} ${label}\r`;
 
     if (this.cursor === 100) {
-      stdout.write(`${progressBar} ${whiteBright('Completion')}\r\n`);
+      stdout.write(`${progressBar} ${bgGreenBright.black('Completion')}\r\n`);
       return;
     }
     switch (this.type) {
