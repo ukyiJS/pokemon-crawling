@@ -262,11 +262,15 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       _$typeDefenses,
     ] = of($main).getColumn();
     const $name = document.querySelector('#main > h1');
+    const $tab = document.querySelector('.tabset-basics > .tabs-tab-list > .tabs-tab.active');
     const $image = _$image.querySelector('img');
     const $types = <NodeListOf<Element>>_$types.childNodes;
     const $abilities = _$abilities.querySelectorAll<Element>('span > a');
     const $hiddenAbility = _$abilities.querySelector('small > a');
     const $evolvingTo = document.querySelectorAll('#main > div.infocard-list-evo');
+
+    const tabName = of($tab).getText();
+    const form = tabName === of($name).getText() ? null : tabName;
 
     return {
       no: of($no).getText(),
@@ -289,7 +293,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       stats: of($stats).getStats(),
       typeDefenses: of(_$typeDefenses).getTypeDefenses($abilities, $hiddenAbility),
       evolvingTo: of($evolvingTo).getEvolvingTo(),
-      form: null,
+      form,
       differentForm: [],
     };
   };
