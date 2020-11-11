@@ -22,4 +22,9 @@ export class PokemonController {
   public getPokemonIconImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
     return this.pokemonService.getPokemonIconImagesOfSerebiiNet();
   }
+
+  @Get('pokemonImagesOfSerebiiNet')
+  public getPokemonImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
+    return this.pokemonService.getPokemonImagesOfSerebiiNet();
+  }
 }
