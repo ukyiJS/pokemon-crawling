@@ -33,12 +33,11 @@ export class PokemonsOfDatabase extends CrawlingUtil {
   public crawling = async (): Promise<IPokemonOfDatabase[]> => {
     await this.promiseLocalStorage;
 
-    const numberOfLoop = 893;
     let curser = 0;
+    const numberOfLoop = 893;
     const progressBar = new ProgressBar();
 
     let pokemons: IPokemonOfDatabase[] = [];
-    const waitForNavigation = this.page.waitForNavigation();
     const nextClickSelector = '.entity-nav-next';
 
     while (true) {
@@ -56,8 +55,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       if (curser >= numberOfLoop) break;
 
       await this.page.waitForSelector(nextClickSelector);
-      await this.page.click(nextClickSelector);
-      await waitForNavigation;
+      await Promise.all([this.page.click(nextClickSelector), this.page.waitForNavigation()]);
     }
 
     return pokemons;
@@ -187,7 +185,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
           this.type.pokemonTypeName,
         );
       };
-      private getForm = (): string | null => {
+      public getForm = (): string | null => {
         if (!this.$element) return null;
         const text = this.$element.textContent;
         return this.parseFunction(this.functionString.getForm)?.call(null, text, this.type.differentFormName);
@@ -270,12 +268,13 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     const $evolvingTo = document.querySelectorAll('#main > div.infocard-list-evo');
 
     const tabName = of($tab).getText();
-    const form = tabName === of($name).getText() ? null : tabName;
+    const engName = of($name).getText();
+    const isForm = tabName === engName ? null : true;
 
     return {
       no: of($no).getText(),
       name: of($name).getName(),
-      engName: of($name).getText(),
+      engName,
       image: of($image).getSrc(),
       types: of($types).getTypes(),
       species: of($species).getText(),
@@ -293,7 +292,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       stats: of($stats).getStats(),
       typeDefenses: of(_$typeDefenses).getTypeDefenses($abilities, $hiddenAbility),
       evolvingTo: of($evolvingTo).getEvolvingTo(),
-      form,
+      form: isForm && of($tab).getForm(),
       differentForm: [],
     };
   };
