@@ -1,10 +1,11 @@
-import { DownloadImage, getJson, PuppeteerUtil } from '@/utils';
+import { DataToDownload, DownloadImage, getJson, PuppeteerUtil } from '@/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { PokemonsOfDatabase } from './crawling/pokemonDatabase/pokemons';
 import { PokemonsOfWiki } from './crawling/pokemonWiki/pokemons';
 import { PokemonIconImages } from './crawling/serebiiNet/pokemonIconImages';
+import { PokemonImages } from './crawling/serebiiNet/pokemonImages';
 import { PokemonOfDatabase } from './model/pokemonOfDatabase.entity';
 import { IPokemonImage, IPokemonOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
 
@@ -85,5 +86,38 @@ export class PokemonService {
     );
 
     return pokemonIconImages;
+  }
+
+  public async getPokemonImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
+    let pokemonImages = getJson<IPokemonImage[]>({ fileName: 'pokemonImagesOfSerebiiNet.json' });
+
+    if (!pokemonImages) {
+      const url = 'https://serebii.net/pokemon/bulbasaur';
+      const selector = '#content > main';
+      const { getBrowserAndPage } = new PuppeteerUtil();
+      const { browser, page } = await getBrowserAndPage(url, selector);
+      const { crawling } = new PokemonImages(page);
+
+      pokemonImages = await crawling();
+      await browser.close();
+    }
+
+    const imagesToDownload = pokemonImages.reduce<DataToDownload[]>((acc, p) => {
+      const extension = 'png';
+
+      const downloadData = { url: p.image, fileName: `${p.no}.${extension}` };
+      if (!p.differentForm?.length) return [...acc, downloadData];
+
+      const differentForm = p.differentForm.map(d => ({
+        url: d.image,
+        fileName: `${p.no}-${d.form}.${extension}`,
+      }));
+      return [...acc, downloadData, ...differentForm];
+    }, []);
+
+    const { multipleDownloads } = new DownloadImage();
+    await multipleDownloads(imagesToDownload);
+
+    return pokemonImages;
   }
 }
