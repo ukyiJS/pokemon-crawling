@@ -5,7 +5,7 @@ import { join } from 'path';
 
 @Injectable()
 export class TypeormService implements TypeOrmOptionsFactory {
-  async createTypeOrmOptions(): Promise<TypeOrmModuleOptions> {
+  public async createTypeOrmOptions(): Promise<TypeOrmModuleOptions> {
     return {
       type: 'mongodb',
       url: MONGODB_URL,
