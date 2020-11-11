@@ -1,15 +1,11 @@
 import { IPokemonImage } from '@/pokemon/pokemon.interface';
-import { functionString, FunctionString, PokemonName, pokemonName, pokemonTypeName } from '@/pokemon/pokemon.type';
+import { functionString, FunctionString, PokemonName, pokemonName } from '@/pokemon/pokemon.type';
 import { CrawlingUtil } from '@/utils';
 
 const { getName } = functionString;
 
 export class PokemonIconImages extends CrawlingUtil {
-  protected promiseLocalStorage = this.initLocalStorage([
-    { functionString: { getName } },
-    { pokemonName },
-    { pokemonTypeName },
-  ]);
+  protected promiseLocalStorage = this.initLocalStorage([{ functionString: { getName } }, { pokemonName }]);
 
   public crawling = async (): Promise<IPokemonImage[]> => {
     await this.promiseLocalStorage;
@@ -74,8 +70,8 @@ export class PokemonIconImages extends CrawlingUtil {
           const no = of($no).replaceText(/\D/);
           const image = of($image).getSrc();
           const name = of($name).getName();
-          console.log(no, name, image);
-          return { no, name, image };
+          const engName = of($name).getText();
+          return { no, name, engName, image };
         });
     });
 
