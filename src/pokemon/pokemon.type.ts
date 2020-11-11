@@ -10,7 +10,6 @@ export * from './type/abilityName';
 export * from './type/differentFormName';
 export * from './type/eggGroupName';
 export * from './type/evolutionType';
-export * from './type/functionString';
 export * from './type/pokemonName';
 export * from './type/pokemonTypeName';
 export * from './type/statName';
