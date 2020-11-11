@@ -39,58 +39,61 @@ export class PokemonImages extends CrawlingUtil {
 
   private getPokemonImages = (): IPokemonImage => {
     const { of, getExceptionalPokemon } = new (class {
-      private $element: Element | null;
-      private $elements: Element[];
+      private $element: Element | Element[] | null;
 
-      public of = ($element: Element | Element[] | NodeListOf<Element> | null): this => {
+      public of = <T>($element: T): this => {
         if (!$element) this.$element = null;
-        else if ($element instanceof Element) this.$element = $element;
-        else this.$elements = Array.from($element);
+        else this.$element = $element instanceof Element ? $element : Array.from(<T & NodeListOf<Element>>$element);
 
         return this;
       };
       public getColumn = (): [Element, Element[], Element, Element[] | null] => {
         const [$image, _$name, _$no] = this.getChildren().filter((_, i) => i < 3);
         const $no = _$no.querySelector('tr > td:last-child')!;
-        const $name = Array.from(_$name.querySelectorAll('tr:nth-child(4n + 1) > td:last-child'));
-        const $table = Array.from(document.querySelectorAll('#content > main > table.dextable')).find(e => {
-          return /Alternate Forms/gi.test(e.querySelector('td')?.textContent ?? '');
-        });
+        const $name = of(_$name.querySelectorAll('tr:nth-child(4n + 1) > td:last-child')).getElements();
+        const $table = of(document.querySelectorAll('#content > main > table.dextable'))
+          .getElements()
+          .find(e => /Alternate Forms/gi.test(e.querySelector('td')?.textContent ?? ''));
         const $differentForms = $table
-          ? Array.from($table.querySelectorAll('tr:last-child tr:nth-child(2) > td'))
+          ? of($table.querySelectorAll('tr:last-child tr:nth-child(2) > td')).getElements()
           : null;
 
         return [$no, $name, $image, $differentForms];
       };
-      public getElement = (): Element | null => this.$element;
-      public getElements = (): Element[] => this.$elements;
+      public getElement = (): Element | null => <Element | null>this.$element;
+      public getElements = (): Element[] => <Element[]>this.$element;
       public getText = (): string => (<Element | null>this.$element)?.textContent?.trim().replace(/é/gi, 'e') ?? '';
       public getTexts = (): string[] => {
-        return this.$elements.reduce<string[]>((acc, $element) => {
+        return this.getElements().reduce<string[]>((acc, $element) => {
           const text = $element.textContent?.trim().replace(/é/gi, 'e') ?? '';
           return text ? [...acc, text] : acc;
         }, []);
       };
-      public getChildren = () => Array.from(this.$element?.children ?? []);
+      public getChildren = () => Array.from(this.getElement()?.children ?? []);
       public matchText = (regExp: RegExp): string => this.getText().match(regExp)?.[1] ?? '';
       public replaceText = (searchValue: string | RegExp, replaceValue = ''): string => {
         return this.getText().replace(new RegExp(searchValue, 'gi'), replaceValue);
       };
       public getImageElement = (): IDifferentFormImage | null => {
-        const $image = this.$element?.querySelector('img');
+        const $image = this.getElement()?.querySelector('img');
         const regExp = /unovan form|unovan|\s/gi;
         return $image ? { image: $image.src, form: $image.alt.replace(regExp, '') } : null;
       };
-      public getSrc = (): string => this.$element?.querySelector('img')?.src ?? '';
+      public getSrc = (): string => this.getElement()?.querySelector('img')?.src ?? '';
       public getHref = (regExp?: RegExp): string => {
-        const href = (<HTMLAnchorElement>this.$element)?.href;
+        const href = (<HTMLAnchorElement>this.getElement())?.href;
         return (regExp ? href?.match(regExp)?.[1] : href) ?? '';
       };
-      public getDifferentForm = (): { image: string; form: string; differentForm: IDifferentFormImage[] } => {
+      public getDifferentForm = (): Partial<IPokemonImage> => {
         const [$differentForm, ...$differentForms] = this.getElements();
         const { image, form } = of($differentForm).getImageElement()!;
-
         const differentForm = $differentForms.map($element => ({ ...of($element).getImageElement()! }));
+
+        if (/^original cap/gi.test(form)) {
+          const basicImage = document.querySelector<HTMLImageElement>('#sprite-regular')?.src ?? '';
+          return { image: basicImage, form: null, differentForm: [{ image, form }, ...differentForm] };
+        }
+
         return { image, form, differentForm };
       };
       public getExceptionalPokemon = (engName: string): { no: string; name: string } | null => {
