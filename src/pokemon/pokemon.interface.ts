@@ -83,10 +83,18 @@ export interface IPokemonOfDatabase {
   differentForm: IPokemonOfDatabase[];
 }
 
+export interface IDifferentFormImage {
+  image: string;
+  form: string;
+}
+
 export interface IPokemonImage {
   no: string;
   name: string;
+  engName: string;
   image: string;
+  form?: string | null;
+  differentForm?: IDifferentFormImage[];
 }
 
 export interface IEvolvingTo {
