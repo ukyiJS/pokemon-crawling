@@ -35,7 +35,7 @@ export class PuppeteerUtil {
     page.once('domcontentloaded', () => Logger.log('✅ DOM is ready', 'DomcontentLoad'));
     page.once('load', () => Logger.log(`✅ Page is Loaded`, 'PageLoad'));
     page.on('console', message => {
-      const regExp = /^A parser-blocking|^Failed|^Access to|^No targeting|^SG Installed|^guaTrackEvent|^Created ad|^Powered by|^tracker|^Aff Overrides|^Use of|^\[AdEngine\]|^isUapResolved|^MediaWiki|^JQMIGRATE|^Watch Shows|^This page|^\[amp-analytics\/transport\]|^\[5a0391aab23c0a5\]|^\[Report Only\]/gi;
+      const regExp = /^A parser-blocking|^Failed|^Access to|^No targeting|^SG Installed|^guaTrackEvent|^Created ad|^Powered by|^tracker|^Aff Overrides|^Use of|^\[AdEngine\]|^isUapResolved|^MediaWiki|^JQMIGRATE|^Watch Shows|^This page|^\[amp-analytics\/transport\]|^\[5a0391aab23c0a5\]|^\[Report Only\]|^fun-hooks|^%cAd URL:%c|^bkTags|^loaded|^\[amp-story-auto-ads:ui\]/gi;
       if (regExp.test(message.text())) return;
       const LoggerKeys: Array<LogLevel> = ['log', 'error', 'warn', 'debug', 'verbose'];
       const LoggerType = LoggerKeys.find(key => new RegExp(key, 'gi').test(message.type())) ?? 'log';
@@ -52,7 +52,6 @@ export class PuppeteerUtil {
     });
     page.on('popup', () => Logger.log('👉 New page is opened', 'Popup'));
     page.on('error', error => Logger.error(`❌ ${error}`, undefined, 'Error'));
-    page.on('pageerror', error => Logger.error(`❌ ${error}`, undefined, 'PageError'));
     page.once('close', () => Logger.log('✅ Page is closed', 'PageClose'));
   };
 }
