@@ -4,7 +4,7 @@ import { createWriteStream, existsSync, mkdirSync, ReadStream } from 'fs';
 import { join } from 'path';
 import { ProgressBar } from '.';
 
-type DataToDownload = {
+export type DataToDownload = {
   url: string;
   fileName: string;
 };
@@ -36,7 +36,8 @@ export class DownloadImage {
     for (const [index, { url, fileName }] of dataToDownloads.entries()) {
       result = [...result, await this.download(url, fileName)];
       const cursor = index + 1;
-      loading.update((cursor / loadingSize) * 100, fileName);
+      Logger.log(`${cursor} : ${fileName}`, 'Download');
+      loading.update((cursor / loadingSize) * 100);
     }
 
     return result;
