@@ -5,8 +5,6 @@ import {
   eggGroupName,
   ExceptionalAbilityName,
   exceptionalAbilityName,
-  functionString,
-  FunctionString,
   PokemonName,
   pokemonName,
   PokemonTypeName,
@@ -14,7 +12,7 @@ import {
   statName,
 } from '@/pokemon/pokemon.type';
 import { differentFormName, DifferentFormName } from '@/pokemon/type/differentFormName';
-import { CrawlingUtil, ProgressBar } from '@/utils';
+import { CrawlingUtil, FunctionString, functionString, ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 
 export class PokemonsOfDatabase extends CrawlingUtil {
@@ -50,7 +48,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       pokemons = [...pokemons, pokemon];
 
       curser = +pokemon.no;
-      progressBar.update((curser / numberOfLoop) * 100, `${pokemon.no} : ${pokemon.name}`);
+      Logger.log(`${pokemon.no} : ${pokemon.name}`, 'Result');
+      progressBar.update((curser / numberOfLoop) * 100);
 
       if (curser >= numberOfLoop) break;
 
