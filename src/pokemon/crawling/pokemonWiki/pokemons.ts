@@ -1,22 +1,20 @@
 import { IPokemonsOfWiki } from '@/pokemon/pokemon.interface';
 import { CrawlingUtil, ProgressBar } from '@/utils';
+import { Logger } from '@nestjs/common';
 
 export class PokemonsOfWiki extends CrawlingUtil {
   protected promiseLocalStorage: Promise<void>;
 
   public crawling = async (): Promise<IPokemonsOfWiki[]> => {
     let curser = 0;
-    let pokemons: IPokemonsOfWiki[] = [];
-    const progressBar = new ProgressBar();
     const numberOfLoop = 893;
+    const progressBar = new ProgressBar();
 
-    const isLoop = curser < numberOfLoop;
-    const selector = '.infobox-pokemon';
+    let pokemons: IPokemonsOfWiki[] = [];
     const nextClickSelector = 'table.w-100.mb-1 td:nth-child(3) td:nth-child(1) > a';
-    const navigationPromise = this.page.waitForNavigation();
 
-    do {
-      await this.page.waitForSelector(selector);
+    while (true) {
+      await this.page.waitForSelector('.infobox-pokemon');
 
       const pokemon = await this.page.evaluate(this.getPokemons);
 
@@ -34,14 +32,14 @@ export class PokemonsOfWiki extends CrawlingUtil {
       pokemons = [...pokemons, pokemon];
 
       curser = +pokemon.no;
-      progressBar.update((curser / numberOfLoop) * 100, `${pokemon.no} : ${pokemon.name}`);
+      Logger.log(`${pokemon.no} : ${pokemon.name}`, 'Result');
+      progressBar.update((curser / numberOfLoop) * 100);
 
-      if (!isLoop) break;
+      if (curser >= numberOfLoop) break;
 
       await this.page.waitForSelector(nextClickSelector);
-      await this.page.click(nextClickSelector);
-      await navigationPromise;
-    } while (isLoop);
+      await Promise.all([this.page.click(nextClickSelector), this.page.waitForNavigation()]);
+    }
 
     return pokemons;
   };
