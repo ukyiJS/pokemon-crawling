@@ -9,16 +9,20 @@ export interface BrowserAndPage {
 export class PuppeteerUtil {
   public getBrowserAndPage = async (url: string, waitForSelector: string): Promise<BrowserAndPage> => {
     const browser = await launch({
-      headless: true,
-      args: [
-        '--disable-gpu',
-        '--disable-dev-shm-usage',
-        '--disable-setuid-sandbox',
-        '--no-first-run',
-        '--no-sandbox',
-        '--no-zygote',
-        '--single-process',
-      ],
+      executablePath: '/mnt/c/Program Files/Google/Chrome/Application/chrome.exe',
+      headless: false,
+      devtools: true,
+      defaultViewport: { width: 1920, height: 1080 },
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      // args: [
+      //   '--disable-gpu',
+      //   '--disable-dev-shm-usage',
+      //   '--disable-setuid-sandbox',
+      //   '--no-first-run',
+      //   '--no-sandbox',
+      //   '--no-zygote',
+      //   '--single-process',
+      // ],
     });
     const page = await browser.newPage();
     this.addPageEvent(page);
