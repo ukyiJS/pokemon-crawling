@@ -102,7 +102,7 @@ export class PokemonImages extends CrawlingUtil {
       };
       public getDifferentForm = (): Partial<IPokemonImage> => {
         const [$differentForm, ...$differentForms] = this.getElements();
-        const { image, form } = of($differentForm).getImageElement()!;
+        const { image = '', form = '' } = of($differentForm).getImageElement() ?? {};
         const differentForm = of($differentForms).getImageElements();
 
         if (/^original cap/gi.test(form)) {
