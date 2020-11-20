@@ -31,7 +31,7 @@ export class PokemonImages extends CrawlingUtil {
         Logger.error(error.message, undefined, 'TimeoutError');
         break;
       }
-      await Promise.all([this.page.click(nextClickSelector), this.page.waitForNavigation()]);
+      await Promise.all([this.page.click(nextClickSelector), this.page.waitForNavigation({ waitUntil: 'load' })]);
     }
 
     return pokemonImages;
@@ -47,18 +47,27 @@ export class PokemonImages extends CrawlingUtil {
 
         return this;
       };
-      public getColumn = (): [Element, Element[], Element, Element[] | null] => {
+      public getColumn = (): [Element, Element[], Element, Element[], Element[], Element[]] => {
         const [$image, _$name, _$no] = this.getChildren().filter((_, i) => i < 3);
         const $no = _$no.querySelector('tr > td:last-child')!;
         const $name = of(_$name.querySelectorAll('tr:nth-child(4n + 1) > td:last-child')).getElements();
-        const $table = of(document.querySelectorAll('#content > main > table.dextable'))
-          .getElements()
-          .find(e => /Alternate Forms/gi.test(e.querySelector('td')?.textContent ?? ''));
-        const $differentForms = $table
-          ? of($table.querySelectorAll('tr:last-child tr:nth-child(2) > td')).getElements()
-          : null;
+        const $table = of(document.querySelectorAll('#content > main > table.dextable')).getElements();
 
-        return [$no, $name, $image, $differentForms];
+        const $differentFormTable = $table.find(e => /^alternate/gi.test(e.querySelector('td')?.textContent ?? ''));
+        const $megaEvolutionTable = $table.find(e => /^mega/gi.test(e.querySelector('td')?.textContent ?? ''));
+        const $gigantamaxTable = $table.find(e => /^gigantamax/gi.test(e.querySelector('td')?.textContent ?? ''));
+
+        const $megaEvolution = $megaEvolutionTable
+          ? of($megaEvolutionTable.querySelectorAll('tr:last-child td')).getElements()
+          : [];
+        const $gigantamax = $gigantamaxTable
+          ? of($gigantamaxTable.querySelectorAll('tr:last-child td')).getElements()
+          : [];
+        const $differentForms = $differentFormTable
+          ? of($differentFormTable.querySelectorAll('tr:last-child tr:nth-child(2) > td')).getElements()
+          : [];
+
+        return [$no, $name, $image, $differentForms, $megaEvolution, $gigantamax];
       };
       public getElement = (): Element | null => <Element | null>this.$element;
       public getElements = (): Element[] => <Element[]>this.$element;
@@ -76,8 +85,15 @@ export class PokemonImages extends CrawlingUtil {
       };
       public getImageElement = (): IDifferentFormImage | null => {
         const $image = this.getElement()?.querySelector('img');
-        const regExp = /unovan form|unovan|\s/gi;
+        const regExp = /unovan form|unovan|artwork|\s/gi;
         return $image ? { image: $image.src, form: $image.alt.replace(regExp, '') } : null;
+      };
+      public getImageElements = (): IDifferentFormImage[] => {
+        try {
+          return this.getElements().map($element => of($element).getImageElement()!);
+        } catch (error) {
+          return [];
+        }
       };
       public getSrc = (): string => this.getElement()?.querySelector('img')?.src ?? '';
       public getHref = (regExp?: RegExp): string => {
@@ -87,7 +103,7 @@ export class PokemonImages extends CrawlingUtil {
       public getDifferentForm = (): Partial<IPokemonImage> => {
         const [$differentForm, ...$differentForms] = this.getElements();
         const { image, form } = of($differentForm).getImageElement()!;
-        const differentForm = $differentForms.map($element => ({ ...of($element).getImageElement()! }));
+        const differentForm = of($differentForms).getImageElements();
 
         if (/^original cap/gi.test(form)) {
           const basicImage = document.querySelector<HTMLImageElement>('#sprite-regular')?.src ?? '';
@@ -114,18 +130,25 @@ export class PokemonImages extends CrawlingUtil {
       };
     })();
 
-    const [$no, $name, $image, $differentForm] = of(
+    const [$no, $name, $image, $differentForm, $megaEvolution, $gigantamax] = of(
       document.querySelector('#content > main > div > table.dextable > tbody > tr:nth-of-type(2)'),
     ).getColumn();
 
     const [engName, korName] = of($name).getTexts();
     const no = of($no).replaceText(/#/);
-    let pokemonImages = { no, name: korName, engName, image: of($image).getSrc(), form: null };
+    let pokemonImages = <IPokemonImage & { differentForm: IDifferentFormImage[] }>{
+      no,
+      name: korName,
+      engName,
+      image: of($image).getSrc(),
+      form: null,
+      differentForm: [...of($megaEvolution).getImageElements(), ...of($gigantamax).getImageElements()],
+    };
 
     const exceptionalPokemon = getExceptionalPokemon(engName);
     if (exceptionalPokemon) pokemonImages = { ...pokemonImages, ...exceptionalPokemon };
 
-    if ($differentForm) return { ...pokemonImages, ...of($differentForm).getDifferentForm() };
+    if ($differentForm.length) return { ...pokemonImages, ...of($differentForm).getDifferentForm() };
     return pokemonImages;
   };
 }
