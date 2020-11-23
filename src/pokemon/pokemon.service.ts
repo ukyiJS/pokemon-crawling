@@ -64,60 +64,55 @@ export class PokemonService {
   }
 
   public async getPokemonIconImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
-    let pokemonIconImages = getJson<IPokemonImage[]>({ fileName: 'pokemonIconImagesOfSerebiiNet.json' });
+    const url = 'https://serebii.net/pokemon/nationalpokedex.shtml';
+    const selector = '#content > main';
+    const { getBrowserAndPage } = new PuppeteerUtil();
+    const { browser, page } = await getBrowserAndPage(url, selector);
+    const { crawling } = new PokemonIconImages(page);
 
-    if (!pokemonIconImages) {
-      const url = 'https://serebii.net/pokemon/nationalpokedex.shtml';
-      const selector = '#content > main';
-      const { getBrowserAndPage } = new PuppeteerUtil();
-      const { browser, page } = await getBrowserAndPage(url, selector);
-      const { crawling } = new PokemonIconImages(page);
-
-      pokemonIconImages = await crawling();
-      await browser.close();
-    }
-
-    const { multipleDownloads } = new DownloadImage();
-    await multipleDownloads(
-      pokemonIconImages.map(p => ({
-        url: p.image,
-        fileName: `${p.no}.png`,
-      })),
-    );
+    const pokemonIconImages = await crawling();
+    await browser.close();
 
     return pokemonIconImages;
   }
 
   public async getPokemonImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
-    let pokemonImages = getJson<IPokemonImage[]>({ fileName: 'pokemonImagesOfSerebiiNet.json' });
+    const url = 'https://serebii.net/pokemon/bulbasaur';
+    const selector = '#content > main';
+    const { getBrowserAndPage } = new PuppeteerUtil();
+    const { browser, page } = await getBrowserAndPage(url, selector);
+    const { crawling } = new PokemonImages(page);
 
-    if (!pokemonImages) {
-      const url = 'https://serebii.net/pokemon/bulbasaur';
-      const selector = '#content > main';
-      const { getBrowserAndPage } = new PuppeteerUtil();
-      const { browser, page } = await getBrowserAndPage(url, selector);
-      const { crawling } = new PokemonImages(page);
-
-      pokemonImages = await crawling();
-      await browser.close();
-    }
-
-    const imagesToDownload = pokemonImages.reduce<DataToDownload[]>((acc, p) => {
-      const extension = 'png';
-
-      const downloadData = { url: p.image, fileName: `${p.no}.${extension}` };
-      if (!p.differentForm?.length) return [...acc, downloadData];
-
-      const differentForm = p.differentForm.map(d => ({
-        url: d.image,
-        fileName: `${p.no}-${d.form}.${extension}`,
-      }));
-      return [...acc, downloadData, ...differentForm];
-    }, []);
-
-    const { multipleDownloads } = new DownloadImage();
-    await multipleDownloads(imagesToDownload);
+    const pokemonImages = await crawling();
+    await browser.close();
 
     return pokemonImages;
+  }
+
+  public async downloadImages(): Promise<void> {
+    const { multipleDownloads } = new DownloadImage();
+    let pokemonImages = getJson<IPokemonImage[]>({ fileName: 'pokemonImagesOfSerebiiNet.json' });
+    let pokemonIconImages = getJson<IPokemonImage[]>({ fileName: 'pokemonIconImagesOfSerebiiNet.json' });
+
+    if (pokemonImages) {
+      const imagesToDownload = pokemonImages.reduce<DataToDownload[]>((acc, p) => {
+        const extension = 'png';
+
+        const downloadData = { url: p.image, fileName: `${p.no}.${extension}` };
+        if (!p.differentForm?.length) return [...acc, downloadData];
+
+        const differentForm = p.differentForm.map(d => ({
+          url: d.image,
+          fileName: `${p.no}-${d.form}.${extension}`,
+        }));
+        return [...acc, downloadData, ...differentForm];
+      }, []);
+      await multipleDownloads(imagesToDownload);
+    }
+
+    if (pokemonIconImages) {
+      const imagesToDownload = pokemonIconImages.map(p => ({ url: p.image, fileName: `${p.no}.png` }));
+      await multipleDownloads(imagesToDownload);
+    }
   }
 }
