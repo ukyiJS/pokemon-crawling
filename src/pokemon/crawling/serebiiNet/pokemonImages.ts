@@ -111,7 +111,7 @@ export class PokemonImages extends CrawlingUtil {
           const { src: image, alt } = <HTMLImageElement>$element;
           const form = (() => {
             const _alt = alt.replace(/unovan form|unovan|artwork|\s/gi, '');
-            if (/^gigantamax/gi.test(_alt)) return 'Gigantamax';
+            if (/^gigantamax/gi.test(_alt)) return 'Dynamax';
             if (/^mega.*x$/gi.test(_alt)) return 'MegaX';
             if (/^mega.*y$/gi.test(_alt)) return 'MegaY';
             if (/^mega/gi.test(_alt)) return 'Mega';
