@@ -38,7 +38,7 @@ export class PokemonsOfWiki extends CrawlingUtil {
       if (curser >= numberOfLoop) break;
 
       await this.page.waitForSelector(nextClickSelector);
-      await Promise.all([this.page.click(nextClickSelector), this.page.waitForNavigation()]);
+      await Promise.all([this.page.click(nextClickSelector), this.page.waitForNavigation({ waitUntil: 'load' })]);
     }
 
     return pokemons;
