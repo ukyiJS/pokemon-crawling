@@ -79,7 +79,7 @@ export class PokemonImages extends CrawlingUtil {
       };
       private getChildren = () => Array.from(this.getElement()?.children ?? []);
       private getImageAndForm = (): IDifferentFormImage | null => {
-        const $image = this.getElement()?.querySelector('img')!;
+        const $image = this.getElement()?.querySelector('img');
         if (!$image) return null;
 
         const { src: image, alt } = <HTMLImageElement>$image;
