@@ -83,12 +83,7 @@ export class PokemonImages extends CrawlingUtil {
         if (!$image) return null;
 
         const { src: image, alt } = <HTMLImageElement>$image;
-        const form = (() => {
-          const _alt = alt.replace(/unovan form|unovan|artwork|\s/gi, '');
-          if (/^alola/gi.test(_alt)) return 'Alola';
-          if (/^Galarian/gi.test(_alt)) return 'Galarian';
-          return _alt;
-        })();
+        const form = alt.replace(/unovan form|unovan|artwork|\s/gi, '');
         return { image, form };
       };
       private getImageAndForms = (): IDifferentFormImage[] => {
