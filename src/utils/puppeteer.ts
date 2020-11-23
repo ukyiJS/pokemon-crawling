@@ -1,3 +1,4 @@
+import { EXECUTABLE_PATH, PROFILE_PATH } from '@/env';
 import { Logger, LogLevel } from '@nestjs/common';
 import { Browser, launch, Page } from 'puppeteer';
 
@@ -12,8 +13,8 @@ const height = 1080;
 export class PuppeteerUtil {
   public getBrowserAndPage = async (url: string, waitForSelector: string): Promise<BrowserAndPage> => {
     const browser = await launch({
-      executablePath: '/mnt/c/Program Files/Google/Chrome/Application/chrome.exe',
-      userDataDir: '/mnt/c/Users/ukyi/AppData/Local/Google/Chrome/User Data',
+      executablePath: EXECUTABLE_PATH,
+      userDataDir: PROFILE_PATH,
       headless: false,
       devtools: true,
       defaultViewport: { width, height },
