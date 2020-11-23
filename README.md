@@ -6,6 +6,30 @@
 
 Nestjs crawling
 
+## Require env file
+
+create `.env.dev` `.env.prod`
+
+env value `PORT` `MONGODB_USER` `MONGODB_HOST` `MONGODB_DATABASE` `EXECUTABLE_PATH` `PROFILE_PATH`
+
+#### window
+
+`EXECUTABLE_PATH=C:/Program Files/Google/Chrome/Application/chrome.exe`
+
+`PROFILE_PATH=C:/Users/<username>/AppData/Local/Google/Chrome/User Data`
+
+#### wsl
+
+`EXECUTABLE_PATH=/mnt/c/Program Files/Google/Chrome/Application/chrome.exe`
+
+`PROFILE_PATH=/mnt/c/Users/<username>/AppData/Local/Google/Chrome/User\ Data`
+
+#### macos
+
+`EXECUTABLE_PATH=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`
+
+`PROFILE_PATH/Users/<username>/Library/Application Support/Google/Chrome`
+
 ## Installation
 
 ```bash
