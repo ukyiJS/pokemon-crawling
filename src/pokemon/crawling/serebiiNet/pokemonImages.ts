@@ -89,11 +89,10 @@ export class PokemonImages extends CrawlingUtil {
         return $image ? { image: $image.src, form: $image.alt.replace(regExp, '') } : null;
       };
       public getImageElements = (): IDifferentFormImage[] => {
-        try {
-          return this.getElements().map($element => of($element).getImageElement()!);
-        } catch (error) {
-          return [];
-        }
+        return this.getElements().reduce<IDifferentFormImage[]>((acc, $element) => {
+          const images = of($element).getImageElement();
+          return images ? [...acc, images] : acc;
+        }, []);
       };
       public getSrc = (): string => this.getElement()?.querySelector('img')?.src ?? '';
       public getHref = (regExp?: RegExp): string => {
@@ -102,7 +101,7 @@ export class PokemonImages extends CrawlingUtil {
       };
       public getDifferentForm = (): Partial<IPokemonImage> => {
         const [$differentForm, ...$differentForms] = this.getElements();
-        const { image = '', form = '' } = of($differentForm).getImageElement() ?? {};
+        const { image, form } = of($differentForm).getImageElement()!;
         const differentForm = of($differentForms).getImageElements();
 
         if (/^original cap/gi.test(form)) {
