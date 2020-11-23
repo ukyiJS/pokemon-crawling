@@ -6,8 +6,10 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 import { LoggingInterceptor, TimeoutInterceptor } from './common';
 import { PORT } from './env';
+import { validateEnv } from './utils/validateEnv';
 
 const createServer = async () => {
+  validateEnv();
   const app = await NestFactory.create<INestApplication & NestExpressApplication>(AppModule, { cors: true });
 
   app.engine('html', renderFile).set('view engine', 'html');
