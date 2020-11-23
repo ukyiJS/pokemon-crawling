@@ -120,17 +120,19 @@ export class PokemonImages extends CrawlingUtil {
         const href = (<HTMLAnchorElement>this.getElement())?.href;
         return (regExp ? href?.match(regExp)?.[1] : href) ?? '';
       };
-      public getDifferentForm = (): Partial<IPokemonImage> => {
+      public getDifferentForm = (): IPokemonImage => {
         const [$differentForm, ...$differentForms] = this.getElements();
         const { image, form } = of($differentForm).getImageAndForm()!;
         const differentForm = of($differentForms).getImageAndForms();
 
-        if (/^original cap/gi.test(form)) {
+        const pokemon = <IPokemonImage>{ image, form, differentForm };
+
+        if (/^originalcap/gi.test(form)) {
           const basicImage = document.querySelector<HTMLImageElement>('#sprite-regular')?.src ?? '';
-          return { image: basicImage, form: null, differentForm: [{ image, form }, ...differentForm] };
+          return { ...pokemon, image: basicImage, form: null, differentForm: [{ image, form }, ...differentForm] };
         }
 
-        return { image, form, differentForm };
+        return pokemon;
       };
       public getExceptionalPokemon = (engName: string): { no: string; name: string } | null => {
         const exceptionalPokemons = [
