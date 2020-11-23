@@ -2,6 +2,8 @@ import { IDifferentFormImage, IPokemonImage } from '@/pokemon/pokemon.interface'
 import { CrawlingUtil, ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 
+type Column = [Element, Element[], Element, Element[], IDifferentFormImage[], IDifferentFormImage[]];
+
 export class PokemonImages extends CrawlingUtil {
   protected promiseLocalStorage: Promise<void>;
 
@@ -47,7 +49,7 @@ export class PokemonImages extends CrawlingUtil {
 
         return this;
       };
-      public getColumn = (): [Element, Element[], Element, Element[], Element[], Element[]] => {
+      public getColumn = (): Column => {
         const [$image, _$name, _$no] = this.getChildren().filter((_, i) => i < 3);
         const $no = _$no.querySelector('tr > td:last-child')!;
         const $name = of(_$name.querySelectorAll('tr:nth-child(4n + 1) > td:last-child')).getElements();
@@ -57,15 +59,9 @@ export class PokemonImages extends CrawlingUtil {
         const $megaEvolutionTable = $table.find(e => /^mega/gi.test(e.querySelector('td')?.textContent ?? ''));
         const $gigantamaxTable = $table.find(e => /^gigantamax/gi.test(e.querySelector('td')?.textContent ?? ''));
 
-        const $megaEvolution = $megaEvolutionTable
-          ? of($megaEvolutionTable.querySelectorAll('tr:last-child td')).getElements()
-          : [];
-        const $gigantamax = $gigantamaxTable
-          ? of($gigantamaxTable.querySelectorAll('tr:last-child td')).getElements()
-          : [];
-        const $differentForms = $differentFormTable
-          ? of($differentFormTable.querySelectorAll('tr:last-child tr:nth-child(2) > td')).getElements()
-          : [];
+        const $differentForms = of($differentFormTable).getDifferentFormElements();
+        const $megaEvolution = of($megaEvolutionTable).getDifferentEvolution();
+        const $gigantamax = of($gigantamaxTable).getDifferentEvolution();
 
         return [$no, $name, $image, $differentForms, $megaEvolution, $gigantamax];
       };
@@ -78,21 +74,35 @@ export class PokemonImages extends CrawlingUtil {
           return text ? [...acc, text] : acc;
         }, []);
       };
-      public getChildren = () => Array.from(this.getElement()?.children ?? []);
-      public matchText = (regExp: RegExp): string => this.getText().match(regExp)?.[1] ?? '';
       public replaceText = (searchValue: string | RegExp, replaceValue = ''): string => {
         return this.getText().replace(new RegExp(searchValue, 'gi'), replaceValue);
       };
-      public getImageElement = (): IDifferentFormImage | null => {
+      private getChildren = () => Array.from(this.getElement()?.children ?? []);
+      private getImageAndForm = (): IDifferentFormImage | null => {
         const $image = this.getElement()?.querySelector('img');
         const regExp = /unovan form|unovan|artwork|\s/gi;
         return $image ? { image: $image.src, form: $image.alt.replace(regExp, '') } : null;
       };
-      public getImageElements = (): IDifferentFormImage[] => {
+      private getImageAndForms = (): IDifferentFormImage[] => {
         return this.getElements().reduce<IDifferentFormImage[]>((acc, $element) => {
-          const images = of($element).getImageElement();
+          const images = of($element).getImageAndForm();
           return images ? [...acc, images] : acc;
         }, []);
+      };
+      private getDifferentFormElements = (): Element[] => {
+        const $differentForm = this.getElement();
+        if (!$differentForm) return [];
+
+        return Array.from($differentForm.querySelectorAll('tr:last-child tr:nth-child(2) > td'));
+      };
+      private getDifferentEvolution = (): IDifferentFormImage[] => {
+        const $differentEvolution = this.getElement();
+        if (!$differentEvolution) return [];
+
+        return Array.from($differentEvolution.querySelectorAll('td > img')).map($element => {
+          const { src, alt } = <HTMLImageElement>$element;
+          return { image: src, form: alt };
+        });
       };
       public getSrc = (): string => this.getElement()?.querySelector('img')?.src ?? '';
       public getHref = (regExp?: RegExp): string => {
@@ -101,8 +111,8 @@ export class PokemonImages extends CrawlingUtil {
       };
       public getDifferentForm = (): Partial<IPokemonImage> => {
         const [$differentForm, ...$differentForms] = this.getElements();
-        const { image, form } = of($differentForm).getImageElement()!;
-        const differentForm = of($differentForms).getImageElements();
+        const { image, form } = of($differentForm).getImageAndForm()!;
+        const differentForm = of($differentForms).getImageAndForms();
 
         if (/^original cap/gi.test(form)) {
           const basicImage = document.querySelector<HTMLImageElement>('#sprite-regular')?.src ?? '';
@@ -141,7 +151,7 @@ export class PokemonImages extends CrawlingUtil {
       engName,
       image: of($image).getSrc(),
       form: null,
-      differentForm: [...of($megaEvolution).getImageElements(), ...of($gigantamax).getImageElements()],
+      differentForm: $megaEvolution.concat($gigantamax),
     };
 
     const exceptionalPokemon = getExceptionalPokemon(engName);
