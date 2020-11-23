@@ -170,7 +170,10 @@ export class PokemonImages extends CrawlingUtil {
     const exceptionalPokemon = getExceptionalPokemon(engName);
     if (exceptionalPokemon) pokemonImages = { ...pokemonImages, ...exceptionalPokemon };
 
-    if ($differentForm.length) return { ...pokemonImages, ...of($differentForm).getDifferentForm() };
+    if ($differentForm.length) {
+      const { image, form, differentForm } = of($differentForm).getDifferentForm();
+      return { ...pokemonImages, image, form, differentForm: pokemonImages.differentForm.concat(differentForm!) };
+    }
     return pokemonImages;
   };
 }
