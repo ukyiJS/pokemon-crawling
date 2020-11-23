@@ -27,4 +27,8 @@ export class PokemonController {
   public getPokemonImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
     return this.pokemonService.getPokemonImagesOfSerebiiNet();
   }
+  @Get('downloadImages')
+  public downloadImages(): Promise<void> {
+    return this.pokemonService.downloadImages();
+  }
 }
