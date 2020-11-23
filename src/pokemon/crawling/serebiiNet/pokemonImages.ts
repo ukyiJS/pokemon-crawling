@@ -79,9 +79,17 @@ export class PokemonImages extends CrawlingUtil {
       };
       private getChildren = () => Array.from(this.getElement()?.children ?? []);
       private getImageAndForm = (): IDifferentFormImage | null => {
-        const $image = this.getElement()?.querySelector('img');
-        const regExp = /unovan form|unovan|artwork|\s/gi;
-        return $image ? { image: $image.src, form: $image.alt.replace(regExp, '') } : null;
+        const $image = this.getElement()?.querySelector('img')!;
+        if (!$image) return null;
+
+        const { src: image, alt } = <HTMLImageElement>$image;
+        const form = (() => {
+          const _alt = alt.replace(/unovan form|unovan|artwork|\s/gi, '');
+          if (/^alola/gi.test(_alt)) return 'Alola';
+          if (/^Galarian/gi.test(_alt)) return 'Galarian';
+          return _alt;
+        })();
+        return { image, form };
       };
       private getImageAndForms = (): IDifferentFormImage[] => {
         return this.getElements().reduce<IDifferentFormImage[]>((acc, $element) => {
@@ -100,8 +108,16 @@ export class PokemonImages extends CrawlingUtil {
         if (!$differentEvolution) return [];
 
         return Array.from($differentEvolution.querySelectorAll('td > img')).map($element => {
-          const { src, alt } = <HTMLImageElement>$element;
-          return { image: src, form: alt };
+          const { src: image, alt } = <HTMLImageElement>$element;
+          const form = (() => {
+            const _alt = alt.replace(/unovan form|unovan|artwork|\s/gi, '');
+            if (/^gigantamax/gi.test(_alt)) return 'Gigantamax';
+            if (/^mega.*x$/gi.test(_alt)) return 'MegaX';
+            if (/^mega.*y$/gi.test(_alt)) return 'MegaY';
+            if (/^mega/gi.test(_alt)) return 'Mega';
+            return _alt;
+          })();
+          return { image, form };
         });
       };
       public getSrc = (): string => this.getElement()?.querySelector('img')?.src ?? '';
