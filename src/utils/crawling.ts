@@ -1,4 +1,4 @@
-import { IEggCycle, IGender, IStat, ITypeDefense } from '@/pokemon/pokemon.interface';
+import { IEggCycle, IGender, IPokemonOfDatabase, IStat, ITypeDefense } from '@/pokemon/pokemon.interface';
 import {
   abilityName,
   AbilityName,
@@ -295,3 +295,37 @@ export const functionString = {
   }}`,
 } as const;
 export type FunctionString = typeof functionString;
+
+export const getGenerationName = (no: number): string => {
+  if (no < 152) return 'gen1';
+  if (no < 252) return 'gen2';
+  if (no < 387) return 'gen3';
+  if (no < 494) return 'gen4';
+  if (no < 650) return 'gen5';
+  if (no < 722) return 'gen6';
+  if (no < 810) return 'gen7';
+  return 'gen8';
+};
+
+const getImageUrl = (name: string): string => {
+  return `https://raw.githubusercontent.com/ukyiJS/pokemon-crawling/image/${name}.png`;
+};
+
+export const setImage = (dirName: string, no: string): string => {
+  const imageUrl = getImageUrl(`${dirName}/${no}`);
+  return imageUrl;
+};
+
+export const setDifferentFormImage = (dirName: string, differentForm: IPokemonOfDatabase[]): IPokemonOfDatabase[] => {
+  const convertToDifferentFormImage = differentForm.map(pokemon => {
+    const [key] = Object.entries(differentFormName).find(([, value]) => {
+      return RegExp(value, 'gi').test(pokemon.form ?? '');
+    })!;
+    const convertToImageName = key.toLowerCase().replace(/[^a-z]+(\w|$)/g, (_, $1) => {
+      return $1.toUpperCase();
+    });
+    const imageUrl = getImageUrl(`${dirName}/${pokemon.no}-${convertToImageName}`);
+    return { ...pokemon, image: imageUrl };
+  });
+  return convertToDifferentFormImage;
+};
