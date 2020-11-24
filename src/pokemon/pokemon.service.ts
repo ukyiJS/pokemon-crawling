@@ -130,6 +130,25 @@ export class PokemonService {
     return true;
   }
 
+  public async downloadPokemonIconImagesOfSerebiiNet(): Promise<boolean> {
+    const pokemonIconImages = getJson<IPokemonImage[]>({ fileName: 'pokemonIconImagesOfSerebiiNet.json' });
+    if (!pokemonIconImages) return false;
+
+    const progressBar = new ProgressBar();
+    const { download } = new DownloadImage();
+
+    const imagesToDownload = pokemonIconImages.map(p => ({ url: p.image, fileName: `${p.no}.png` }));
+    for (const [index, { url, fileName }] of imagesToDownload.entries()) {
+      const dirName = 'download/icon';
+      await download(url, fileName, dirName);
+      const cursor = index + 1;
+      Logger.log(`${cursor} : ${fileName}`, 'Download');
+      progressBar.update((cursor / imagesToDownload.length) * 100);
+    }
+
+    return true;
+  }
+
   public async downloadImages(): Promise<void> {
     const progressBar = new ProgressBar();
     const { download } = new DownloadImage();
