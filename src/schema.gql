@@ -46,6 +46,15 @@ type DifferentForm {
   differentForm: [DifferentForm!]!
 }
 
+type EvolvingTo {
+  no: String!
+  name: String!
+  image: String!
+  form: String
+  condition: String!
+  evolvingTo: [EvolvingTo!]!
+}
+
 type PokemonOfDatabase {
   _id: String!
   no: String!
@@ -68,6 +77,7 @@ type PokemonOfDatabase {
   gender: [Gender!]!
   eggCycles: EggCycle!
   form: String
+  evolvingTo: [EvolvingTo!]!
   differentForm: [DifferentForm!]!
   createdAt: Float!
   searchCount: Int!
