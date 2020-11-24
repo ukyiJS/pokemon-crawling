@@ -34,4 +34,9 @@ export class PokemonResolver {
   public async updatePokemonImageOfDatabase(): Promise<FindAndModifyWriteOpResultObject[]> {
     return this.pokemonService.updatePokemonImageOfDatabase();
   }
+
+  @Mutation(() => [PokemonOfDatabase])
+  public async updatePokemonIconImageOfDatabase(): Promise<FindAndModifyWriteOpResultObject[]> {
+    return this.pokemonService.updatePokemonIconImageOfDatabase();
+  }
 }
