@@ -171,4 +171,19 @@ export class PokemonService {
 
     return Promise.all(updatedPokemons);
   }
+
+  public async updatePokemonIconImageOfDatabase(): Promise<FindAndModifyWriteOpResultObject[]> {
+    const pokemons = await this.pokemonOfDatabaseRepository.find({ order: { no: 'ASC' } });
+    const updatedPokemons = pokemons.map(({ no }, i) => {
+      const icon = setImage('icon', no);
+      return this.pokemonOfDatabaseRepository
+        .findOneAndUpdate({ no }, { $set: { icon } }, { returnOriginal: false })
+        .then(({ value: pokemon }) => {
+          Logger.log(`${i + 1} : ${pokemon.icon}`, 'Updated Icon Image');
+          return pokemon;
+        });
+    });
+
+    return Promise.all(updatedPokemons);
+  }
 }
