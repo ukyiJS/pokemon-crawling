@@ -51,7 +51,7 @@ export class PokemonService {
     return pokemons;
   }
 
-  public async findPokemonOfDatabases(page = 1, display = 10): Promise<PokemonOfDatabase[]> {
+  public async findPokemonOfDatabase(page = 1, display = 10): Promise<PokemonOfDatabase[]> {
     return this.pokemonOfDatabaseRepository.find({
       skip: (page - 1) * display,
       take: display,
@@ -60,7 +60,7 @@ export class PokemonService {
     });
   }
 
-  public async addPokemonOfDatabases(): Promise<boolean> {
+  public async addPokemonOfDatabase(): Promise<boolean> {
     const pokemons = getJson<PokemonOfDatabase[]>({ fileName: 'pokemonsOfDatabase.json' });
     if (!pokemons) return false;
     try {
