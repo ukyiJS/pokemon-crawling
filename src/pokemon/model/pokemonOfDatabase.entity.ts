@@ -5,6 +5,7 @@ import { v4 } from 'uuid';
 import { IPokemonOfDatabase } from '../pokemon.interface';
 import { DifferentForm } from './differentForm.entity';
 import { EggCycle } from './eggCycle.entity';
+import { EvolvingTo } from './evolvingTo.entity';
 import { Gender } from './gender.entity';
 import { Stat } from './stat.entity';
 import { TypeDefense } from './typeDefense.entity';
@@ -116,6 +117,11 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
   @Column()
   @Field({ nullable: true })
   form: string;
+
+  @Expose()
+  @Column()
+  @Field(() => [EvolvingTo])
+  evolvingTo: EvolvingTo[];
 
   @Expose()
   @Column()
