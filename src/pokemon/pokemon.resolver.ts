@@ -20,12 +20,12 @@ export class PokemonResolver {
     return this.pokemonService.addPokemonOfDatabase();
   }
 
-  @Mutation(() => Boolean)
+  @Query(() => Boolean)
   public async downloadPokemonImagesOfSerebiiNet(): Promise<boolean> {
     return this.pokemonService.downloadPokemonImagesOfSerebiiNet();
   }
 
-  @Mutation(() => Boolean)
+  @Query(() => Boolean)
   public async downloadPokemonIconImagesOfSerebiiNet(): Promise<boolean> {
     return this.pokemonService.downloadPokemonIconImagesOfSerebiiNet();
   }
