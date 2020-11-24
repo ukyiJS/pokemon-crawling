@@ -32,9 +32,4 @@ export class PokemonController {
   public downloadImages(): Promise<void> {
     return this.pokemonService.downloadImages();
   }
-
-  @Get('updateImage')
-  public updateImage(): Promise<FindAndModifyWriteOpResultObject[]> {
-    return this.pokemonService.updateImage();
-  }
 }
