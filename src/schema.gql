@@ -61,6 +61,7 @@ type PokemonOfDatabase {
   name: String!
   engName: String!
   image: String!
+  icon: String
   stats: [Stat!]!
   types: [String!]!
   typeDefenses: [TypeDefense!]!
@@ -92,4 +93,5 @@ type Query {
 type Mutation {
   addPokemonOfDatabase: Boolean!
   updatePokemonImageOfDatabase: [PokemonOfDatabase!]!
+  updatePokemonIconImageOfDatabase: [PokemonOfDatabase!]!
 }
