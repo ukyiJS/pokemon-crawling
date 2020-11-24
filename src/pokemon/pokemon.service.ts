@@ -141,7 +141,7 @@ export class PokemonService {
     }
   }
 
-  public async updateImage(): Promise<FindAndModifyWriteOpResultObject[]> {
+  public async updatePokemonImageOfDatabase(): Promise<FindAndModifyWriteOpResultObject[]> {
     const pokemons = await this.pokemonOfDatabaseRepository.find({ order: { no: 'ASC' } });
 
     const updatedPokemons = pokemons.map(({ no, differentForm }, i) => {
