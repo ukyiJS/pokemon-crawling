@@ -83,7 +83,7 @@ export class PokemonImages extends CrawlingUtil {
         if (!$image) return null;
 
         const { src: image, alt } = <HTMLImageElement>$image;
-        const form = alt.replace(/unovan form|unovan|artwork|\s/gi, '');
+        const form = alt.replace(/unovan form|unovan|artwork|\s/gi, '').replace(/^galarianForm/gi, 'GalarForm');
         return { image, form };
       };
       private getImageAndForms = (): IDifferentFormImage[] => {
@@ -123,6 +123,7 @@ export class PokemonImages extends CrawlingUtil {
       public getDifferentForm = (): IPokemonImage => {
         const [$differentForm, ...$differentForms] = this.getElements();
         const { image, form } = of($differentForm).getImageAndForm()!;
+
         const differentForm = of($differentForms).getImageAndForms();
 
         const pokemon = <IPokemonImage>{ image, form, differentForm };
