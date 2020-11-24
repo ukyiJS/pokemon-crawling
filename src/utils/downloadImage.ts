@@ -11,6 +11,11 @@ export type DataToDownload = {
 
 export class DownloadImage {
   public download = async (url: string, fileName: string, dirName = 'download'): Promise<void> => {
+    const downloadDir = join(process.cwd(), 'download');
+    if (!existsSync(downloadDir)) {
+      mkdirSync(downloadDir);
+      Logger.log(downloadDir, 'CreateDirectory');
+    }
     const dir = join(process.cwd(), dirName);
     if (!existsSync(dir)) {
       mkdirSync(dir);
