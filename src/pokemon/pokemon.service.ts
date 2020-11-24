@@ -1,7 +1,15 @@
-import { DataToDownload, DownloadImage, getJson, PuppeteerUtil } from '@/utils';
+import {
+  DataToDownload,
+  DownloadImage,
+  getGenerationName,
+  getJson,
+  ProgressBar,
+  PuppeteerUtil,
+  setDifferentFormImage,
+  setImage,
+} from '@/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { join } from 'path';
 import { FindAndModifyWriteOpResultObject, MongoRepository } from 'typeorm';
 import { PokemonsOfDatabase } from './crawling/pokemonDatabase/pokemons';
 import { PokemonsOfWiki } from './crawling/pokemonWiki/pokemons';
@@ -9,7 +17,6 @@ import { PokemonIconImages } from './crawling/serebiiNet/pokemonIconImages';
 import { PokemonImages } from './crawling/serebiiNet/pokemonImages';
 import { PokemonOfDatabase } from './model/pokemonOfDatabase.entity';
 import { IPokemonImage, IPokemonOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
-import { differentFormName } from './pokemon.type';
 
 @Injectable()
 export class PokemonService {
@@ -92,12 +99,17 @@ export class PokemonService {
   }
 
   public async downloadImages(): Promise<void> {
+    const progressBar = new ProgressBar();
+    const { download } = new DownloadImage();
     const pokemonImages = getJson<IPokemonImage[]>({ fileName: 'pokemonImagesOfSerebiiNet.json' });
     const pokemonIconImages = getJson<IPokemonImage[]>({ fileName: 'pokemonIconImagesOfSerebiiNet.json' });
-    const getDir = (dirName: string) => join(process.cwd(), 'download', dirName);
+    const progress = (index: number, fileName: string, progressSize: number) => {
+      const cursor = index + 1;
+      Logger.log(`${cursor} : ${fileName}`, 'Download');
+      progressBar.update((cursor / progressSize) * 100);
+    };
 
     if (pokemonImages) {
-      const { multipleDownloads } = new DownloadImage(getDir('image'));
       const imagesToDownload = pokemonImages.reduce<DataToDownload[]>((acc, p) => {
         const extension = 'png';
 
@@ -105,55 +117,47 @@ export class PokemonService {
         if (!p.differentForm?.length) return [...acc, downloadData];
 
         const differentForm = p.differentForm.map(d => ({
+          no: p.no,
           url: d.image,
           fileName: `${p.no}-${d.form}.${extension}`,
         }));
         return [...acc, downloadData, ...differentForm];
       }, []);
-      await multipleDownloads(imagesToDownload);
+
+      for (const [index, { url, fileName, no }] of imagesToDownload.entries()) {
+        const dirName = no && `download/${getGenerationName(+no)}`;
+        await download(url, fileName, dirName);
+        progress(index, fileName, imagesToDownload.length);
+      }
     }
 
     if (pokemonIconImages) {
-      const { multipleDownloads } = new DownloadImage(getDir('icon'));
       const imagesToDownload = pokemonIconImages.map(p => ({ url: p.image, fileName: `${p.no}.png` }));
-      await multipleDownloads(imagesToDownload);
+      for (const [index, { url, fileName }] of imagesToDownload.entries()) {
+        const dirName = 'download/icon';
+        await download(url, fileName, dirName);
+        progress(index, fileName, imagesToDownload.length);
+      }
     }
   }
 
   public async updateImage(): Promise<FindAndModifyWriteOpResultObject[]> {
     const pokemons = await this.pokemonOfDatabaseRepository.find({ order: { no: 'ASC' } });
-    const getImageUrl = (name: string) => {
-      return `https://raw.githubusercontent.com/ukyiJS/pokemon-crawling/image/main/${name}.png`;
-    };
-
-    const setImage = (no: string) => ({ image: getImageUrl(no) });
-    const setDifferentFormImage = (differentForm: IPokemonOfDatabase[]) => {
-      const convertToDifferentFormImage = differentForm.map(pokemon => {
-        const [key] = Object.entries(differentFormName).find(([, value]) => {
-          return RegExp(value, 'gi').test(pokemon.form ?? '');
-        })!;
-        const convertToImageName = key.toLowerCase().replace(/[^a-z]+(\w|$)/g, (_, $1) => {
-          return $1.toUpperCase();
-        });
-
-        return { ...pokemon, image: getImageUrl(`${pokemon.no}-${convertToImageName}`) };
-      });
-      return { differentForm: convertToDifferentFormImage };
-    };
 
     const updatedPokemons = pokemons.map(({ no, differentForm }, i) => {
+      const dirName = getGenerationName(i);
+      const image = setImage(dirName, no);
+      const differentFormImage = setDifferentFormImage(dirName, differentForm);
+
       return this.pokemonOfDatabaseRepository
-        .findOneAndUpdate(
-          { no },
-          { $set: { ...setImage(no), ...setDifferentFormImage(differentForm) } },
-          { returnOriginal: false },
-        )
-        .then(pokemon => {
-          Logger.log(`${i + 1} : ${pokemon.value.image}`, 'Updated Image');
-          (<IPokemonOfDatabase[]>pokemon.value.differentForm).forEach(pokemon => {
-            Logger.log(pokemon.image, 'Updated DifferentForm Image');
+        .findOneAndUpdate({ no }, { $set: { image, differentForm: differentFormImage } }, { returnOriginal: false })
+        .then(({ value: pokemon }) => {
+          Logger.log(`${i + 1} : ${pokemon.image}`, 'Updated Image');
+          (<IPokemonOfDatabase[]>pokemon.differentForm).forEach(({ image }) => {
+            Logger.log(image, 'Updated DifferentForm Image');
           });
-          return pokemon.value;
+
+          return pokemon;
         });
     });
 
