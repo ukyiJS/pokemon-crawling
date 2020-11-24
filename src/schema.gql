@@ -84,7 +84,7 @@ type PokemonOfDatabase {
 }
 
 type Query {
-  findPokemonOfDatabases(display: Int, page: Int): [PokemonOfDatabase!]!
+  findPokemonOfDatabase(display: Int, page: Int): [PokemonOfDatabase!]!
 }
 
 type Mutation {
