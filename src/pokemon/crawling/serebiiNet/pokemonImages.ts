@@ -83,7 +83,14 @@ export class PokemonImages extends CrawlingUtil {
         if (!$image) return null;
 
         const { src: image, alt } = <HTMLImageElement>$image;
-        const form = alt.replace(/unovan form|unovan|artwork|\s/gi, '').replace(/^galarianForm/gi, 'GalarForm');
+        const form = (() => {
+          const camelCaseForm = `${alt.substr(0, 1).toLowerCase()}${alt.substr(1, alt.length)}`;
+          const form = camelCaseForm
+            .replace(/unovan form|unovan|artwork|[^a-z]/gi, '')
+            .replace(/galarianform/gi, 'galar')
+            .replace(/alolaform/gi, 'alola');
+          return form;
+        })();
         return { image, form };
       };
       private getImageAndForms = (): IDifferentFormImage[] => {
@@ -105,12 +112,13 @@ export class PokemonImages extends CrawlingUtil {
         return Array.from($differentEvolution.querySelectorAll('td > img')).map($element => {
           const { src: image, alt } = <HTMLImageElement>$element;
           const form = (() => {
-            const _alt = alt.replace(/unovan form|unovan|artwork|\s/gi, '');
-            if (/^gigantamax/gi.test(_alt)) return 'Dynamax';
-            if (/^mega.*x$/gi.test(_alt)) return 'MegaX';
-            if (/^mega.*y$/gi.test(_alt)) return 'MegaY';
-            if (/^mega/gi.test(_alt)) return 'Mega';
-            return _alt;
+            const camelCaseForm = `${alt.substr(0, 1).toLowerCase()}${alt.substr(1, alt.length)}`;
+            const form = camelCaseForm.replace(/unovan form|unovan|artwork|[^a-z]/gi, '');
+            if (/^gigantamax/gi.test(form)) return 'dynamax';
+            if (/^mega.*x$/gi.test(form)) return 'megaX';
+            if (/^mega.*y$/gi.test(form)) return 'megaY';
+            if (/^mega/gi.test(form)) return 'mega';
+            return form;
           })();
           return { image, form };
         });
