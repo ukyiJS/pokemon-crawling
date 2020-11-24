@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosPromise } from 'axios';
 import { createWriteStream, existsSync, mkdirSync, ReadStream } from 'fs';
 import { join } from 'path';
 import { ProgressBar } from '.';
@@ -12,19 +12,26 @@ export type DataToDownload = {
 export class DownloadImage {
   constructor(readonly dir = join(process.cwd(), 'download')) {}
 
-  public download = async (url: string, fileName: string): Promise<ReadStream> => {
+  public download = async (url: string, fileName: string): Promise<ReadStream | null> => {
     if (!existsSync(this.dir)) {
       mkdirSync(this.dir);
       Logger.log(this.dir, 'CreateDirectory');
     }
 
-    const { data }: AxiosResponse<ReadStream> = await axios({ url, responseType: 'stream' });
+    let download = <ReadStream>{};
+    try {
+      const { data } = await (<AxiosPromise<ReadStream>>axios({ url, responseType: 'stream' }));
+      download = data;
+    } catch (error) {
+      Logger.error(error.message, error.stack, 'Download Error');
+      return null;
+    }
 
-    return new Promise((resolve, reject) => {
-      data
+    return new Promise(resolve => {
+      download
         .pipe(createWriteStream(`${this.dir}/${fileName}`))
         .on('finish', resolve)
-        .on('error', reject);
+        .on('error', error => Logger.error(error.message, error.stack, error.name));
     });
   };
 
@@ -34,10 +41,13 @@ export class DownloadImage {
     const loadingSize = dataToDownloads.length;
 
     for (const [index, { url, fileName }] of dataToDownloads.entries()) {
-      result = [...result, await this.download(url, fileName)];
+      const download = await this.download(url, fileName);
       const cursor = index + 1;
       Logger.log(`${cursor} : ${fileName}`, 'Download');
       loading.update((cursor / loadingSize) * 100);
+
+      if (!download) continue;
+      result = [...result, download];
     }
 
     return result;
