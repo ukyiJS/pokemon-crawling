@@ -40,6 +40,11 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
 
   @Expose()
   @Column()
+  @Field({ nullable: true })
+  icon?: string;
+
+  @Expose()
+  @Column()
   @Field(() => [Stat])
   stats: Stat[];
 
