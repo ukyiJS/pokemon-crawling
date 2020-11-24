@@ -89,5 +89,6 @@ type Query {
 
 type Mutation {
   addPokemonOfDatabase: Boolean!
+  downloadPokemonImagesOfSerebiiNet: Boolean!
   updatePokemonImageOfDatabase: [PokemonOfDatabase!]!
 }
