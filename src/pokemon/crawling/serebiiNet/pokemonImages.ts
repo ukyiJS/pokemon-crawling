@@ -161,27 +161,30 @@ export class PokemonImages extends CrawlingUtil {
       };
     })();
 
-    const [$no, $name, $image, $differentForm, $megaEvolution, $gigantamax] = of(
+    const [$no, $name, $image, $differentForm, $megaEvolution, $dynamax] = of(
       document.querySelector('#content > main > div > table.dextable > tbody > tr:nth-of-type(2)'),
     ).getColumn();
 
     const [engName, korName] = of($name).getTexts();
     const no = of($no).replaceText(/#/);
+    const pokemon = { no, name: korName, engName };
+    const megaEvolution = $megaEvolution.map(mega => ({ ...pokemon, ...mega }));
+    const dynamax = $dynamax.map(dynamax => ({ ...pokemon, ...dynamax }));
+
     let pokemonImages = <IPokemonImage & { differentForm: IDifferentFormImage[] }>{
-      no,
-      name: korName,
-      engName,
+      ...pokemon,
       image: of($image).getSrc(),
       form: null,
-      differentForm: $megaEvolution.concat($gigantamax),
+      differentForm: megaEvolution.concat(dynamax),
     };
 
     const exceptionalPokemon = getExceptionalPokemon(engName);
     if (exceptionalPokemon) pokemonImages = { ...pokemonImages, ...exceptionalPokemon };
 
     if ($differentForm.length) {
-      const { image, form, differentForm } = of($differentForm).getDifferentForm();
-      return { ...pokemonImages, image, form, differentForm: pokemonImages.differentForm.concat(differentForm!) };
+      const { image, form, differentForm: _differentForm } = of($differentForm).getDifferentForm();
+      const differentForm = pokemonImages.differentForm.concat(_differentForm!.map(d => ({ ...pokemon, ...d })));
+      return { ...pokemonImages, image, form, differentForm };
     }
     return pokemonImages;
   };
