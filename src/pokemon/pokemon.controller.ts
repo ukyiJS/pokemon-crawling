@@ -1,5 +1,6 @@
 import { WriteJsonInterceptor } from '@/common';
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
+import { FindAndModifyWriteOpResultObject } from 'typeorm';
 import { IPokemonImage, IPokemonOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
 import { PokemonService } from './pokemon.service';
 
@@ -30,5 +31,10 @@ export class PokemonController {
   @Get('downloadImages')
   public downloadImages(): Promise<void> {
     return this.pokemonService.downloadImages();
+  }
+
+  @Get('updateImage')
+  public updateImage(): Promise<FindAndModifyWriteOpResultObject[]> {
+    return this.pokemonService.updateImage();
   }
 }
