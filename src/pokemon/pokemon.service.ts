@@ -98,6 +98,38 @@ export class PokemonService {
     return pokemonImages;
   }
 
+  public async downloadPokemonImagesOfSerebiiNet(): Promise<boolean> {
+    const pokemonImages = getJson<IPokemonImage[]>({ fileName: 'pokemonImagesOfSerebiiNet.json' });
+    if (!pokemonImages) return false;
+
+    const progressBar = new ProgressBar();
+    const { download } = new DownloadImage();
+
+    const imagesToDownload = pokemonImages.reduce<DataToDownload[]>((acc, p) => {
+      const extension = 'png';
+
+      const downloadData = { url: p.image, fileName: `${p.no}.${extension}` };
+      if (!p.differentForm?.length) return [...acc, downloadData];
+
+      const differentForm = p.differentForm.map(d => ({
+        no: p.no,
+        url: d.image,
+        fileName: `${p.no}-${d.form}.${extension}`,
+      }));
+      return [...acc, downloadData, ...differentForm];
+    }, []);
+
+    for (const [index, { url, fileName, no }] of imagesToDownload.entries()) {
+      const dirName = no && `download/${getGenerationName(+no)}`;
+      await download(url, fileName, dirName);
+      const cursor = index + 1;
+      Logger.log(`${cursor} : ${fileName}`, 'Download');
+      progressBar.update((cursor / imagesToDownload.length) * 100);
+    }
+
+    return true;
+  }
+
   public async downloadImages(): Promise<void> {
     const progressBar = new ProgressBar();
     const { download } = new DownloadImage();
