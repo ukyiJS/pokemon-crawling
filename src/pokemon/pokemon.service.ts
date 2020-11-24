@@ -1,6 +1,7 @@
 import { DataToDownload, DownloadImage, getJson, PuppeteerUtil } from '@/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { join } from 'path';
 import { MongoRepository } from 'typeorm';
 import { PokemonsOfDatabase } from './crawling/pokemonDatabase/pokemons';
 import { PokemonsOfWiki } from './crawling/pokemonWiki/pokemons';
@@ -90,11 +91,12 @@ export class PokemonService {
   }
 
   public async downloadImages(): Promise<void> {
-    const { multipleDownloads } = new DownloadImage();
-    let pokemonImages = getJson<IPokemonImage[]>({ fileName: 'pokemonImagesOfSerebiiNet.json' });
-    let pokemonIconImages = getJson<IPokemonImage[]>({ fileName: 'pokemonIconImagesOfSerebiiNet.json' });
+    const pokemonImages = getJson<IPokemonImage[]>({ fileName: 'pokemonImagesOfSerebiiNet.json' });
+    const pokemonIconImages = getJson<IPokemonImage[]>({ fileName: 'pokemonIconImagesOfSerebiiNet.json' });
+    const getDir = (dirName: string) => join(process.cwd(), 'download', dirName);
 
     if (pokemonImages) {
+      const { multipleDownloads } = new DownloadImage(getDir('image'));
       const imagesToDownload = pokemonImages.reduce<DataToDownload[]>((acc, p) => {
         const extension = 'png';
 
@@ -111,6 +113,7 @@ export class PokemonService {
     }
 
     if (pokemonIconImages) {
+      const { multipleDownloads } = new DownloadImage(getDir('icon'));
       const imagesToDownload = pokemonIconImages.map(p => ({ url: p.image, fileName: `${p.no}.png` }));
       await multipleDownloads(imagesToDownload);
     }
