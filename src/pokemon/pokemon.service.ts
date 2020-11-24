@@ -108,7 +108,7 @@ export class PokemonService {
     const imagesToDownload = pokemonImages.reduce<DataToDownload[]>((acc, p) => {
       const extension = 'png';
 
-      const downloadData = { url: p.image, fileName: `${p.no}.${extension}` };
+      const downloadData = { no: p.no, url: p.image, fileName: `${p.no}.${extension}` };
       if (!p.differentForm?.length) return [...acc, downloadData];
 
       const differentForm = p.differentForm.map(d => ({
