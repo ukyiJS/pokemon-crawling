@@ -76,12 +76,7 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
   @Expose()
   @Column()
   @Field(() => [String])
-  abilities: string[];
-
-  @Expose()
-  @Column()
-  @Field({ nullable: true })
-  hiddenAbility: string;
+  abilities: (string | null)[];
 
   @Expose()
   @Column()
