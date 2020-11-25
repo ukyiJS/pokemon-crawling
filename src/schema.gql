@@ -34,7 +34,6 @@ type DifferentForm {
   height: String!
   weight: String!
   abilities: [String!]!
-  hiddenAbility: String
   evYield: String
   catchRate: Int!
   friendship: Int!
@@ -69,7 +68,6 @@ type PokemonOfDatabase {
   height: String!
   weight: String!
   abilities: [String!]!
-  hiddenAbility: String
   evYield: String
   catchRate: Int!
   friendship: Int!
