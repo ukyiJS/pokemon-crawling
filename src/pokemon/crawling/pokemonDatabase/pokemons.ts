@@ -143,7 +143,10 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       private getAbility = (text: string | null): string => {
         return text && this.parseFunction(this.functionString.getAbility)?.call(null, text, this.type.abilityName);
       };
-      public getAbilities = (): string[] => this.getElements().map($element => this.getAbility($element.textContent));
+      public getAbilities = (): (string | null)[] => {
+        const [ability1, ability2 = null] = this.getElements().map($element => this.getAbility($element.textContent));
+        return [ability1, ability2];
+      };
       public getHiddenAbility = (): string | null => this.getAbility(this.getText() || null);
       public getEvYield = (): string => {
         return this.parseFunction(this.functionString.getEvYield)?.call(null, this.getText(), this.type.statName);
@@ -278,8 +281,9 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       species: of($species).getText(),
       height: of($height).matchText(/(\w.*)(?=\s\()/),
       weight: of($weight).matchText(/(\w.*)(?=\s\()/),
-      abilities: of($abilities).getAbilities(),
-      hiddenAbility: of($hiddenAbility).getHiddenAbility(),
+      abilities: of($abilities)
+        .getAbilities()
+        .concat(of($hiddenAbility).getHiddenAbility()),
       evYield: of($evYield).getEvYield(),
       catchRate: +of($catchRate).replaceText(/—|\s.*/),
       friendship: +of($friendship).replaceText(/—|\s.*/),
