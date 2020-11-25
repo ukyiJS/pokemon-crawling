@@ -69,8 +69,7 @@ export interface IPokemonOfDatabase {
   species: string;
   height: string;
   weight: string;
-  abilities: string[];
-  hiddenAbility: string | null;
+  abilities: (string | null)[];
   evYield: string | null;
   catchRate: number;
   friendship: number;
