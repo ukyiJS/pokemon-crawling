@@ -1,5 +1,5 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
-import { Any, FindAndModifyWriteOpResultObject } from 'typeorm';
+import { FindAndModifyWriteOpResultObject } from 'typeorm';
 import { PokemonOfDatabase } from './model/pokemonOfDatabase.entity';
 import { PokemonService } from './pokemon.service';
 
@@ -19,7 +19,7 @@ export class PokemonResolver {
   public async addPokemonOfWiki(): Promise<boolean> {
     return this.pokemonService.addPokemonOfWiki();
   }
-  
+
   @Mutation(() => Boolean)
   public async addPokemonOfDatabase(): Promise<boolean> {
     return this.pokemonService.addPokemonOfDatabase();
