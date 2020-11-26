@@ -1,47 +1,52 @@
 import { EXECUTABLE_PATH, PROFILE_PATH } from '@/env';
 import { Logger, LogLevel } from '@nestjs/common';
-import { Browser, launch, Page } from 'puppeteer';
+import puppeteer from 'puppeteer-extra';
+import adblocker from 'puppeteer-extra-plugin-adblocker';
+import { Browser, LaunchOptions, Page } from 'puppeteer-extra/dist/puppeteer';
 
-export interface BrowserAndPage {
-  browser: Browser;
-  page: Page;
-}
+puppeteer.use(adblocker({ blockTrackers: true }));
 
-const width = 1920;
-const height = 1080;
+export class Puppeteer {
+  constructor(private readonly url: string, private readonly options: LaunchOptions = {}) {}
 
-export class PuppeteerUtil {
-  public getBrowserAndPage = async (url: string, waitForSelector: string): Promise<BrowserAndPage> => {
-    const browser = await launch({
-      executablePath: EXECUTABLE_PATH,
-      userDataDir: PROFILE_PATH,
-      headless: false,
-      devtools: true,
-      defaultViewport: { width, height },
-      timeout: 0,
-      args: [`--window-size${width},${height}`],
-      // args: [
-      //   '--disable-gpu',
-      //   '--disable-dev-shm-usage',
-      //   '--disable-setuid-sandbox',
-      //   '--no-first-run',
-      //   '--no-sandbox',
-      //   '--no-zygote',
-      //   '--single-process',
-      // ],
-    });
-    const page = await browser.newPage();
-    this.addPageEvent(page);
-
-    Logger.log(`############################## Crawling Start ##############################`, 'Start');
-    await page.goto(url, { waitUntil: 'load' });
-
-    await page.waitForSelector(waitForSelector);
+  public init = async (): Promise<{ browser: Browser; page: Page }> => {
+    const browser = await this.initBrowser();
+    const page = await this.initPage(browser);
 
     return { browser, page };
   };
+  private initBrowser = async (): Promise<Browser> => {
+    const width = 1920;
+    const height = 1080;
+    const windowSize = `--window-size${width},${height}`;
+    const {
+      executablePath = EXECUTABLE_PATH,
+      userDataDir = PROFILE_PATH,
+      headless = false,
+      devtools = true,
+      defaultViewport = { width, height },
+      timeout = 0,
+      args = [],
+    } = this.options;
 
-  private addPageEvent = (page: Page): void => {
+    return puppeteer.launch({
+      executablePath,
+      userDataDir,
+      headless,
+      devtools,
+      defaultViewport,
+      timeout,
+      args: [...args, windowSize],
+    });
+  };
+  private initPage = async (browser: Browser): Promise<Page> => {
+    const page = await browser.newPage();
+    this.onPage(page);
+    await page.goto(this.url, { waitUntil: 'load' });
+
+    return page;
+  };
+  private onPage = (page: Page): void => {
     page.once('domcontentloaded', () => Logger.log('✅ DOM is ready', 'DomcontentLoad'));
     page.once('load', () => Logger.log(`✅ Page is Loaded`, 'PageLoad'));
     page.on('console', message => {
@@ -61,7 +66,7 @@ export class PuppeteerUtil {
       await dialog.dismiss();
     });
     page.on('popup', () => Logger.log('👉 New page is opened', 'Popup'));
-    page.on('error', error => Logger.error(`❌ ${error}`, undefined, 'Error'));
+    page.on('error', error => Logger.error(`❌ ${error}`, undefined, 'PageError'));
     page.once('close', () => Logger.log('✅ Page is closed', 'PageClose'));
   };
 }
