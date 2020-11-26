@@ -61,6 +61,18 @@ export class PokemonService {
     });
   }
 
+  public async addPokemonOfWiki(): Promise<boolean> {
+    const pokemons = getJson<PokemonOfWiki[]>({ fileName: 'pokemonsOfWiki.json' });
+    if (!pokemons) return false;
+    try {
+      await Promise.all(pokemons.map(pokemon => this.pokemonOfWiKiRepository.save(new PokemonOfWiki(pokemon))));
+    } catch (error) {
+      Logger.error(error.message, error.stack, error);
+      throw error;
+    }
+    return true;
+  }
+
   public async addPokemonOfDatabase(): Promise<boolean> {
     const pokemons = getJson<PokemonOfDatabase[]>({ fileName: 'pokemonsOfDatabase.json' });
     if (!pokemons) return false;
