@@ -1,5 +1,5 @@
 import { Logger } from '@nestjs/common';
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 interface WriteJson {
