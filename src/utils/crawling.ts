@@ -23,7 +23,7 @@ type Tuple<T, U> = readonly [T, U];
 type Nullish<T> = T | null;
 
 export abstract class CrawlingUtil {
-  protected abstract promiseLocalStorage: Promise<void>;
+  protected promiseLocalStorage: Promise<void>;
 
   constructor(readonly page: Page) {}
 
