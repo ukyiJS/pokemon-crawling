@@ -23,7 +23,12 @@ describe('PokemonService', () => {
     service = new PokemonService(pokemonOfDatabaseRepository,pokemonOfWikiRepository);
   });
 
-  it.only('Pokemons of Database Test', async () => {
+  it.only('Pokemons of Wiki Test', async () => {
+    const pokemons = await service.getPokemonsOfWiki();
+    expect(pokemons).not.toHaveLength(0);
+  });
+
+  it('Pokemons of Database Test', async () => {
     const pokemons = await service.getPokemonsOfDatabase();
     expect(pokemons).not.toBeUndefined();
   });
