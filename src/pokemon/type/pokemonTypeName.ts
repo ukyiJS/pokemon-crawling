@@ -5,7 +5,7 @@ export const pokemonTypeName = {
   ELECTRIC: '전기',
   GRASS: '풀',
   ICE: '얼음',
-  FIGHTING: '비행',
+  FIGHTING: '격투',
   POISON: '독',
   GROUND: '땅',
   FLYING: '비행',
