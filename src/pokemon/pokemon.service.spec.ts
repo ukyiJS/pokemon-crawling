@@ -35,6 +35,6 @@ describe('PokemonService', () => {
 
   it('Pokemon Icon Images Test', async () => {
     const iconImages = await service.getPokemonIconImagesOfSerebiiNet();
-    expect(iconImages).not.toBeUndefined();
+    expect(iconImages).not.toHaveLength(0);
   });
 });
