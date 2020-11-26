@@ -155,7 +155,7 @@ export class PokemonsOfWiki {
       .filter((form, i) => {
         if (i > 0) return true;
         const name = $pokemon?.querySelector('.name-ko')?.textContent?.trim();
-        return form !== '기존폼' && form !== name;
+        return !/기존폼|평상시/.test(form) && form !== name;
       });
 
     const isForm = formName ? $differentForm.length === differentFormNames.length : false;
