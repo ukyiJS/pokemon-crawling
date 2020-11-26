@@ -21,6 +21,7 @@ export interface IPokemonsOfWiki {
   types: string[];
   species: string;
   abilities: (string | null)[];
+  hiddenAbility: string | null;
   color: IColor;
   friendship: number;
   height: string;
@@ -28,8 +29,7 @@ export interface IPokemonsOfWiki {
   captureRate: number;
   gender: IGender[];
   form: string | null;
-  megaStone?: string;
-  differentForm: IPokemonsOfWiki[];
+  differentForm?: IPokemonsOfWiki[];
 }
 
 interface IMove {
@@ -69,6 +69,7 @@ export interface IPokemonOfDatabase {
   height: string;
   weight: string;
   abilities: (string | null)[];
+  hiddenAbility: string | null;
   evYield: string | null;
   catchRate: number;
   friendship: number;
