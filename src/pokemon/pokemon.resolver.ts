@@ -16,6 +16,11 @@ export class PokemonResolver {
   }
 
   @Mutation(() => Boolean)
+  public async addPokemonOfWiki(): Promise<boolean> {
+    return this.pokemonService.addPokemonOfWiki();
+  }
+  
+  @Mutation(() => Boolean)
   public async addPokemonOfDatabase(): Promise<boolean> {
     return this.pokemonService.addPokemonOfDatabase();
   }
