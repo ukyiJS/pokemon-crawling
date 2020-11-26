@@ -30,7 +30,7 @@ describe('PokemonService', () => {
 
   it('Pokemons of Database Test', async () => {
     const pokemons = await service.getPokemonsOfDatabase();
-    expect(pokemons).not.toBeUndefined();
+    expect(pokemons).not.toHaveLength(0);
   });
 
   it('Pokemon Icon Images Test', async () => {
