@@ -4,7 +4,7 @@ import {
   getGenerationName,
   getJson,
   ProgressBar,
-  PuppeteerUtil,
+  Puppeteer,
   setDifferentFormImage,
   setImage,
 } from '@/utils';
@@ -27,9 +27,8 @@ export class PokemonService {
 
   public async getPokemonsOfWiki(): Promise<IPokemonsOfWiki[]> {
     const url = 'https://pokemon.fandom.com/ko/wiki/이상해씨';
-    const selector = '.infobox-pokemon';
-    const { getBrowserAndPage } = new PuppeteerUtil();
-    const { page, browser } = await getBrowserAndPage(url, selector);
+    const { init } = new Puppeteer(url);
+    const { browser, page } = await init();
     const { crawling } = new PokemonsOfWiki(page);
 
     const pokemons = await crawling();
@@ -40,9 +39,8 @@ export class PokemonService {
 
   public async getPokemonsOfDatabase(): Promise<IPokemonOfDatabase[]> {
     const url = 'https://pokemondb.net/pokedex/bulbasaur';
-    const selector = '#main';
-    const { getBrowserAndPage } = new PuppeteerUtil();
-    const { browser, page } = await getBrowserAndPage(url, selector);
+    const { init } = new Puppeteer(url);
+    const { browser, page } = await init();
     const { crawling } = new PokemonsOfDatabase(page);
 
     const pokemons = await crawling();
@@ -74,9 +72,8 @@ export class PokemonService {
 
   public async getPokemonIconImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
     const url = 'https://serebii.net/pokemon/nationalpokedex.shtml';
-    const selector = '#content > main';
-    const { getBrowserAndPage } = new PuppeteerUtil();
-    const { browser, page } = await getBrowserAndPage(url, selector);
+    const { init } = new Puppeteer(url);
+    const { browser, page } = await init();
     const { crawling } = new PokemonIconImages(page);
 
     const pokemonIconImages = await crawling();
@@ -87,9 +84,8 @@ export class PokemonService {
 
   public async getPokemonImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
     const url = 'https://serebii.net/pokemon/bulbasaur';
-    const selector = '#content > main';
-    const { getBrowserAndPage } = new PuppeteerUtil();
-    const { browser, page } = await getBrowserAndPage(url, selector);
+    const { init } = new Puppeteer(url);
+    const { browser, page } = await init();
     const { crawling } = new PokemonImages(page);
 
     const pokemonImages = await crawling();
