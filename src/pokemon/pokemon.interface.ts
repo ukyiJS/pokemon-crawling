@@ -20,8 +20,7 @@ export interface IPokemonsOfWiki {
   image: string;
   types: string[];
   species: string;
-  abilities: string[];
-  hiddenAbility: string | null;
+  abilities: (string | null)[];
   color: IColor;
   friendship: number;
   height: string;
