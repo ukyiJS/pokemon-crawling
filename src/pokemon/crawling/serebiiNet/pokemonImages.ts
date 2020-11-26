@@ -33,7 +33,16 @@ export class PokemonImages extends CrawlingUtil {
         Logger.error(error.message, undefined, 'TimeoutError');
         break;
       }
-      await Promise.all([this.page.click(nextClickSelector), this.page.waitForNavigation({ waitUntil: 'load' })]);
+
+      try {
+        await Promise.all([
+          this.page.click(nextClickSelector),
+          this.page.waitForNavigation({ waitUntil: 'load', timeout: 10000 }),
+        ]);
+      } catch (error) {
+        if (error.name !== 'TimeoutError') throw error;
+        Logger.error(error.message, error.stack, error.name);
+      }
     }
 
     return pokemonImages;
