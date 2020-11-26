@@ -1,17 +1,17 @@
 /* eslint-disable no-console */
-import { IColor, IGender, IPokemonsOfWiki } from '@/pokemon/pokemon.interface';
+import { IColor, IGender, IPokemonOfWiki } from '@/pokemon/pokemon.interface';
 import { ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
 
 export class PokemonsOfWiki {
   constructor(private readonly page: Page) {}
-  public crawling = async (): Promise<IPokemonsOfWiki[]> => {
+  public crawling = async (): Promise<IPokemonOfWiki[]> => {
     let curser = 0;
     const numberOfLoop = 893;
     const progressBar = new ProgressBar();
 
-    let pokemons = <IPokemonsOfWiki[]>[];
+    let pokemons = <IPokemonOfWiki[]>[];
     const nextClickSelector = '.w-100.mb-1 > tbody > tr > td:last-child td:last-child > a';
 
     while (true) {
@@ -42,7 +42,7 @@ export class PokemonsOfWiki {
     return pokemons;
   };
 
-  private getPokemons = (): IPokemonsOfWiki => {
+  private getPokemons = (): IPokemonOfWiki => {
     const { of } = new (class {
       private $element: Element | null;
       private $elements: Element[];
@@ -109,7 +109,7 @@ export class PokemonsOfWiki {
           { name: '암컷', ratio: +female },
         ];
       };
-      public getPokemon = (): IPokemonsOfWiki => {
+      public getPokemon = (): IPokemonOfWiki => {
         const $pokemon = this.getElement();
         const [
           $types,
