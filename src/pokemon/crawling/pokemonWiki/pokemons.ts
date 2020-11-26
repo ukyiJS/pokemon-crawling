@@ -1,16 +1,18 @@
 /* eslint-disable no-console */
 import { IColor, IGender, IPokemonsOfWiki } from '@/pokemon/pokemon.interface';
-import { CrawlingUtil, ProgressBar } from '@/utils';
+import { ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
+import { Page } from 'puppeteer-extra/dist/puppeteer';
 
-export class PokemonsOfWiki extends CrawlingUtil {
+export class PokemonsOfWiki {
+  constructor(private readonly page: Page) {}
   public crawling = async (): Promise<IPokemonsOfWiki[]> => {
     let curser = 0;
     const numberOfLoop = 893;
     const progressBar = new ProgressBar();
 
     let pokemons = <IPokemonsOfWiki[]>[];
-    const nextClickSelector = 'table.w-100.mb-1 td:last-child > table a';
+    const nextClickSelector = '.w-100.mb-1 > tbody > tr > td:last-child td:last-child > a';
 
     while (true) {
       await this.page.waitForSelector('.infobox-pokemon');
@@ -75,14 +77,18 @@ export class PokemonsOfWiki extends CrawlingUtil {
         const [name, , engName] = of(this.getElement()?.querySelectorAll(`div[class^='name-']`) ?? []).getTexts();
         return { name, engName };
       };
-      public getImage = (): string => (<HTMLAnchorElement>this.getElement()?.querySelector('img a'))?.href ?? '';
-      public getTypes = (): string[] => of(this.getElement()?.querySelector('a span')).getTexts();
+      public getImage = (): string => {
+        const href = (<HTMLAnchorElement>this.getElement()?.querySelector('a'))?.href ?? '';
+        const src = (<HTMLImageElement>this.getElement()?.querySelector('img'))?.src ?? '';
+        return href || src;
+      };
+      public getTypes = (): string[] => of(this.getElement()?.querySelectorAll('a span')).getTexts();
       public getHiddenAbility = (): string | null => {
         const hiddenAbility = of(this.getElement()).getText() || null;
         return hiddenAbility && /없음/g.test(hiddenAbility) ? null : hiddenAbility;
       };
       public getAbilities = (): (string | null)[] => {
-        const [ability1, ability2 = null] = of(this.getElement()?.querySelector('a span')).getTexts();
+        const [ability1, ability2 = null] = of(this.getElement()?.querySelectorAll('a span')).getTexts();
         return [ability1, ability2];
       };
       public getColors = (): IColor => {
@@ -121,15 +127,17 @@ export class PokemonsOfWiki extends CrawlingUtil {
           $gender,
         ] = of($pokemon).getContentsElements();
 
+        const abilities = of($abilities).getAbilities();
+        const hiddenAbility = of($hiddenAbility).getHiddenAbility();
+
         return {
           no: of($pokemon).getNo(),
           ...of($pokemon).getNames(),
           image: of($pokemon).getImage(),
           species: of($species).getText(),
           types: of($types).getTypes(),
-          abilities: of($abilities)
-            .getAbilities()
-            .concat(of($hiddenAbility).getHiddenAbility()),
+          abilities: abilities.concat(hiddenAbility),
+          hiddenAbility,
           color: of($color).getColors(),
           friendship: +of($friendship).getText(),
           height: of($height).getText(),
@@ -137,7 +145,6 @@ export class PokemonsOfWiki extends CrawlingUtil {
           captureRate: +of($captureRate).getText(),
           gender: of($gender).getGender(),
           form: null,
-          differentForm: [],
         };
       };
     })();
@@ -155,16 +162,25 @@ export class PokemonsOfWiki extends CrawlingUtil {
     const form = isForm ? formName : null;
     const pokemon = { ...of($pokemon).getPokemon(), form };
 
-    const differentForm = $differentForm.map($pokemon => {
-      if (/^메가|^원시|^울트라/g.test(formName)) {
+    const differentForm = $differentForm.map(($pokemon, i) => {
+      const { name } = pokemon;
+      const forms = [formName, ...differentFormNames];
+      const form = forms[i].replace(/리전폼/g, () => {
+        return /파오리/g.test(name) ? `가라르 ${name}` : `알로라 ${name}`;
+      });
+
+      if (/^메가|^원시|^울트라/g.test(form)) {
         const [, , , $height, $weight] = of($pokemon).getContentsElements();
-        const image = of($pokemon).getImage();
-        return { ...pokemon, image, height: of($height).getText(), weight: of($weight).getText() };
+        return {
+          ...pokemon,
+          image: of($pokemon).getImage(),
+          height: of($height).getText(),
+          weight: of($weight).getText(),
+          form,
+        };
       }
-      const _pokemon = of($pokemon).getPokemon();
-      const { name } = _pokemon;
-      const form = formName.replace(/리전폼/g, () => (/파오리/g.test(name) ? `가라르 ${name}` : `알로라 ${name}`));
-      return { ..._pokemon, form };
+
+      return { ...of($pokemon).getPokemon(), form };
     });
 
     return { ...pokemon, differentForm };
