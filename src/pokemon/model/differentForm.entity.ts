@@ -41,6 +41,9 @@ export class DifferentForm implements IPokemonOfDatabase {
   abilities: string[];
 
   @Field({ nullable: true })
+  hiddenAbility: string;
+
+  @Field({ nullable: true })
   evYield: string;
 
   @Field(() => Int)
