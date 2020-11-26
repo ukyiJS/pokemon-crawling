@@ -166,7 +166,7 @@ export class PokemonsOfWiki {
       const { name } = pokemon;
       const forms = [formName, ...differentFormNames];
       const form = forms[i].replace(/리전폼/g, () => {
-        return /파오리/g.test(name) ? `가라르 ${name}` : `알로라 ${name}`;
+        return /파오리|불비달마/g.test(name) ? `가라르 ${name}` : `알로라 ${name}`;
       });
 
       if (/^메가|^원시|^울트라/g.test(form)) {
