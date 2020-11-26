@@ -84,6 +84,33 @@ type PokemonOfDatabase {
   searchCount: Int!
 }
 
+type Color {
+  name: String!
+  code: String!
+}
+
+type PokemonOfWiki {
+  _id: String!
+  no: String!
+  name: String!
+  engName: String!
+  image: String!
+  types: [String!]!
+  species: String!
+  abilities: [String!]!
+  hiddenAbility: String!
+  color: Color!
+  friendship: Int!
+  height: String!
+  weight: String!
+  captureRate: Int!
+  gender: [Gender!]!
+  form: String
+  differentForm: [PokemonOfWiki!]!
+  createdAt: Float!
+  searchCount: Int!
+}
+
 type Query {
   findPokemonOfDatabase(display: Int, page: Int): [PokemonOfDatabase!]!
   downloadPokemonImagesOfSerebiiNet: Boolean!
@@ -91,6 +118,7 @@ type Query {
 }
 
 type Mutation {
+  addPokemonOfWiki: Boolean!
   addPokemonOfDatabase: Boolean!
   updatePokemonImageOfDatabase: [PokemonOfDatabase!]!
   updatePokemonIconImageOfDatabase: [PokemonOfDatabase!]!
