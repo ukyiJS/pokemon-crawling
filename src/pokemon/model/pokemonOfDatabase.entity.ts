@@ -81,6 +81,11 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
   @Expose()
   @Column()
   @Field({ nullable: true })
+  hiddenAbility: string;
+
+  @Expose()
+  @Column()
+  @Field({ nullable: true })
   evYield: string;
 
   @Expose()
