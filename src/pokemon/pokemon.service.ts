@@ -6,7 +6,7 @@ import {
   ProgressBar,
   Puppeteer,
   setDifferentFormImage,
-  setImage,
+  setImage
 } from '@/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,16 +16,19 @@ import { PokemonsOfWiki } from './crawling/pokemonWiki/pokemons';
 import { PokemonIconImages } from './crawling/serebiiNet/pokemonIconImages';
 import { PokemonImages } from './crawling/serebiiNet/pokemonImages';
 import { PokemonOfDatabase } from './model/pokemonOfDatabase.entity';
-import { IPokemonImage, IPokemonOfDatabase, IPokemonsOfWiki } from './pokemon.interface';
+import { PokemonOfWiki } from './model/pokemonOfWiki.entity';
+import { IPokemonImage, IPokemonOfDatabase, IPokemonOfWiki } from './pokemon.interface';
 
 @Injectable()
 export class PokemonService {
   constructor(
     @InjectRepository(PokemonOfDatabase)
     private readonly pokemonOfDatabaseRepository: MongoRepository<PokemonOfDatabase>,
+    @InjectRepository(PokemonOfWiki)
+    private readonly pokemonOfWiKiRepository: MongoRepository<PokemonOfWiki>,
   ) {}
 
-  public async getPokemonsOfWiki(): Promise<IPokemonsOfWiki[]> {
+  public async getPokemonsOfWiki(): Promise<IPokemonOfWiki[]> {
     const url = 'https://pokemon.fandom.com/ko/wiki/이상해씨';
     const { init } = new Puppeteer(url);
     const { browser, page } = await init();
@@ -64,7 +67,7 @@ export class PokemonService {
     try {
       await Promise.all(pokemons.map(pokemon => this.pokemonOfDatabaseRepository.save(new PokemonOfDatabase(pokemon))));
     } catch (error) {
-      Logger.error(error.message, undefined, error);
+      Logger.error(error.message, error.stack, error);
       throw error;
     }
     return true;
