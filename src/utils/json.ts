@@ -2,15 +2,13 @@ import { Logger } from '@nestjs/common';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-interface WriteJson {
-  data: any;
-  fileName: string;
-  dirName?: string;
-}
-
 interface GetJson {
   dirName?: string;
   fileName: string;
+}
+
+interface WriteJson extends GetJson {
+  data: any;
 }
 
 interface MergedJson {
@@ -18,7 +16,12 @@ interface MergedJson {
   dirName?: string;
 }
 
-const fileOptions = { encoding: 'utf-8' };
+interface FileOptions {
+  encoding: BufferEncoding;
+  flag?: string;
+}
+
+const fileOptions = <FileOptions>{ encoding: 'utf-8' };
 
 export const getJson = <T>({ fileName, dirName = 'src/assets/json' }: GetJson): T | null => {
   const dir = join(process.cwd(), dirName, fileName);
