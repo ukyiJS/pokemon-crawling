@@ -53,8 +53,16 @@ export class PokemonsOfDatabase extends CrawlingUtil {
 
       if (curser >= numberOfLoop) break;
 
-      await this.page.waitForSelector(nextClickSelector);
-      await Promise.all([this.page.click(nextClickSelector), this.page.waitForNavigation({ waitUntil: 'load' })]);
+      try {
+        await this.page.waitForSelector(nextClickSelector);
+        await Promise.all([
+          this.page.click(nextClickSelector),
+          this.page.waitForNavigation({ waitUntil: 'load', timeout: 10000 }),
+        ]);
+      } catch (error) {
+        if (error.name !== 'TimeoutError') throw error;
+        Logger.error(error.message, error.stack, error.name);
+      }
     }
 
     return pokemons;
