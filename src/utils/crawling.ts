@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { IEggCycle, IGender, IPokemonOfDatabase, IStat, ITypeDefense } from '@/pokemon/pokemon.interface';
 import {
   abilityName,
@@ -16,7 +17,7 @@ import {
 } from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
 import { blueBright, redBright, yellowBright } from 'chalk';
-import { Page } from 'puppeteer';
+import { Page } from 'puppeteer-extra/dist/puppeteer';
 import { ObjectLiteral } from 'typeorm';
 
 type Tuple<T, U> = readonly [T, U];
