@@ -33,8 +33,12 @@ describe('PokemonService', () => {
     expect(pokemons).not.toHaveLength(0);
   });
 
+  it('Pokemon Images Test', async () => {
+    const pokemons = await service.getPokemonImagesOfSerebiiNet();
+    expect(pokemons).not.toHaveLength(0);
+  });
   it('Pokemon Icon Images Test', async () => {
-    const iconImages = await service.getPokemonIconImagesOfSerebiiNet();
-    expect(iconImages).not.toHaveLength(0);
+    const pokemons = await service.getPokemonIconImagesOfSerebiiNet();
+    expect(pokemons).not.toHaveLength(0);
   });
 });
