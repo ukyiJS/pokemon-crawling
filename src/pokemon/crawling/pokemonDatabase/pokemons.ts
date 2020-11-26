@@ -279,6 +279,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     const tabName = of($tab).getText();
     const engName = of($name).getText();
     const isForm = tabName === engName ? null : true;
+    const abilities = of($abilities).getAbilities();
+    const hiddenAbility = of($hiddenAbility).getHiddenAbility();
 
     return {
       no: of($no).getText(),
@@ -289,9 +291,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       species: of($species).getText(),
       height: of($height).matchText(/(\w.*)(?=\s\()/),
       weight: of($weight).matchText(/(\w.*)(?=\s\()/),
-      abilities: of($abilities)
-        .getAbilities()
-        .concat(of($hiddenAbility).getHiddenAbility()),
+      abilities: abilities.concat(hiddenAbility),
+      hiddenAbility,
       evYield: of($evYield).getEvYield(),
       catchRate: +of($catchRate).replaceText(/—|\s.*/),
       friendship: +of($friendship).replaceText(/—|\s.*/),
