@@ -3,12 +3,14 @@ import { Test } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { getMongoRepository, MongoRepository } from 'typeorm';
 import { PokemonOfDatabase } from './model/pokemonOfDatabase.entity';
+import { PokemonOfWiki } from './model/pokemonOfWiki.entity';
 import { PokemonService } from './pokemon.service';
 
 jest.setTimeout(100000);
 describe('PokemonService', () => {
   let service: PokemonService;
-  let repository: MongoRepository<PokemonOfDatabase>;
+  let pokemonOfDatabaseRepository: MongoRepository<PokemonOfDatabase>;
+  let pokemonOfWikiRepository: MongoRepository<PokemonOfWiki>;
 
   beforeAll(async () => {
     await Test.createTestingModule({
@@ -16,8 +18,9 @@ describe('PokemonService', () => {
       providers: [PokemonService, { provide: getRepositoryToken(PokemonOfDatabase), useClass: MongoRepository }],
     }).compile();
 
-    repository = getMongoRepository(PokemonOfDatabase);
-    service = new PokemonService(repository);
+    pokemonOfDatabaseRepository = getMongoRepository(PokemonOfDatabase);
+    pokemonOfWikiRepository = getMongoRepository(PokemonOfWiki);
+    service = new PokemonService(pokemonOfDatabaseRepository,pokemonOfWikiRepository);
   });
 
   it.only('Pokemons of Database Test', async () => {
