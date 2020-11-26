@@ -13,7 +13,7 @@ export interface IGender {
   ratio: number;
 }
 
-export interface IPokemonsOfWiki {
+export interface IPokemonOfWiki {
   no: string;
   name: string;
   engName: string;
@@ -29,7 +29,7 @@ export interface IPokemonsOfWiki {
   captureRate: number;
   gender: IGender[];
   form: string | null;
-  differentForm?: IPokemonsOfWiki[];
+  differentForm?: IPokemonOfWiki[];
 }
 
 interface IMove {
