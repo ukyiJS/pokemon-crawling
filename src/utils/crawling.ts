@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { IEggCycle, IGender, IPokemonOfDatabase, IStat, ITypeDefense } from '@/pokemon/pokemon.interface';
 import {
   abilityName,
