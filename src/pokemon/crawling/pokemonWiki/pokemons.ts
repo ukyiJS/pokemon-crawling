@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { IColor, IGender, IPokemonOfWiki } from '@/pokemon/pokemon.interface';
 import { ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
@@ -156,6 +155,14 @@ export class PokemonsOfWiki {
         if (i > 0) return true;
         const name = $pokemon?.querySelector('.name-ko')?.textContent?.trim();
         return !/기존폼|평상시/.test(form) && form !== name;
+      })
+      .map(form => {
+        return form
+          .replace(/(^알로라|^가라르).*/, '$1 폼')
+          .replace(/(^메가).*X$/, '$1진화X')
+          .replace(/(^메가).*Y$/, '$1진화Y')
+          .replace(/(^메가).*/, '$1진화')
+          .replace(/(^거다이맥스).*/, '$1');
       });
 
     const isForm = formName ? $differentForm.length === differentFormNames.length : false;
@@ -166,7 +173,7 @@ export class PokemonsOfWiki {
       const { name } = pokemon;
       const forms = [formName, ...differentFormNames];
       const form = forms[i].replace(/리전폼/g, () => {
-        return /파오리|불비달마/g.test(name) ? `가라르 ${name}` : `알로라 ${name}`;
+        return /파오리|불비달마/g.test(name) ? '가라르 폼' : '알로라 폼';
       });
 
       if (/^메가|^원시|^울트라/g.test(form)) {
