@@ -1,9 +1,9 @@
 export const differentFormName = {
-  'MEGA.*x$': '메가진화 X',
-  'MEGA.*y$': '메가진화 Y',
+  'MEGA.*x$': '메가진화X',
+  'MEGA.*y$': '메가진화Y',
   MEGA: '메가진화',
-  'GALAR.*STANDARD_MODE': '리전 폼',
-  'GALAR.*ZEN_MODE': '리전 폼 달마모드',
+  'GALAR.*STANDARD_MODE': '가라르 폼',
+  'GALAR.*ZEN_MODE': '가라르 폼 달마모드',
   ALOLA: '알로라 폼',
   GALAR: '가라르 폼',
   SUNNY_FORM: '태양의 모습',
