@@ -7,5 +7,6 @@ export const validateEnv = (): void => {
     MONGODB_PASS: str(),
     MONGODB_HOST: str(),
     MONGODB_DATABASE: str(),
+    EXECUTABLE_PATH: str(),
   });
 };
