@@ -4,20 +4,15 @@ import { IEvolvingTo } from '../pokemon.interface';
 @ObjectType()
 export class EvolvingTo implements IEvolvingTo {
   @Field()
-  no: string;
-
+  public no: string;
   @Field()
-  name: string;
-
+  public name: string;
   @Field()
-  image: string;
-
+  public image: string;
   @Field({ nullable: true })
-  form: string;
-
+  public form: string;
   @Field()
-  condition: string;
-
+  public condition: string;
   @Field(() => [EvolvingTo])
-  evolvingTo: EvolvingTo[];
+  public evolvingTo: EvolvingTo[];
 }
