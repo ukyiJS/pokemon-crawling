@@ -18,11 +18,6 @@ export class PokemonController {
     return this.pokemonService.getPokemonsOfDatabase();
   }
 
-  @Get('mergedPokemon')
-  public getMergedPokemon(): IPokemonOfDatabase[] {
-    return this.pokemonService.getMergedPokemon();
-  }
-
   @Get('pokemonIconImagesOfSerebiiNet')
   public getPokemonIconImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
     return this.pokemonService.getPokemonIconImagesOfSerebiiNet();
