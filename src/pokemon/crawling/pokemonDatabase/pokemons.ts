@@ -273,15 +273,17 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       };
       public getEvolvingTo = (): IEvolvingTo[] => {
         return this.getElements().map($element => {
-          return Array.from($element.children).reduce((acc, e) => {
-            if (of(e).addMoreThanTwoKindsEvolvingTo(acc)) return acc;
-            if (of(e).addCondition()) return acc;
+          return of($element)
+            .getChildren()
+            .reduce((acc, e) => {
+              if (of(e).addMoreThanTwoKindsEvolvingTo(acc)) return acc;
+              if (of(e).addCondition()) return acc;
 
-            if (!acc?.no) return { ...of(e).getPokemon(), condition: this.condition };
-            this.addEvolvingTo(acc, { ...of(e).getPokemon(), condition: this.condition });
+              if (!acc?.no) return { ...of(e).getPokemon(), condition: this.condition };
+              this.addEvolvingTo(acc, { ...of(e).getPokemon(), condition: this.condition });
 
-            return acc;
-          }, <IEvolvingTo>{});
+              return acc;
+            }, <IEvolvingTo>{});
         });
       };
     })();
