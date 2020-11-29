@@ -256,16 +256,17 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         this.condition = of($element).replaceText(/[()]/);
         return true;
       };
-      private addMoreThanTwoKindsEvolvingTo = (previous: IEvolvingTo, $element: Element): boolean => {
-        const isSplit = /split$/.test($element.className);
+      private addMoreThanTwoKindsEvolvingTo = (previous: IEvolvingTo): boolean => {
+        const $element = this.getElement();
+        const isSplit = /split$/.test($element?.className ?? '');
         if (!isSplit) return false;
 
-        const pokemons = Array.from($element.children).map($el => {
-          // const $condition = $el?.querySelector('.infocard-arrow > small');
-          // const condition = $condition?.textContent?.replace(/[()]/g, '') ?? '';
-          const condition = of($el?.querySelector('.infocard-arrow > small')).replaceText(/[()]/);
-          return { ...of($el.querySelector('.infocard:last-child')).getPokemon(), condition };
-        });
+        const pokemons = of($element)
+          .getChildren()
+          .map($el => {
+            const condition = of($el?.querySelector('.infocard-arrow > small')).replaceText(/[()]/);
+            return { ...of($el.querySelector('.infocard:last-child')).getPokemon(), condition };
+          });
         this.addEvolvingTo(previous, pokemons);
 
         return true;
@@ -273,7 +274,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       public getEvolvingTo = (): IEvolvingTo[] => {
         return this.getElements().map($element => {
           return Array.from($element.children).reduce((acc, e) => {
-            if (this.addMoreThanTwoKindsEvolvingTo(acc, e)) return acc;
+            if (of(e).addMoreThanTwoKindsEvolvingTo(acc)) return acc;
             if (of(e).addCondition()) return acc;
 
             if (!acc?.no) return { ...of(e).getPokemon(), condition: this.condition };
