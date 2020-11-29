@@ -1,10 +1,10 @@
-import { Field, Float, Int, ObjectType } from "@nestjs/graphql";
-import { Expose, plainToClass } from "class-transformer";
-import { Column, Entity, ObjectIdColumn } from "typeorm";
-import { v4 } from "uuid";
-import { IPokemonOfWiki } from "../pokemon.interface";
-import { Color } from "./color.entity";
-import { Gender } from "./gender.entity";
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import { Expose, plainToClass } from 'class-transformer';
+import { Column, Entity, ObjectIdColumn } from 'typeorm';
+import { v4 } from 'uuid';
+import { IPokemonOfWiki } from '../pokemon.interface';
+import { Color } from './color.entity';
+import { Gender } from './gender.entity';
 
 @Entity()
 @ObjectType()
@@ -12,7 +12,7 @@ export class PokemonOfWiki implements IPokemonOfWiki {
   @Expose()
   @ObjectIdColumn()
   @Field()
-  public _id?:string;
+  public _id?: string;
   @Expose()
   @Column()
   @Field()
@@ -44,7 +44,7 @@ export class PokemonOfWiki implements IPokemonOfWiki {
   @Expose()
   @Column()
   @Field()
-  public hiddenAbility: string
+  public hiddenAbility: string;
   @Expose()
   @Column()
   @Field(() => Color)
@@ -71,12 +71,12 @@ export class PokemonOfWiki implements IPokemonOfWiki {
   public gender: Gender[];
   @Expose()
   @Column()
-  @Field({ nullable:true }) 
-  public form: string 
+  @Field({ nullable: true })
+  public form: string;
   @Expose()
   @Column()
   @Field(() => [PokemonOfWiki])
-  public differentForm?: PokemonOfWiki[] 
+  public differentForm?: PokemonOfWiki[];
   @Expose()
   @Column()
   @Field(() => Float)
