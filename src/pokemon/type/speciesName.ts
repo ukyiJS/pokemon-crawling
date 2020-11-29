@@ -638,5 +638,6 @@ export const speciesName = {
   GIGANTIC_POKEMON: '거대포켓몬',
   WUSHU_POKEMON: '권법포켓몬',
   ROGUE_MONKEY_POKEMON: '나쁜원숭이포켓몬',
+  UNIQUE_HORN_POKEMON: '일각포켓몬',
 };
 export type SpeciesName = typeof speciesName[keyof typeof speciesName];
