@@ -6,6 +6,7 @@ import { otherCondition, OtherCondition } from './type/otherCondition';
 import { stoneCondition, StoneCondition } from './type/stoneCondition';
 import { tradeCondition, TradeCondition } from './type/tradeCondition';
 
+export * from './type/speciesName';
 export * from './type/abilityName';
 export * from './type/differentFormName';
 export * from './type/eggGroupName';
