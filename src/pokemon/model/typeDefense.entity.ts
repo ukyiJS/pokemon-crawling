@@ -4,8 +4,7 @@ import { ITypeDefense } from '../pokemon.interface';
 @ObjectType()
 export class TypeDefense implements ITypeDefense {
   @Field()
-  type: string;
-
+  public type: string;
   @Field(() => Float)
-  damage: number;
+  public damage: number;
 }
