@@ -34,7 +34,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     await this.promiseLocalStorage;
 
     let curser = 0;
-    const numberOfLoop = 6;
+    const numberOfLoop = 893;
     const progressBar = new ProgressBar();
 
     let pokemons: IPokemonOfDatabase[] = [];
