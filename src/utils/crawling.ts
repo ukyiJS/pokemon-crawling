@@ -12,6 +12,8 @@ import {
   pokemonName,
   PokemonTypeName,
   pokemonTypeName,
+  speciesName,
+  SpeciesName,
   statName,
 } from '@/pokemon/pokemon.type';
 import { Logger } from '@nestjs/common';
@@ -52,7 +54,7 @@ export abstract class CrawlingUtil {
 }
 
 export const functionString = {
-  getName: `${function(text: string, type: typeof pokemonName): PokemonName {
+  getName: `${function (text: string, type: typeof pokemonName): PokemonName {
     const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
     if (isEmpty(type)) throw new Error('getName pokemonName Does Not Exist!');
 
@@ -71,7 +73,7 @@ export const functionString = {
     return name;
   }}`,
 
-  getTypes: `${function(texts: string[], type: typeof pokemonTypeName): PokemonTypeName[] | null {
+  getTypes: `${function (texts: string[], type: typeof pokemonTypeName): PokemonTypeName[] | null {
     const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
     if (isEmpty(type)) throw new Error('getType pokemonTypeName Does Not Exist!');
 
@@ -87,7 +89,7 @@ export const functionString = {
     });
   }}`,
 
-  getAbility: `${function(text: string, type: typeof abilityName): AbilityName | null {
+  getAbility: `${function (text: string, type: typeof abilityName): AbilityName | null {
     const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
     if (isEmpty(type)) throw new Error('getAbility abilityName Does Not Exist!');
 
@@ -105,7 +107,23 @@ export const functionString = {
     return ability;
   }}`,
 
-  getEvYield: `${function(text: string, type: typeof statName): string | null {
+  getSpeciesName: `${function (text: string, type: typeof speciesName): SpeciesName {
+    const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
+    if (isEmpty(type)) throw new Error('getAbility abilityName Does Not Exist!');
+
+    let species = '';
+    try {
+      const cleanText = text.replace(/é/g, 'e').replace(/[^a-z]/gi, '');
+      const regExp = (searchValue: string): RegExp => new RegExp(`^${searchValue.replace(/_/g, '')}$`, 'gi');
+      [, species] = Object.entries(type).find(([key]) => regExp(key).test(cleanText))!;
+    } catch (error) {
+      console.error('No Matching Species Name Found', text);
+      throw error;
+    }
+    return species;
+  }}`,
+
+  getEvYield: `${function (text: string, type: typeof statName): string | null {
     const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
     if (isEmpty(type)) throw new Error('getEvYield statName Does Not Exist!');
 
@@ -124,7 +142,7 @@ export const functionString = {
     });
   }}`,
 
-  getEggGroups: `${function(text: string, type: typeof eggGroupName): EggGroupName[] {
+  getEggGroups: `${function (text: string, type: typeof eggGroupName): EggGroupName[] {
     const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
     if (isEmpty(type)) throw new Error('getEggGroups eggGroupName Does Not Exist!');
 
@@ -148,7 +166,7 @@ export const functionString = {
     });
   }}`,
 
-  getGender: `${function(text: string): IGender[] {
+  getGender: `${function (text: string): IGender[] {
     const match = text.match(/(\d.*)(?=%).*(?<=,\s)(\d.*)(?=%)/);
     const genderless = [{ name: '무성', ratio: 100 }];
     if (!match) return genderless;
@@ -160,7 +178,7 @@ export const functionString = {
     ];
   }}`,
 
-  getEggCycles: `${function(text: string): IEggCycle | null {
+  getEggCycles: `${function (text: string): IEggCycle | null {
     const match = text.match(/(\d.*)(?:\s\()(\d.*)(?:\ssteps)/);
     if (!match) return null;
 
@@ -171,7 +189,7 @@ export const functionString = {
     };
   }}`,
 
-  getStat: `${function(texts: string[], type: typeof statName): IStat[] {
+  getStat: `${function (texts: string[], type: typeof statName): IStat[] {
     const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
     if (isEmpty(type)) throw new Error('getStat param statName Does Not Exist!');
 
@@ -179,7 +197,7 @@ export const functionString = {
     return texts.filter((_, i) => !(i % 4)).map((value, i) => ({ name: statNames[i], value: +value }));
   }}`,
 
-  getTypeDefenses: `${function(texts: string[], type: typeof pokemonTypeName): ITypeDefense[] {
+  getTypeDefenses: `${function (texts: string[], type: typeof pokemonTypeName): ITypeDefense[] {
     const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
     if (isEmpty(type)) throw new Error('getTypeDefenses param pokemonTypeName Does Not Exist!');
     if (texts.length < 18) throw new Error('getTypeDefenses be short of type! Check typeDefenses param');
@@ -189,7 +207,7 @@ export const functionString = {
     return texts.map((text, i) => ({ type: pokemonTypes[i], damage: convertToDamage(text) }));
   }}`,
 
-  getForm: `${function(text: string | null, type: typeof differentFormName): DifferentFormName | null {
+  getForm: `${function (text: string | null, type: typeof differentFormName): DifferentFormName | null {
     const isEmpty = (object: any) => object.constructor === Object && !Object.keys(object).length;
     if (isEmpty(type)) throw new Error('getForm param differentFormName Does Not Exist!');
     if (!text) return null;
@@ -229,7 +247,7 @@ export const functionString = {
     return form;
   }}`,
 
-  getCondition: `${function(texts: Nullish<string>[], type: ConditionParam): Nullish<string>[] {
+  getCondition: `${function (texts: Nullish<string>[], type: ConditionParam): Nullish<string>[] {
     const { getConditions } = new (class {
       constructor(
         readonly evolutionType = type.evolutionType,
