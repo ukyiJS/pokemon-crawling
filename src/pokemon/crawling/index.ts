@@ -1,2 +1,2 @@
-export * from './pokemonDatabase/pokemons';
-export * from './pokemonWiki/pokemons';
+export * from './pokemonOfDatabase';
+export * from './PokemonsOfWiki';
