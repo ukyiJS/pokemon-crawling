@@ -248,8 +248,9 @@ export class PokemonsOfDatabase extends CrawlingUtil {
 
         return { no, name, image, form, evolvingTo: [] };
       };
-      private addCondition = ($element: Element) => {
-        const isCondition = /arrow$/.test($element.className);
+      private addCondition = () => {
+        const $element = this.getElement();
+        const isCondition = /arrow$/.test($element?.className ?? '');
         if (!isCondition) return false;
 
         this.condition = of($element).replaceText(/[()]/);
@@ -273,7 +274,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         return this.getElements().map($element => {
           return Array.from($element.children).reduce((acc, e) => {
             if (this.addMoreThanTwoKindsEvolvingTo(acc, e)) return acc;
-            if (this.addCondition(e)) return acc;
+            if (of(e).addCondition()) return acc;
 
             if (!acc?.no) return { ...of(e).getPokemon(), condition: this.condition };
             this.addEvolvingTo(acc, { ...of(e).getPokemon(), condition: this.condition });
