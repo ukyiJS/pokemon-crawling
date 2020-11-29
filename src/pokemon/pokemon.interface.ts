@@ -57,6 +57,15 @@ export interface IEggCycle {
   step: number[] | null;
 }
 
+export interface IEvolvingTo {
+  no: string;
+  name: string;
+  image: string;
+  form: string | null;
+  condition?: string;
+  evolvingTo: IEvolvingTo[];
+}
+
 export interface IPokemonOfDatabase {
   no: string;
   name: string;
@@ -94,13 +103,4 @@ export interface IPokemonImage {
   image: string;
   form?: string | null;
   differentForm?: IDifferentFormImage[];
-}
-
-export interface IEvolvingTo {
-  no: string;
-  name: string;
-  image: string;
-  form: string | null;
-  condition?: string;
-  evolvingTo: IEvolvingTo[];
 }
