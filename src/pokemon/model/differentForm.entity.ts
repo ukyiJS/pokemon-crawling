@@ -8,65 +8,45 @@ import { TypeDefense } from './typeDefense.entity';
 @ObjectType()
 export class DifferentForm implements IPokemonOfDatabase {
   @Field()
-  no: string;
-
+  public no: string;
   @Field()
-  name: string;
-
+  public name: string;
   @Field()
-  engName: string;
-
+  public engName: string;
   @Field()
-  image: string;
-
+  public image: string;
   @Field(() => [Stat])
-  stats: Stat[];
-
+  public stats: Stat[];
   @Field(() => [String])
-  types: string[];
-
+  public types: string[];
   @Field(() => [TypeDefense])
-  typeDefenses: TypeDefense[];
-
+  public typeDefenses: TypeDefense[];
   @Field()
-  species: string;
-
+  public species: string;
   @Field()
-  height: string;
-
+  public height: string;
   @Field()
-  weight: string;
-
+  public weight: string;
   @Field(() => [String])
-  abilities: string[];
-
+  public abilities: string[];
   @Field({ nullable: true })
-  hiddenAbility: string;
-
+  public hiddenAbility: string;
   @Field({ nullable: true })
-  evYield: string;
-
+  public evYield: string;
   @Field(() => Int)
-  catchRate: number;
-
+  public catchRate: number;
   @Field(() => Int)
-  friendship: number;
-
+  public friendship: number;
   @Field(() => Int)
-  exp: number;
-
+  public exp: number;
   @Field(() => [String])
-  eegGroups: string[];
-
+  public eegGroups: string[];
   @Field(() => [Gender])
-  gender: Gender[];
-
+  public gender: Gender[];
   @Field(() => EggCycle)
-  eggCycles: EggCycle;
-
+  public eggCycle: EggCycle;
   @Field({ nullable: true })
-  form: string;
-
+  public form: string;
   @Field(() => [DifferentForm])
-  differentForm: DifferentForm[];
+  differentForm?: DifferentForm[];
 }
