@@ -4,8 +4,7 @@ import { IEggCycle } from '../pokemon.interface';
 @ObjectType()
 export class EggCycle implements IEggCycle {
   @Field(() => Int)
-  cycle: number;
-
+  public value: number;
   @Field(() => [Int], { nullable: true })
-  step: number[];
+  public step: number[];
 }
