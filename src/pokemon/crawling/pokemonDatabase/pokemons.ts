@@ -12,6 +12,7 @@ import {
   statName,
 } from '@/pokemon/pokemon.type';
 import { differentFormName, DifferentFormName } from '@/pokemon/type/differentFormName';
+import { SpeciesName, speciesName } from '@/pokemon/type/speciesName';
 import { CrawlingUtil, FunctionString, functionString, ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 
@@ -20,6 +21,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     { gdpr: '0' },
     { pokemonName },
     { pokemonTypeName },
+    { speciesName },
     { statName },
     { abilityName },
     { exceptionalAbilityName },
@@ -76,6 +78,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         statName: typeof statName;
         pokemonTypeName: typeof pokemonTypeName;
         differentFormName: typeof differentFormName;
+        speciesName: typeof speciesName;
         abilityName: typeof abilityName;
         eggGroupName: typeof eggGroupName;
         exceptionalAbilityName: ExceptionalAbilityName;
@@ -90,6 +93,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
           statName: this.getItem<typeof statName>('statName'),
           pokemonTypeName: this.getItem<typeof pokemonTypeName>('pokemonTypeName'),
           differentFormName: this.getItem<typeof differentFormName>('differentFormName'),
+          speciesName: this.getItem<typeof speciesName>('speciesName'),
           abilityName: this.getItem<typeof abilityName>('abilityName'),
           eggGroupName: this.getItem<typeof eggGroupName>('eggGroupName'),
           exceptionalAbilityName: this.getItem<ExceptionalAbilityName>('exceptionalAbilityName'),
@@ -147,6 +151,13 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       };
       public getTypes = (): PokemonTypeName[] => {
         return this.parseFunction(this.functionString.getTypes)?.call(null, this.getTexts(), this.type.pokemonTypeName);
+      };
+      public getSpeciesName = (): SpeciesName => {
+        return this.parseFunction(this.functionString.getSpeciesName)?.call(
+          null,
+          this.getText(),
+          this.type.speciesName,
+        );
       };
       private getAbility = (text: string | null): string => {
         return text && this.parseFunction(this.functionString.getAbility)?.call(null, text, this.type.abilityName);
@@ -288,7 +299,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       engName,
       image: of($image).getSrc(),
       types: of($types).getTypes(),
-      species: of($species).getText(),
+      species: of($species).getSpeciesName(),
       height: of($height).matchText(/(\w.*)(?=\s\()/),
       weight: of($weight).matchText(/(\w.*)(?=\s\()/),
       abilities: abilities.concat(hiddenAbility),
