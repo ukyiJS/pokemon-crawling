@@ -16,132 +16,107 @@ export class PokemonOfDatabase implements IPokemonOfDatabase {
   @Expose()
   @ObjectIdColumn()
   @Field()
-  _id?: string;
-
+  public _id?: string;
   @Expose()
   @Column({ unique: true })
   @Field()
-  no: string;
-
+  public no: string;
   @Expose()
   @Column()
   @Field()
-  name: string;
-
+  public name: string;
   @Expose()
   @Column()
   @Field()
-  engName: string;
-
+  public engName: string;
   @Expose()
   @Column()
   @Field()
-  image: string;
-
+  public image: string;
   @Expose()
   @Column()
   @Field({ nullable: true })
-  icon?: string;
-
+  public icon?: string;
   @Expose()
   @Column()
   @Field(() => [Stat])
-  stats: Stat[];
-
+  public stats: Stat[];
   @Expose()
   @Column()
   @Field(() => [String])
-  types: string[];
-
+  public types: string[];
   @Expose()
   @Column()
   @Field(() => [TypeDefense])
-  typeDefenses: TypeDefense[];
-
+  public typeDefenses: TypeDefense[];
   @Expose()
   @Column()
   @Field()
-  species: string;
-
+  public species: string;
   @Expose()
   @Column()
   @Field()
-  height: string;
-
+  public height: string;
   @Expose()
   @Column()
   @Field()
-  weight: string;
-
+  public weight: string;
   @Expose()
   @Column()
   @Field(() => [String])
-  abilities: (string | null)[];
-
+  public abilities: (string | null)[];
   @Expose()
   @Column()
   @Field({ nullable: true })
-  hiddenAbility: string;
-
+  public hiddenAbility: string;
   @Expose()
   @Column()
   @Field({ nullable: true })
-  evYield: string;
-
+  public evYield: string;
   @Expose()
   @Column()
   @Field(() => Int)
-  catchRate: number;
-
+  public catchRate: number;
   @Expose()
   @Column()
   @Field(() => Int)
-  friendship: number;
-
+  public friendship: number;
   @Expose()
   @Column()
   @Field(() => Int)
-  exp: number;
-
+  public exp: number;
   @Expose()
   @Column()
   @Field(() => [String])
-  eegGroups: string[];
-
+  public eegGroups: string[];
   @Expose()
   @Column()
   @Field(() => [Gender])
-  gender: Gender[];
-
+  public gender: Gender[];
   @Expose()
   @Column()
   @Field(() => EggCycle)
-  eggCycles: EggCycle;
-
+  public eggCycle: EggCycle;
   @Expose()
   @Column()
   @Field({ nullable: true })
-  form: string;
-
+  public form: string;
   @Expose()
   @Column()
   @Field(() => [EvolvingTo])
-  evolvingTo: EvolvingTo[];
-
+  public evolvingTo: EvolvingTo[];
   @Expose()
   @Column()
   @Field(() => [DifferentForm])
-  differentForm: DifferentForm[];
-
+  public differentForm?: DifferentForm[];
   @Expose()
   @Column()
   @Field(() => Float)
-  createdAt: number;
-
+  public createdAt: number;
   @Expose()
   @Column()
   @Field(() => Int)
-  searchCount: number;
+  public searchCount: number;
 
   constructor(pokemon: Partial<PokemonOfDatabase>) {
     if (pokemon?.no) {
