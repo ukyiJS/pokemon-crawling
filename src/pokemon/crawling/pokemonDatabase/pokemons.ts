@@ -248,7 +248,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         const isCondition = /arrow$/.test($element.className);
         if (!isCondition) return false;
 
-        this.condition = $element?.textContent?.replace(/[()]/g, '') ?? '';
+        this.condition = of($element).replaceText(/[()]/);
         return true;
       };
       private addMoreThanTwoKindsEvolvingTo = (previous: IEvolvingTo, $element: Element): boolean => {
