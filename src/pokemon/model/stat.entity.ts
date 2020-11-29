@@ -4,8 +4,7 @@ import { IStat } from '../pokemon.interface';
 @ObjectType()
 export class Stat implements IStat {
   @Field()
-  name: string;
-
+  public name: string;
   @Field(() => Int)
-  value: number;
+  public value: number;
 }
