@@ -4,18 +4,16 @@ import puppeteer from 'puppeteer-extra';
 import adblocker from 'puppeteer-extra-plugin-adblocker';
 import { Browser, LaunchOptions, Page } from 'puppeteer-extra/dist/puppeteer';
 
-puppeteer.use(adblocker({ blockTrackers: true }));
-
 export class Puppeteer {
-  constructor(private readonly url: string, private readonly options: LaunchOptions = {}) {}
+  protected initPuppeteer = async (url: string, options?: LaunchOptions): Promise<{ browser: Browser; page: Page }> => {
+    puppeteer.use(adblocker({ blockTrackers: true }));
 
-  public init = async (): Promise<{ browser: Browser; page: Page }> => {
-    const browser = await this.initBrowser();
-    const page = await this.initPage(browser);
+    const browser = await this.initBrowser(options);
+    const page = await this.initPage(url, browser);
 
     return { browser, page };
   };
-  private initBrowser = async (): Promise<Browser> => {
+  private initBrowser = async (options: LaunchOptions = {}): Promise<Browser> => {
     const width = 1920;
     const height = 1080;
     const windowSize = `--window-size${width},${height}`;
@@ -27,7 +25,7 @@ export class Puppeteer {
       defaultViewport = { width, height },
       timeout = 0,
       args = [],
-    } = this.options;
+    } = options;
 
     return puppeteer.launch({
       executablePath,
@@ -39,10 +37,10 @@ export class Puppeteer {
       args: [...args, windowSize],
     });
   };
-  private initPage = async (browser: Browser): Promise<Page> => {
+  private initPage = async (url: string, browser: Browser): Promise<Page> => {
     const page = await browser.newPage();
     this.onPage(page);
-    await page.goto(this.url, { waitUntil: 'load' });
+    await page.goto(url, { waitUntil: 'load' });
 
     return page;
   };
