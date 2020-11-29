@@ -639,5 +639,9 @@ export const speciesName = {
   WUSHU_POKEMON: '권법포켓몬',
   ROGUE_MONKEY_POKEMON: '나쁜원숭이포켓몬',
   UNIQUE_HORN_POKEMON: '일각포켓몬',
+  STRONG_LEGS_POKEMON: '건각포켓몬',
+  MALEVOLENT_POKEMON: '사악포켓몬',
+  HEXPERT_POKEMON: '술사포켓몬',
+  DJINN_POKEMON: '마신포켓몬',
 };
 export type SpeciesName = typeof speciesName[keyof typeof speciesName];
