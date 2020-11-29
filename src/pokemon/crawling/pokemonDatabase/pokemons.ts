@@ -101,7 +101,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         this.functionString = this.getItem<FunctionString>('functionString');
       }
 
-      public of = ($element: Element | Element[] | NodeListOf<Element> | null): this => {
+      public of = ($element?: Element | Element[] | NodeListOf<Element> | null): this => {
         if (!$element) this.$element = null;
         else if ($element instanceof Element) this.$element = $element;
         else this.$elements = Array.from($element);
@@ -152,6 +152,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       public getTypes = (): PokemonTypeName[] => {
         return this.parseFunction(this.functionString.getTypes)?.call(null, this.getTexts(), this.type.pokemonTypeName);
       };
+      public getImage = (): string => this.getElement()?.getAttribute('data-src') ?? '';
       public getSpeciesName = (): SpeciesName => {
         return this.parseFunction(this.functionString.getSpeciesName)?.call(
           null,
@@ -229,18 +230,21 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         }
         previous.evolvingTo = [pokemon].flat();
       };
-      private getPokemon = ($element: Element): IEvolvingTo => {
-        const $image = $element.querySelector('.infocard-lg-img span');
-        const $no = $element.querySelector('.infocard-lg-data > small');
+      private getPokemon = (): IEvolvingTo => {
+        let $element;
+        try {
+          $element = this.getElement()!;
+        } catch (error) {
+          console.error('Pokemon Element does not exist!');
+          throw error;
+        }
         const $data = $element.querySelector('.infocard-lg-data');
-        const isForm = ($data?.children.length ?? 0) > 5;
-        const $name = $data?.querySelector('.ent-name') ?? null;
-        const $form = $data?.querySelector('small:nth-of-type(2)') ?? null;
-        const form = isForm ? this.of($form).getForm() : null;
+        const isForm = of($data).getChildren().length > 5;
+        const form = isForm ? this.of($data?.querySelector('small:nth-of-type(2)')).getForm() : null;
 
-        const no = this.of($no).replaceText(/\D/);
-        const name = this.of($name).getName();
-        const image = $image?.getAttribute('data-src') ?? '';
+        const no = this.of($element.querySelector('.infocard-lg-data > small')).replaceText(/\D/);
+        const name = this.of($data?.querySelector('.ent-name')).getName();
+        const image = of($element.querySelector('.infocard-lg-img span')).getImage();
 
         return { no, name, image, form, evolvingTo: [] };
       };
@@ -256,9 +260,10 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         if (!isSplit) return false;
 
         const pokemons = Array.from($element.children).map($el => {
-          const $condition = $el?.querySelector('.infocard-arrow > small');
-          const condition = $condition?.textContent?.replace(/[()]/g, '') ?? '';
-          return { ...this.getPokemon($el.querySelector('.infocard:last-child')!), condition };
+          // const $condition = $el?.querySelector('.infocard-arrow > small');
+          // const condition = $condition?.textContent?.replace(/[()]/g, '') ?? '';
+          const condition = of($el?.querySelector('.infocard-arrow > small')).replaceText(/[()]/);
+          return { ...of($el.querySelector('.infocard:last-child')).getPokemon(), condition };
         });
         this.addEvolvingTo(previous, pokemons);
 
@@ -270,8 +275,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
             if (this.addMoreThanTwoKindsEvolvingTo(acc, e)) return acc;
             if (this.addCondition(e)) return acc;
 
-            if (!acc?.no) return { ...this.getPokemon(e), condition: this.condition };
-            this.addEvolvingTo(acc, { ...this.getPokemon(e), condition: this.condition });
+            if (!acc?.no) return { ...of(e).getPokemon(), condition: this.condition };
+            this.addEvolvingTo(acc, { ...of(e).getPokemon(), condition: this.condition });
 
             return acc;
           }, <IEvolvingTo>{});
