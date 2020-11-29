@@ -30,7 +30,7 @@ export class ProgressBar {
     stdout.write(message);
   };
   public updateProgressBar = (cursor: number, context?: string): void => {
-    this.cursor = Math.floor(cursor / this.progressBarSize);
+    this.cursor = Math.floor((cursor / this.progressBarSize) * 100);
     if (this.cursor < 33) this.color = redBright;
     else if (this.cursor < 66) this.color = yellowBright;
     else if (this.cursor < 100) this.color = cyanBright;
