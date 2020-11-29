@@ -141,7 +141,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
           return text ? [...acc, text] : acc;
         }, []);
       };
-      public getSrc = (): string => (<HTMLImageElement>this.$element)?.src ?? '';
+      public getSrc = (): string => (<HTMLImageElement>this.getElement())?.src ?? '';
       public matchText = (regExp: RegExp): string => this.getText().match(regExp)?.[1] ?? '';
       public replaceText = (searchValue: string | RegExp, replaceValue = ''): string => {
         return this.getText().replace(new RegExp(searchValue, 'gi'), replaceValue);
@@ -152,7 +152,6 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       public getTypes = (): PokemonTypeName[] => {
         return this.parseFunction(this.functionString.getTypes)?.call(null, this.getTexts(), this.type.pokemonTypeName);
       };
-      public getImage = (): string => this.getElement()?.getAttribute('data-src') ?? '';
       public getSpeciesName = (): SpeciesName => {
         return this.parseFunction(this.functionString.getSpeciesName)?.call(
           null,
@@ -231,7 +230,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         previous.evolvingTo = [pokemon].flat();
       };
       private getPokemon = (): IEvolvingTo => {
-        let $element;
+        let $element = <Element>{};
         try {
           $element = this.getElement()!;
         } catch (error) {
@@ -240,11 +239,11 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         }
         const $data = $element.querySelector('.infocard-lg-data');
         const isForm = of($data).getChildren().length > 5;
-        const form = isForm ? this.of($data?.querySelector('small:nth-of-type(2)')).getForm() : null;
+        const form = isForm ? of($data?.querySelector('small:nth-of-type(2)')).getForm() : null;
 
-        const no = this.of($element.querySelector('.infocard-lg-data > small')).replaceText(/\D/);
-        const name = this.of($data?.querySelector('.ent-name')).getName();
-        const image = of($element.querySelector('.infocard-lg-img span')).getImage();
+        const no = of($element.querySelector('.infocard-lg-data > small')).replaceText(/\D/);
+        const name = of($data?.querySelector('.ent-name')).getName();
+        const image = of($element.querySelector('.infocard-lg-img img')).getSrc();
 
         return { no, name, image, form, evolvingTo: [] };
       };
