@@ -4,8 +4,7 @@ import { IGender } from '../pokemon.interface';
 @ObjectType()
 export class Gender implements IGender {
   @Field()
-  name: string;
-
+  public name: string;
   @Field(() => Float)
-  ratio: number;
+  public ratio: number;
 }
