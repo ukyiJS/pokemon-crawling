@@ -212,9 +212,13 @@ export class PokemonsOfDatabase extends CrawlingUtil {
         );
       };
       public getForm = (): string | null => {
-        if (!this.$element) return null;
-        const text = this.$element.textContent;
-        return this.parseFunction(this.functionString.getForm)?.call(null, text, this.type.differentFormName);
+        const $element = this.getElement();
+        if (!$element) return null;
+        return this.parseFunction(this.functionString.getForm)?.call(
+          null,
+          of($element).getText(),
+          this.type.differentFormName,
+        );
       };
       private addEvolvingTo = (previous: IEvolvingTo, pokemon: IEvolvingTo | IEvolvingTo[]): void => {
         const { evolvingTo } = previous;
