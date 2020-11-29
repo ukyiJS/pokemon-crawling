@@ -53,7 +53,7 @@ export interface ITypeDefense {
 }
 
 export interface IEggCycle {
-  cycle: number;
+  value: number;
   step: number[] | null;
 }
 
@@ -69,7 +69,6 @@ export interface IEvolvingTo {
 export interface IPokemonOfDatabase {
   no: string;
   name: string;
-  engName: string;
   image: string;
   stats: IStat[];
   types: string[];
@@ -85,10 +84,10 @@ export interface IPokemonOfDatabase {
   exp: number;
   eegGroups: string[];
   gender: IGender[];
-  eggCycles: IEggCycle;
+  eggCycle: IEggCycle | null;
   evolvingTo?: IEvolvingTo[];
   form: string | null;
-  differentForm: IPokemonOfDatabase[];
+  differentForm?: IPokemonOfDatabase[];
 }
 
 export interface IDifferentFormImage {
