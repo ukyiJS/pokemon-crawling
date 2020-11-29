@@ -6,7 +6,7 @@ import {
   ProgressBar,
   Puppeteer,
   setDifferentFormImage,
-  setImage
+  setImage,
 } from '@/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -50,6 +50,22 @@ export class PokemonService {
     await browser.close();
 
     return pokemons;
+  }
+
+  public getMergedPokemon(): IPokemonOfDatabase[] {
+    const pokemonWiki = getJson<PokemonOfWiki[]>({ fileName: 'pokemonsOfWiki.json' });
+    const pokemonDatabase = getJson<PokemonOfDatabase[]>({ fileName: 'pokemonsOfDatabase.json' });
+    if (!pokemonWiki) return [];
+    if (!pokemonDatabase) return [];
+    return pokemonDatabase.map((pokemon, i) => {
+      const { species, color } = pokemonWiki[i];
+      const { differentForm } = pokemon;
+
+      const dynamaxForm = pokemonWiki[i].differentForm?.find(p => /^거다이맥스/.test(p.form));
+      const dynamaxPokemon = <PokemonOfDatabase>{ ...pokemon, species, ...dynamaxForm, differentForm: [] };
+
+      return { ...pokemon, color, species, differentForm: [...differentForm, dynamaxPokemon] };
+    });
   }
 
   public async findPokemonOfDatabase(page = 1, display = 10): Promise<PokemonOfDatabase[]> {
