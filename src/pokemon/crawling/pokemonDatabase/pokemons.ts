@@ -34,7 +34,7 @@ export class PokemonsOfDatabase extends CrawlingUtil {
     await this.promiseLocalStorage;
 
     let curser = 0;
-    const numberOfLoop = 893;
+    const numberOfLoop = 6;
     const progressBar = new ProgressBar();
 
     let pokemons: IPokemonOfDatabase[] = [];
@@ -158,6 +158,11 @@ export class PokemonsOfDatabase extends CrawlingUtil {
           this.getText(),
           this.type.speciesName,
         );
+      };
+      public getHeightOrWeight = (): string => {
+        return of(this.getElement())
+          .matchText(/(\w.*)(?=\s\()/)
+          .replace(/\s/g, '');
       };
       private getAbility = (text: string | null): string => {
         return text && this.parseFunction(this.functionString.getAbility)?.call(null, text, this.type.abilityName);
@@ -300,8 +305,8 @@ export class PokemonsOfDatabase extends CrawlingUtil {
       image: of($image).getSrc(),
       types: of($types).getTypes(),
       species: of($species).getSpeciesName(),
-      height: of($height).matchText(/(\w.*)(?=\s\()/),
-      weight: of($weight).matchText(/(\w.*)(?=\s\()/),
+      height: of($height).getHeightOrWeight(),
+      weight: of($weight).getHeightOrWeight(),
       abilities: abilities.concat(hiddenAbility),
       hiddenAbility,
       evYield: of($evYield).getEvYield(),
