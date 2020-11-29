@@ -141,7 +141,11 @@ export class PokemonsOfDatabase extends CrawlingUtil {
           return text ? [...acc, text] : acc;
         }, []);
       };
-      public getSrc = (): string => (<HTMLImageElement>this.getElement())?.src ?? '';
+      public getSrc = (): string => {
+        const $element = this.getElement();
+        const src = $element?.getAttribute('src') ?? $element?.getAttribute('data-src') ?? '';
+        return src.replace(/(rockruff)-own-tempo.png$/g, '$1.png');
+      };
       public matchText = (regExp: RegExp): string => this.getText().match(regExp)?.[1] ?? '';
       public replaceText = (searchValue: string | RegExp, replaceValue = ''): string => {
         return this.getText().replace(new RegExp(searchValue, 'gi'), replaceValue);
@@ -237,13 +241,14 @@ export class PokemonsOfDatabase extends CrawlingUtil {
           console.error('Pokemon Element does not exist!');
           throw error;
         }
+        const $image = $element.querySelector('.infocard-lg-img .img-sprite');
         const $data = $element.querySelector('.infocard-lg-data');
-        const isForm = of($data).getChildren().length > 5;
-        const form = isForm ? of($data?.querySelector('small:nth-of-type(2)')).getForm() : null;
 
         const no = of($element.querySelector('.infocard-lg-data > small')).replaceText(/\D/);
         const name = of($data?.querySelector('.ent-name')).getName();
-        const image = of($element.querySelector('.infocard-lg-img img')).getSrc();
+        const image = of($image).getSrc();
+        const isForm = of($data).getChildren().length > 5;
+        const form = isForm ? of($data?.querySelector('small:nth-of-type(2)')).getForm() : null;
 
         return { no, name, image, form, evolvingTo: [] };
       };
