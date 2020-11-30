@@ -1,93 +1,129 @@
-export interface IStat {
-  name: string;
-  value: number;
+import { Field, Float, Int, InterfaceType, ObjectType } from '@nestjs/graphql';
+
+@ObjectType()
+export abstract class Stat {
+  @Field()
+  public name: string;
+  @Field(() => Int)
+  public value: number;
 }
 
-export interface IColor {
-  name: string;
-  code: string;
+@ObjectType()
+export abstract class Color {
+  @Field()
+  public name: string;
+  @Field()
+  public code: string;
 }
 
-export interface IGender {
-  name: string;
-  ratio: number;
+@ObjectType()
+export abstract class Gender {
+  @Field()
+  public name: string;
+  @Field(() => Float)
+  public ratio: number;
 }
 
-export interface IPokemonOfWiki {
-  no: string;
-  name: string;
-  engName: string;
-  image: string;
-  types: string[];
-  species: string;
-  abilities: (string | null)[];
-  hiddenAbility: string | null;
-  color: IColor;
-  friendship: number;
-  height: string;
-  weight: string;
-  captureRate: number;
-  gender: IGender[];
-  form: string | null;
-  differentForm?: IPokemonOfWiki[];
+@ObjectType()
+export abstract class TypeDefense {
+  @Field()
+  public type: string;
+  @Field(() => Float)
+  public damage: number;
 }
 
-interface IMove {
-  name: string;
-  type: string;
-  category: string;
-  power: number | null;
-  accuracy: number | null;
+@ObjectType()
+export abstract class EggCycle {
+  @Field(() => Int)
+  public value: number;
+  @Field(() => Int, { nullable: true })
+  public step: number[] | null;
 }
 
-export interface IMoves {
-  level: (IMove & { value: number | null })[];
-  egg: IMove[];
-  tm: (IMove & { no: number })[];
-  tr: (IMove & { no: number })[];
+@ObjectType()
+export abstract class EvolvingTo {
+  @Field()
+  public no: string;
+  @Field()
+  public name: string;
+  @Field()
+  public image: string;
+  @Field(() => String, { nullable: true })
+  public form: string | null;
+  @Field()
+  public condition?: string;
+  @Field(() => [EvolvingTo])
+  public evolvingTo?: EvolvingTo[];
 }
 
-export interface ITypeDefense {
-  type: string;
-  damage: number;
+@InterfaceType()
+export abstract class Pokemon {
+  @Field()
+  public no: string;
+  @Field()
+  public name: string;
+  @Field()
+  public image: string;
+  @Field(() => [String])
+  public types: string[];
+  @Field()
+  public species: string;
+  @Field()
+  public height: string;
+  @Field()
+  public weight: string;
+  @Field(() => [String], { nullable: 'items' })
+  public abilities: (string | null)[];
+  @Field(() => String, { nullable: true })
+  public hiddenAbility: string | null;
+  @Field(() => Int)
+  public catchRate: number;
+  @Field(() => Int)
+  public friendship: number;
+  @Field(() => [String])
+  public eegGroups: string[];
+  @Field(() => [Gender])
+  public gender: Gender[];
+  @Field(() => String, { nullable: true })
+  public form: string | null;
 }
 
-export interface IEggCycle {
-  value: number;
-  step: number[] | null;
+@InterfaceType()
+export abstract class DatabaseColumn {
+  @Field()
+  public _id?: string;
+  @Field(() => Float)
+  public createdAt?: number;
+  @Field(() => Int)
+  public searchCount?: number;
 }
 
-export interface IEvolvingTo {
-  no: string;
-  name: string;
-  image: string;
-  form: string | null;
-  condition?: string;
-  evolvingTo: IEvolvingTo[];
+@InterfaceType()
+export abstract class PokemonOfWiki extends Pokemon {
+  @Field()
+  public color: Color;
+  @Field(() => [PokemonOfWiki])
+  public differentForm?: PokemonOfWiki[];
 }
 
-export interface IPokemonOfDatabase {
-  no: string;
-  name: string;
-  image: string;
-  stats: IStat[];
-  types: string[];
-  typeDefenses: ITypeDefense[];
-  species: string;
-  height: string;
-  weight: string;
-  abilities: (string | null)[];
-  hiddenAbility: string | null;
-  evYield: string | null;
-  catchRate: number;
-  friendship: number;
-  exp: number;
-  eegGroups: string[];
-  gender: IGender[];
-  eggCycle: IEggCycle | null;
-  evolvingTo?: IEvolvingTo[];
-  form: string | null;
-  differentForm?: IPokemonOfDatabase[];
+@InterfaceType()
+export abstract class PokemonOfDatabase extends Pokemon {
+  @Field()
+  public icon?: string;
+  @Field(() => String, { nullable: true })
+  public evYield: string | null;
+  @Field(() => Int)
+  public exp: number;
+  @Field(() => [EggCycle], { nullable: true })
+  public eggCycle: EggCycle | null;
+  @Field(() => [Stat])
+  public stats: Stat[];
+  @Field(() => [TypeDefense])
+  public typeDefenses: TypeDefense[];
+  @Field(() => [EvolvingTo])
+  public evolvingTo?: EvolvingTo[];
+  @Field(() => [PokemonOfDatabase])
+  public differentForm?: PokemonOfDatabase[];
 }
 
 export interface IDifferentFormImage {
