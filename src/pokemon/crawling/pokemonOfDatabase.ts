@@ -1,14 +1,14 @@
 import { ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
-import { IEggCycle, IEvolvingTo, IGender, IPokemonOfDatabase, IStat, ITypeDefense } from '../pokemon.interface';
+import { EggCycle, EvolvingTo, Gender, PokemonOfDatabase, Stat, TypeDefense } from '../pokemon.interface';
 import { CrawlingUtil } from './util';
 
 export class CrawlingPokemonOfDatabase extends CrawlingUtil {
-  public crawling = async (page: Page): Promise<IPokemonOfDatabase[]> => {
-    let pokemons = <IPokemonOfDatabase[]>[];
+  public crawling = async (page: Page): Promise<PokemonOfDatabase[]> => {
+    let pokemons = <PokemonOfDatabase[]>[];
     let curser = 0;
-    const loopCount = 893;
+    const loopCount = 6;
     const { updateProgressBar } = new ProgressBar(loopCount);
 
     const mainSelector = '#main';
@@ -20,7 +20,7 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
       const pokemon = await page.evaluate(this.getPokemon, $main);
       pokemons = [...pokemons, pokemon];
 
-      curser = +pokemon.no;
+      curser = +pokemon?.no;
       Logger.log(`${pokemon.no} : ${pokemon.name}`, 'Crawling');
       updateProgressBar(curser);
 
@@ -30,7 +30,7 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
     return pokemons;
   };
 
-  private getPokemon = ($main: Element): IPokemonOfDatabase => {
+  private getPokemon = ($main: Element): PokemonOfDatabase => {
     const { of } = new (class {
       private $element: Element | null;
       private $elements: Element[];
@@ -60,7 +60,7 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
       };
       public getChildren = (): Element[] => (this.$element ? Array.from(this.$element.children) : []);
       public getPokemonElements = (): Element[] => Array.from(this.$elements);
-      public getImage = (): string => {
+      private getSrc = (): string => {
         const src = this.$element?.getAttribute('src') ?? this.$element?.getAttribute('data-src') ?? '';
         return src.replace(/(rockruff)-own-tempo.png$/g, '$1.png');
       };
@@ -80,13 +80,24 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
         }, []);
         return $columns;
       };
+      public getName = (): string => of(this.$element?.querySelector('h1')).getText();
+      public getImage = (): string => of(this.$element?.querySelector('img')).getSrc();
+      public getTypes = (): string[] => of(this.$element?.querySelectorAll('a')).getTexts();
       public getHeightOrWeight = (): string => this.matchText(/(\w.*)(?=\s\()/).replace(/\s/g, '');
       public getAbilities = (): (string | null)[] => {
         const $abilities = Array.from(this.$element?.querySelectorAll('span > a') ?? []);
-        const [ability1, ability2 = null] = $abilities.map($ability => of($ability).replaceText(/[^a-z]/));
+        const [ability1 = null, ability2 = null] = $abilities.map($ability => of($ability).replaceText(/[^a-z]/));
         return [ability1, ability2];
       };
-      public getGender = (): IGender[] => {
+      public getHiddenAbility = (): string | null => {
+        return of(this.$element?.querySelector('small > a')).replaceText(/[^a-z]/) || null;
+      };
+      public getEvYield = (): string | null => of(this.$element).replaceText(/(?<=\D)\s/) || null;
+      public getCatchRate = (): number => +of(this.$element).matchText(/(\d+)/);
+      public getFriendship = (): number => +of(this.$element).matchText(/(\d+)/) || 70;
+      public getExp = (): number => +of(this.$element).matchText(/(\d+)/);
+      public getEegGroups = (): string[] => of(this.$element?.querySelectorAll('a')).getTexts();
+      public getGender = (): Gender[] => {
         const match = this.getText().match(/(\d.*)(?=%).*(?<=,\s)(\d.*)(?=%)/);
         const genderless = [{ name: '무성', ratio: 100 }];
         if (!match) return genderless;
@@ -97,7 +108,7 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
           { name: '암컷', ratio: +female },
         ];
       };
-      public getEggCycle = (): IEggCycle | null => {
+      public getEggCycle = (): EggCycle | null => {
         const match = this.getText().match(/(\d.*)(?:\s\()(\d.*)(?:\ssteps)/);
         if (!match) return null;
 
@@ -107,7 +118,7 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
           step: step.split('–').map(step => +step.replace(/\D/g, '')),
         };
       };
-      public getStats = (): IStat[] => {
+      public getStats = (): Stat[] => {
         const statNames = ['체력', '공격', '방어', '특수공격', '특수방어', '스피드', '총합'];
         return this.getTexts()
           .filter((_, i) => !(i % 4))
@@ -139,7 +150,7 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
         });
         return index > -1 ? index : 0;
       };
-      public getTypeDefenses = (abilities: (string | null)[]): ITypeDefense[] => {
+      public getTypeDefenses = (abilities: (string | null)[]): TypeDefense[] => {
         const { $elements } = this;
         const typeDefenseIndex = this.getTypeDefenseIndex(abilities);
         const $typeDefenseTables = Array.from($elements[typeDefenseIndex].querySelectorAll('table'));
@@ -165,20 +176,19 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
 
         return true;
       };
-      private addEvolvingTo = (previous: IEvolvingTo, pokemon: IEvolvingTo | IEvolvingTo[]): void => {
+      private addEvolvingTo = (previous: EvolvingTo, pokemon: EvolvingTo | EvolvingTo[]): void => {
         const { evolvingTo } = previous;
-        const isEvolvingTo = !!evolvingTo.length;
-        if (isEvolvingTo) {
+        if (evolvingTo?.length) {
           this.addEvolvingTo(evolvingTo[0], pokemon);
           return;
         }
         previous.evolvingTo = [pokemon].flat();
       };
-      private addMoreThanTwoKindsEvolvingTo = (previous: IEvolvingTo): boolean => {
+      private addMoreThanTwoKindsEvolvingTo = (previous: EvolvingTo): boolean => {
         const isSplit = /split$/.test(this.$element?.className ?? '');
         if (!isSplit) return false;
 
-        const pokemons = <IEvolvingTo[]>of(this.$element)
+        const pokemons = <EvolvingTo[]>of(this.$element)
           .getChildren()
           .map($el => {
             const condition = of($el.querySelector('.infocard-arrow > small')).replaceText(/[()]/);
@@ -188,7 +198,7 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
 
         return true;
       };
-      public getEvolutionPokemon = (): IEvolvingTo => {
+      public getEvolutionPokemon = (): EvolvingTo => {
         const $element = this.$element!;
 
         const $image = $element.querySelector('.infocard-lg-img .img-sprite');
@@ -196,13 +206,13 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
 
         const no = of($element.querySelector('.infocard-lg-data > small')).replaceText(/\D/);
         const name = of($data?.querySelector('.ent-name')).getText();
-        const image = of($image).getImage();
+        const image = of($image).getSrc();
         const isForm = of($data).getChildren().length > 5;
         const form = isForm ? of($data?.querySelector('small:nth-of-type(2)')).getText() : null;
 
         return { no, name, image, form, condition: this.condition, evolvingTo: [] };
       };
-      public getEvolvingTo = (): IEvolvingTo[] => {
+      public getEvolvingTo = (): EvolvingTo[] => {
         return this.$elements.map($element => {
           return of($element)
             .getChildren()
@@ -216,10 +226,10 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
               this.addEvolvingTo(acc, pokemon);
 
               return acc;
-            }, <IEvolvingTo>{});
+            }, <EvolvingTo>{});
         });
       };
-      public getPokemon = (): IPokemonOfDatabase => {
+      public getPokemon = (): PokemonOfDatabase => {
         const [
           [$image],
           [$no, $types, $species, $height, $weight, $abilities],
@@ -228,35 +238,30 @@ export class CrawlingPokemonOfDatabase extends CrawlingUtil {
           $stats,
           $typeDefenses,
         ] = of(this.$element).getColumn();
-        const $hiddenAbility = $abilities.querySelector('small > a');
-
         const abilities = of($abilities).getAbilities();
-
-        const hiddenAbility = of($hiddenAbility).replaceText(/[^a-z]/) || null;
-
+        const hiddenAbility = of($abilities).getHiddenAbility();
         const mergedAbilities = abilities.concat(hiddenAbility);
 
         const pokemon = {
           no: of($no).getText(),
-          name: of($main.querySelector('h1')).getText(),
-          image: of($image.querySelector('img')).getImage(),
-          types: of($types).getTexts(),
+          name: of($main).getName(),
+          image: of($image).getImage(),
+          types: of($types).getTypes(),
           species: of($species).getText(),
           height: of($height).getHeightOrWeight(),
           weight: of($weight).getHeightOrWeight(),
           abilities: mergedAbilities,
           hiddenAbility,
-          evYield: of($evYield).replaceText(/(?<=\D)\s/),
-          catchRate: +of($catchRate).matchText(/(\d+)/),
-          friendship: +of($friendship).matchText(/(\d+)/) ?? 70,
-          exp: +of($exp).matchText(/(\d+)/),
-          eegGroups: of($eegGroups).getTexts(),
+          evYield: of($evYield).getEvYield(),
+          catchRate: of($catchRate).getCatchRate(),
+          friendship: of($friendship).getFriendship(),
+          exp: +of($exp).getExp(),
+          eegGroups: of($eegGroups).getEegGroups(),
           gender: of($gender).getGender(),
           eggCycle: of($eggCycles).getEggCycle(),
           stats: of($stats).getStats(),
           typeDefenses: of($typeDefenses).getTypeDefenses(mergedAbilities),
           form: null,
-          differentForm: [],
         };
         return pokemon;
       };
