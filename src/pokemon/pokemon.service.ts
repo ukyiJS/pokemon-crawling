@@ -1,25 +1,26 @@
-import { Puppeteer } from '@/utils';
+import { getJson, Puppeteer } from '@/utils';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { CrawlingPokemonOfDatabase, CrawlingPokemonsOfWiki } from './crawling';
 import { CrawlingPokemonIconImageOfSerebiiNet } from './crawling/pokemonIconImageOfSerebiiNet';
 import { CrawlingPokemonImageOfSerebiiNet } from './crawling/pokemonImageOfSerebiiNet';
-import { PokemonOfDatabase, PokemonOfWiki } from './model';
-import { IPokemonImage, IPokemonOfDatabase, IPokemonOfWiki } from './pokemon.interface';
+import { PokemonOfDatabaseEntity } from './model/pokemonOfDatabase.entity';
+import { PokemonOfWikiEntity } from './model/pokemonOfWiki.entity';
+import { IPokemonImage, PokemonOfDatabase, PokemonOfWiki } from './pokemon.interface';
 
 @Injectable()
 export class PokemonService extends Puppeteer {
   constructor(
-    @InjectRepository(PokemonOfDatabase)
-    private readonly pokemonOfDatabaseRepository: MongoRepository<PokemonOfDatabase>,
-    @InjectRepository(PokemonOfWiki)
-    private readonly pokemonOfWiKiRepository: MongoRepository<PokemonOfWiki>,
+    @InjectRepository(PokemonOfWikiEntity)
+    private readonly pokemonOfWiKiRepository: MongoRepository<PokemonOfWikiEntity>,
+    @InjectRepository(PokemonOfDatabaseEntity)
+    private readonly pokemonOfDatabaseRepository: MongoRepository<PokemonOfDatabaseEntity>,
   ) {
     super();
   }
 
-  public async getPokemonsOfWiki(): Promise<IPokemonOfWiki[]> {
+  public async getPokemonsOfWiki(): Promise<PokemonOfWiki[]> {
     const { browser, page } = await this.initPuppeteer('https://pokemon.fandom.com/ko/wiki/이상해씨');
     const { crawling } = new CrawlingPokemonsOfWiki();
 
@@ -29,7 +30,7 @@ export class PokemonService extends Puppeteer {
     return pokemons;
   }
 
-  public async getPokemonsOfDatabase(): Promise<IPokemonOfDatabase[]> {
+  public async getPokemonsOfDatabase(): Promise<PokemonOfDatabase[]> {
     const { browser, page } = await this.initPuppeteer('https://pokemondb.net/pokedex/bulbasaur');
     const { crawling } = new CrawlingPokemonOfDatabase();
 
@@ -57,5 +58,27 @@ export class PokemonService extends Puppeteer {
     await browser.close();
 
     return pokemonImages;
+  }
+
+  public async addPokemonsOfWiki(): Promise<boolean> {
+    const pokemons = getJson<PokemonOfWiki[]>({ fileName: 'pokemonsOfWiki.json' });
+    if (!pokemons) return false;
+
+    const savePokemon = (pokemon: PokemonOfWikiEntity) => {
+      return this.pokemonOfWiKiRepository.save(new PokemonOfWikiEntity(pokemon));
+    };
+    await Promise.all(pokemons.map(savePokemon));
+    return true;
+  }
+
+  public async addPokemonsOfDatabase(): Promise<boolean> {
+    const pokemons = getJson<PokemonOfDatabase[]>({ fileName: 'pokemonsOfDatabase.json' });
+    if (!pokemons) return false;
+
+    const savePokemon = (pokemon: PokemonOfDatabaseEntity) => {
+      return this.pokemonOfDatabaseRepository.save(new PokemonOfDatabaseEntity(pokemon));
+    };
+    await Promise.all(pokemons.map(savePokemon));
+    return true;
   }
 }
