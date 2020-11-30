@@ -1,16 +1,16 @@
-import { IColor, IGender, IPokemonOfWiki } from '@/pokemon/pokemon.interface';
+import { Color, Gender, PokemonOfWiki } from '@/pokemon/pokemon.interface';
 import { ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
 import { CrawlingUtil } from './util';
 
 export class CrawlingPokemonsOfWiki extends CrawlingUtil {
-  public crawling = async (page: Page): Promise<IPokemonOfWiki[]> => {
+  public crawling = async (page: Page): Promise<PokemonOfWiki[]> => {
     let curser = 0;
     const loopCount = 893;
     const { updateProgressBar } = new ProgressBar(loopCount);
 
-    let pokemons = <IPokemonOfWiki[]>[];
+    let pokemons = <PokemonOfWiki[]>[];
     const nextClickSelector = '.w-100.mb-1 > tbody > tr > td:last-child td:last-child > a';
 
     while (true) {
@@ -30,7 +30,7 @@ export class CrawlingPokemonsOfWiki extends CrawlingUtil {
     return pokemons;
   };
 
-  private getPokemons = (): IPokemonOfWiki => {
+  private getPokemons = (): PokemonOfWiki => {
     const { of } = new (class {
       private $element: Element | null;
       private $elements: Element[];
@@ -79,13 +79,13 @@ export class CrawlingPokemonsOfWiki extends CrawlingUtil {
         const [ability1, ability2 = null] = of(this.getElement()?.querySelectorAll('a span')).getTexts();
         return [ability1, ability2];
       };
-      public getColors = (): IColor => {
+      public getColors = (): Color => {
         const $code = this.getElement()?.querySelector('span');
         const name = of(this.getElement()).getText();
         const code = $code?.getAttribute('style')?.replace(/background:/, '') ?? '';
         return { name, code };
       };
-      public getGender = (): IGender[] => {
+      public getGender = (): Gender[] => {
         const genderless = [{ name: '무성', ratio: 100 }];
         const match = of(this.getElement())
           .getText()
@@ -97,7 +97,10 @@ export class CrawlingPokemonsOfWiki extends CrawlingUtil {
           { name: '암컷', ratio: +female },
         ];
       };
-      public getPokemon = (): IPokemonOfWiki => {
+      public getEegGroups = (): string[] => {
+        return of(this.getElement()?.querySelectorAll('a:not(:first-child)')).getTexts();
+      };
+      public getPokemon = (): PokemonOfWiki => {
         const $pokemon = this.getElement();
         const [
           $types,
@@ -111,8 +114,9 @@ export class CrawlingPokemonsOfWiki extends CrawlingUtil {
           $friendship,
           $height,
           $weight,
-          $captureRate,
+          $catchRate,
           $gender,
+          $eegGroups,
         ] = of($pokemon).getContentsElements();
 
         const abilities = of($abilities).getAbilities();
@@ -130,8 +134,9 @@ export class CrawlingPokemonsOfWiki extends CrawlingUtil {
           friendship: +of($friendship).getText(),
           height: of($height).getText(),
           weight: of($weight).getText(),
-          captureRate: +of($captureRate).getText(),
+          catchRate: +of($catchRate).getText(),
           gender: of($gender).getGender(),
+          eegGroups: of($eegGroups).getEegGroups(),
           form: null,
         };
       };
