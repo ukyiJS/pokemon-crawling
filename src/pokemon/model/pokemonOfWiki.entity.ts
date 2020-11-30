@@ -1,94 +1,73 @@
-import { Field, Float, Int, ObjectType } from '@nestjs/graphql';
+import { ObjectType } from '@nestjs/graphql';
 import { Expose, plainToClass } from 'class-transformer';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { v4 } from 'uuid';
-import { IPokemonOfWiki } from '../pokemon.interface';
-import { Color } from './color.entity';
-import { Gender } from './gender.entity';
+import { Color, DatabaseColumn, Gender, Pokemon, PokemonOfWiki } from '../pokemon.interface';
 
 @Entity()
-@ObjectType()
-export class PokemonOfWiki implements IPokemonOfWiki {
+@ObjectType({ implements: () => [DatabaseColumn, Pokemon, PokemonOfWiki] })
+export class PokemonOfWikiEntity implements DatabaseColumn, Pokemon, PokemonOfWiki {
   @Expose()
-  @ObjectIdColumn()
-  @Field()
+  @ObjectIdColumn({ type: 'uuid' })
   public _id?: string;
   @Expose()
   @Column()
-  @Field()
   public no: string;
   @Expose()
   @Column()
-  @Field()
   public name: string;
   @Expose()
   @Column()
-  @Field()
-  public engName: string;
-  @Expose()
-  @Column()
-  @Field()
   public image: string;
   @Expose()
   @Column()
-  @Field(() => [String])
-  public types: string[];
-  @Expose()
-  @Column()
-  @Field()
-  public species: string;
-  @Expose()
-  @Column()
-  @Field(() => [String])
-  public abilities: (string | null)[];
-  @Expose()
-  @Column()
-  @Field()
-  public hiddenAbility: string;
-  @Expose()
-  @Column()
-  @Field(() => Color)
   public color: Color;
   @Expose()
   @Column()
-  @Field(() => Int)
-  public friendship: number;
+  public types: string[];
   @Expose()
   @Column()
-  @Field()
+  public species: string;
+  @Expose()
+  @Column()
   public height: string;
   @Expose()
   @Column()
-  @Field()
   public weight: string;
   @Expose()
   @Column()
-  @Field(() => Int)
-  public captureRate: number;
+  public abilities: (string | null)[];
   @Expose()
   @Column()
-  @Field(() => [Gender])
+  public hiddenAbility: string | null;
+  @Expose()
+  @Column()
+  public catchRate: number;
+  @Expose()
+  @Column()
+  public friendship: number;
+  @Expose()
+  @Column()
+  public eegGroups: string[];
+  @Expose()
+  @Column()
   public gender: Gender[];
   @Expose()
   @Column()
-  @Field({ nullable: true })
-  public form: string;
+  public form: string | null;
   @Expose()
   @Column()
-  @Field(() => [PokemonOfWiki])
   public differentForm?: PokemonOfWiki[];
   @Expose()
   @Column()
-  @Field(() => Float)
   public createdAt?: number;
   @Expose()
   @Column()
-  @Field(() => Int)
   public searchCount?: number;
 
-  constructor(pokemon: Partial<PokemonOfWiki>) {
+  constructor(pokemon: Partial<PokemonOfWikiEntity>) {
     if (pokemon?.no) {
-      Object.assign(this, plainToClass(PokemonOfWiki, pokemon, { excludeExtraneousValues: true }));
+      Object.assign(this, plainToClass(PokemonOfWikiEntity, pokemon, { excludeExtraneousValues: true }));
       this._id = this._id ?? v4();
       this.createdAt = this.createdAt ?? +new Date();
       this.searchCount = this.searchCount ?? 0;
