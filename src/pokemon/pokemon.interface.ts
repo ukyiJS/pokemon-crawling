@@ -98,7 +98,6 @@ export interface IDifferentFormImage {
 export interface IPokemonImage {
   no: string;
   name: string;
-  engName: string;
   image: string;
   form?: string | null;
   differentForm?: IDifferentFormImage[];
