@@ -60,7 +60,7 @@ export class PokemonService extends Puppeteer {
     return pokemonImages;
   }
 
-  public async addPokemonsOfWiki(): Promise<boolean> {
+  public async addPokemonOfWiki(): Promise<boolean> {
     const pokemons = getJson<PokemonOfWiki[]>({ fileName: 'pokemonsOfWiki.json' });
     if (!pokemons) return false;
 
@@ -71,7 +71,7 @@ export class PokemonService extends Puppeteer {
     return true;
   }
 
-  public async addPokemonsOfDatabase(): Promise<boolean> {
+  public async addPokemonOfDatabase(): Promise<boolean> {
     const pokemons = getJson<PokemonOfDatabase[]>({ fileName: 'pokemonsOfDatabase.json' });
     if (!pokemons) return false;
 
