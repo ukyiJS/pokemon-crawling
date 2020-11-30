@@ -1,6 +1,6 @@
 import { WriteJsonInterceptor } from '@/common';
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
-import { IPokemonImage, IPokemonOfDatabase, IPokemonOfWiki } from './pokemon.interface';
+import { IPokemonImage, PokemonOfDatabase, PokemonOfWiki } from './pokemon.interface';
 import { PokemonService } from './pokemon.service';
 
 @UseInterceptors(WriteJsonInterceptor)
@@ -9,18 +9,18 @@ export class PokemonController {
   constructor(private readonly pokemonService: PokemonService) {}
 
   @Get('pokemonsOfWiki')
-  public getPokemonWiki(): Promise<IPokemonOfWiki[]> {
+  public getPokemonWiki(): Promise<PokemonOfWiki[]> {
     return this.pokemonService.getPokemonsOfWiki();
   }
 
   @Get('pokemonsOfDatabase')
-  public getPokemonsOfDatabase(): Promise<IPokemonOfDatabase[]> {
+  public getPokemonsOfDatabase(): Promise<PokemonOfDatabase[]> {
     return this.pokemonService.getPokemonsOfDatabase();
   }
 
   @Get('pokemonIconImagesOfSerebiiNet')
   public getPokemonIconImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
-    return this.pokemonService.getPokemonIconImagesOfSerebiiNet();
+    return this.pokemonService.getPokemonIconImageOfSerebiiNet();
   }
 
   @Get('pokemonImagesOfSerebiiNet')
