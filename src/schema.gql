@@ -2,14 +2,48 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type EggCycle {
-  cycle: Int!
-  step: [Int!]
+interface PokemonOfWiki {
+  no: String!
+  name: String!
+  image: String!
+  types: [String!]!
+  species: String!
+  height: String!
+  weight: String!
+  abilities: [String]!
+  hiddenAbility: String
+  catchRate: Int!
+  friendship: Int!
+  eegGroups: [String!]!
+  gender: [Gender!]!
+  form: String
+  color: Color!
+  differentForm: [PokemonOfWiki!]!
 }
 
-type Gender {
+interface PokemonOfDatabase {
+  no: String!
   name: String!
-  ratio: Float!
+  image: String!
+  types: [String!]!
+  species: String!
+  height: String!
+  weight: String!
+  abilities: [String]!
+  hiddenAbility: String
+  catchRate: Int!
+  friendship: Int!
+  eegGroups: [String!]!
+  gender: [Gender!]!
+  form: String
+  icon: String!
+  evYield: String
+  exp: Int!
+  eggCycle: [EggCycle!]
+  stats: [Stat!]!
+  typeDefenses: [TypeDefense!]!
+  evolvingTo: [EvolvingTo!]!
+  differentForm: [PokemonOfDatabase!]!
 }
 
 type Stat {
@@ -17,33 +51,24 @@ type Stat {
   value: Int!
 }
 
+type Color {
+  name: String!
+  code: String!
+}
+
+type Gender {
+  name: String!
+  ratio: Float!
+}
+
 type TypeDefense {
   type: String!
   damage: Float!
 }
 
-type DifferentForm {
-  no: String!
-  name: String!
-  engName: String!
-  image: String!
-  stats: [Stat!]!
-  types: [String!]!
-  typeDefenses: [TypeDefense!]!
-  species: String!
-  height: String!
-  weight: String!
-  abilities: [String!]!
-  hiddenAbility: String
-  evYield: String
-  catchRate: Int!
-  friendship: Int!
-  exp: Int!
-  eegGroups: [String!]!
-  gender: [Gender!]!
-  eggCycles: EggCycle!
-  form: String
-  differentForm: [DifferentForm!]!
+type EggCycle {
+  value: Int!
+  step: Int
 }
 
 type EvolvingTo {
@@ -55,71 +80,79 @@ type EvolvingTo {
   evolvingTo: [EvolvingTo!]!
 }
 
-type PokemonOfDatabase {
-  _id: String!
+type PokemonOfDatabaseEntity implements DatabaseColumn & Pokemon & PokemonOfDatabase {
   no: String!
   name: String!
-  engName: String!
   image: String!
-  icon: String
-  stats: [Stat!]!
   types: [String!]!
-  typeDefenses: [TypeDefense!]!
   species: String!
   height: String!
   weight: String!
-  abilities: [String!]!
+  abilities: [String]!
   hiddenAbility: String
-  evYield: String
   catchRate: Int!
   friendship: Int!
-  exp: Int!
   eegGroups: [String!]!
   gender: [Gender!]!
-  eggCycles: EggCycle!
   form: String
+  _id: String!
+  createdAt: Float!
+  searchCount: Int!
+  icon: String!
+  evYield: String
+  exp: Int!
+  eggCycle: [EggCycle!]
+  stats: [Stat!]!
+  typeDefenses: [TypeDefense!]!
   evolvingTo: [EvolvingTo!]!
-  differentForm: [DifferentForm!]!
+  differentForm: [PokemonOfDatabase!]!
+}
+
+interface DatabaseColumn {
+  _id: String!
   createdAt: Float!
   searchCount: Int!
 }
 
-type Color {
-  name: String!
-  code: String!
-}
-
-type PokemonOfWiki {
-  _id: String!
+interface Pokemon {
   no: String!
   name: String!
-  engName: String!
   image: String!
   types: [String!]!
   species: String!
-  abilities: [String!]!
-  hiddenAbility: String!
-  color: Color!
-  friendship: Int!
   height: String!
   weight: String!
-  captureRate: Int!
+  abilities: [String]!
+  hiddenAbility: String
+  catchRate: Int!
+  friendship: Int!
+  eegGroups: [String!]!
   gender: [Gender!]!
   form: String
-  differentForm: [PokemonOfWiki!]!
+}
+
+type PokemonOfWikiEntity implements DatabaseColumn & Pokemon & PokemonOfWiki {
+  no: String!
+  name: String!
+  image: String!
+  types: [String!]!
+  species: String!
+  height: String!
+  weight: String!
+  abilities: [String]!
+  hiddenAbility: String
+  catchRate: Int!
+  friendship: Int!
+  eegGroups: [String!]!
+  gender: [Gender!]!
+  form: String
+  _id: String!
   createdAt: Float!
   searchCount: Int!
+  color: Color!
+  differentForm: [PokemonOfWiki!]!
 }
 
 type Query {
-  findPokemonOfDatabase(display: Int, page: Int): [PokemonOfDatabase!]!
-  downloadPokemonImagesOfSerebiiNet: Boolean!
-  downloadPokemonIconImagesOfSerebiiNet: Boolean!
-}
-
-type Mutation {
-  addPokemonOfWiki: Boolean!
-  addPokemonOfDatabase: Boolean!
-  updatePokemonImageOfDatabase: [PokemonOfDatabase!]!
-  updatePokemonIconImageOfDatabase: [PokemonOfDatabase!]!
+  getHello: String!
 }
