@@ -7,11 +7,13 @@ import { CrawlingPokemonIconImageOfSerebiiNet } from './crawling/pokemonIconImag
 import { CrawlingPokemonImageOfSerebiiNet } from './crawling/pokemonImageOfSerebiiNet';
 import { CrawlingPokemonsWiki } from './crawling/PokemonsWiki';
 import { PokemonNames } from './enums/pokemonName.enum';
+import { PokemonTypes } from './enums/pokemonType.enum';
 import { IPokemonDatabase } from './interfaces/pokemonDatabase.interface';
 import { IPokemonWiki } from './interfaces/pokemonWiki.interface';
 import { PokemonDatabase } from './model/pokemonDatabase.entity';
 import { PokemonWiki } from './model/pokemonWiki.entity';
 import { IPokemonImage } from './pokemon.interface';
+import { EvolvingToType } from './types/evolvingTo.type';
 
 @Injectable()
 export class PokemonService extends Puppeteer {
@@ -86,7 +88,7 @@ export class PokemonService extends Puppeteer {
     return true;
   }
 
-  private convertToKorName = <T>(enums: T, nameToConvert: string) => {
+  private convertToKorName = <T>(enums: T, nameToConvert: string): string => {
     const removeSpecialSymbol = (text: string) => {
       return text.replace(/(♂)|(♀)/, (str, $1, $2) => ($1 && 'M') || ($2 && 'F') || str).replace(/[^a-z0-9]/gi, '');
     };
@@ -97,23 +99,48 @@ export class PokemonService extends Puppeteer {
         return RegExp(`${removeSpecialSymbol(key)}$`, 'gi').test(removeSpecialSymbol(nameToConvert));
       })!;
     } catch (error) {
-      Logger.error(`No matching ${nameToConvert} found`, 'NoMatchingError');
+      Logger.error(`No matching ${nameToConvert} found`, '', 'NoMatchingError');
+      throw error;
     }
     return result;
   };
 
-  public async updatePokemonName(): Promise<PokemonDatabase[]> {
-    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonsOfDatabase.json' });
-    if (!pokemons) return [];
+  private convertToKorNameByEvolvingTo = <T>(
+    enums: T,
+    key: keyof EvolvingToType,
+    evolvingTo?: EvolvingToType[],
+  ): EvolvingToType[] | undefined => {
+    const convertToKorName = this.convertToKorName.bind(null, enums);
+    const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, enums, key);
+    const convert = (to: EvolvingToType) => {
+      return { ...to, [key]: convertToKorName(<keyof typeof EvolvingToType>to[key]) };
+    };
 
+    const result = <EvolvingToType[]>evolvingTo?.map(convert);
+    if (!result?.length) return undefined;
+
+    return result.map(to => ({ ...to, evolvingTo: convertToKorNameByEvolvingTo(to?.evolvingTo) }));
+  };
+
+  public async updatePokemonName(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
     const convertToKorName = this.convertToKorName.bind(null, PokemonNames);
+    const convertToNameOfEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, PokemonNames, 'name');
     return pokemons.map(pokemon => {
       const name = convertToKorName(pokemon.name);
+      const evolvingTo = convertToNameOfEvolvingTo(pokemon.evolvingTo);
       const differentForm = pokemon.differentForm?.map(({ name, ...differentForm }) => {
         return { ...differentForm, name: convertToKorName(name) };
       });
 
-      return { ...pokemon, name, differentForm };
+      return { ...pokemon, name, differentForm, evolvingTo };
+    });
+  }
+
+  public async updatePokemonTypes(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
+    const convertToKorName = this.convertToKorName.bind(null, PokemonTypes);
+    return pokemons.map(pokemon => {
+      const types = pokemon.types.map(convertToKorName);
+      return { ...pokemon, types };
     });
   }
 }
