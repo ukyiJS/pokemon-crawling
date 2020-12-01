@@ -141,6 +141,7 @@ export class PokemonService extends Puppeteer {
   public async updatePokemonTypes(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
     const convertToKorName = this.convertToKorName.bind(null, TypeNames);
     const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, TypeNames, 'types');
+
     return pokemons.map(({ types, evolvingTo, ...pokemon }) => ({
       ...pokemon,
       types: types.map(convertToKorName),
