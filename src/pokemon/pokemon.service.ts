@@ -91,21 +91,24 @@ export class PokemonService extends Puppeteer {
     return true;
   }
 
-  private convertToKorName = <T>(enums: T, nameToConvert: string): string => {
+  private convertToKorName = <T>(enums: T, nameToConvert: string | string[]): string | string[] => {
     const removeSpecialSymbol = (text: string) => {
       return text.replace(/(♂)|(♀)/, (str, $1, $2) => ($1 && 'M') || ($2 && 'F') || str).replace(/[^a-z0-9]/gi, '');
     };
-
-    let result;
-    try {
-      [, result] = Object.entries(enums).find(([key]) => {
-        return RegExp(`${removeSpecialSymbol(key)}$`, 'gi').test(removeSpecialSymbol(nameToConvert));
+    const findKorName = (name: string) => {
+      const [, result] = Object.entries(enums).find(([key]) => {
+        return RegExp(`${removeSpecialSymbol(key)}$`, 'gi').test(removeSpecialSymbol(name));
       })!;
+      return result;
+    };
+
+    try {
+      if (Array.isArray(nameToConvert)) return nameToConvert.map(findKorName);
+      return findKorName(nameToConvert);
     } catch (error) {
       Logger.error(`No matching ${nameToConvert} found`, '', 'NoMatchingError');
       throw error;
     }
-    return result;
   };
 
   private convertToKorNameByEvolvingTo = <T>(
@@ -126,7 +129,7 @@ export class PokemonService extends Puppeteer {
   };
 
   public async updatePokemonName(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
-    const convertToKorName = this.convertToKorName.bind(null, PokemonNames);
+    const convertToKorName = (name: string): string => <string>this.convertToKorName(PokemonNames, name);
     const convertToNameOfEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, PokemonNames, 'name');
     const convert = ({ name, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
       ...pokemon,
@@ -141,24 +144,28 @@ export class PokemonService extends Puppeteer {
   }
 
   public async updatePokemonTypes(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
-    const convertToKorName = this.convertToKorName.bind(null, TypeNames);
+    const convertToKorName = (name: string): string => <string>this.convertToKorName(TypeNames, name);
     const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, TypeNames, 'types');
-
-    return pokemons.map(({ types, evolvingTo, ...pokemon }) => ({
+    const convert = ({ types, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
       ...pokemon,
-      types: types.map(convertToKorName),
+      types: types.map(type => convertToKorName(type)),
+    });
+
+    return pokemons.map(({ evolvingTo, differentForm, ...pokemon }) => ({
+      ...convert(pokemon),
       evolvingTo: convertToKorNameByEvolvingTo(evolvingTo),
+      differentForm: differentForm?.map(convert),
     }));
   }
 
   public async updatePokemonSpecies(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
-    const convertToKorName = this.convertToKorName.bind(null, SpeciesNames);
+    const convertToKorName = (name: string): string => <string>this.convertToKorName(SpeciesNames, name);
 
     return pokemons.map(({ species, ...pokemon }) => ({ ...pokemon, species: convertToKorName(species) }));
   }
 
   public async updatePokemonAbilities(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
-    const convertToKorName = this.convertToKorName.bind(null, AbilityNames);
+    const convertToKorName = (name: string): string => <string>this.convertToKorName(AbilityNames, name);
     const convert = ({ abilities, hiddenAbility, ...pokemon }: PokemonDatabase) => ({
       ...pokemon,
       abilities: abilities.map(ability => ability && convertToKorName(ability)),
@@ -172,7 +179,7 @@ export class PokemonService extends Puppeteer {
   }
 
   public async updatePokemonEggGroups(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
-    const convertToKorName = this.convertToKorName.bind(null, EggGroupNames);
+    const convertToKorName = (name: string): string => <string>this.convertToKorName(EggGroupNames, name);
 
     return pokemons.map(({ eegGroups, ...pokemon }) => ({ ...pokemon, eegGroups: eegGroups.map(convertToKorName) }));
   }
