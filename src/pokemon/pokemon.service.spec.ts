@@ -2,43 +2,43 @@ import { TypeormService } from '@/config';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
 import { getMongoRepository, MongoRepository } from 'typeorm';
-import { PokemonOfDatabase } from './model/pokemonOfDatabase.entity';
-import { PokemonOfWiki } from './model/pokemonOfWiki.entity';
+import { PokemonDatabase } from './model/pokemonDatabase.entity';
+import { PokemonWiki } from './model/pokemonWiki.entity';
 import { PokemonService } from './pokemon.service';
 
 jest.setTimeout(100000);
 describe('PokemonService', () => {
   let service: PokemonService;
-  let pokemonOfDatabaseRepository: MongoRepository<PokemonOfDatabase>;
-  let pokemonOfWikiRepository: MongoRepository<PokemonOfWiki>;
+  let pokemonDatabaseRepository: MongoRepository<PokemonDatabase>;
+  let pokemonWikiRepository: MongoRepository<PokemonWiki>;
 
   beforeAll(async () => {
     await Test.createTestingModule({
       imports: [TypeOrmModule.forRootAsync({ useClass: TypeormService })],
-      providers: [PokemonService, { provide: getRepositoryToken(PokemonOfDatabase), useClass: MongoRepository }],
+      providers: [PokemonService, { provide: getRepositoryToken(PokemonDatabase), useClass: MongoRepository }],
     }).compile();
 
-    pokemonOfDatabaseRepository = getMongoRepository(PokemonOfDatabase);
-    pokemonOfWikiRepository = getMongoRepository(PokemonOfWiki);
-    service = new PokemonService(pokemonOfDatabaseRepository,pokemonOfWikiRepository);
+    pokemonWikiRepository = getMongoRepository(PokemonWiki);
+    pokemonDatabaseRepository = getMongoRepository(PokemonDatabase);
+    service = new PokemonService(pokemonWikiRepository, pokemonDatabaseRepository);
   });
 
   it.only('Pokemons of Wiki Test', async () => {
-    const pokemons = await service.getPokemonsOfWiki();
+    const pokemons = await service.getPokemonWiki();
     expect(pokemons).not.toHaveLength(0);
   });
 
   it('Pokemons of Database Test', async () => {
-    const pokemons = await service.getPokemonsOfDatabase();
+    const pokemons = await service.getPokemonDatabase();
     expect(pokemons).not.toHaveLength(0);
   });
 
   it('Pokemon Images Test', async () => {
-    const pokemons = await service.getPokemonImagesOfSerebiiNet();
+    const pokemons = await service.getPokemonImageOfSerebiiNet();
     expect(pokemons).not.toHaveLength(0);
   });
   it('Pokemon Icon Images Test', async () => {
-    const pokemons = await service.getPokemonIconImagesOfSerebiiNet();
+    const pokemons = await service.getPokemonIconImagOfSerebiiNet();
     expect(pokemons).not.toHaveLength(0);
   });
 });
