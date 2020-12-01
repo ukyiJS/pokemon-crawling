@@ -2,20 +2,19 @@ import { ObjectType } from '@nestjs/graphql';
 import { Expose, plainToClass } from 'class-transformer';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { v4 } from 'uuid';
-import {
-  DatabaseColumn,
-  EggCycle,
-  EvolvingTo,
-  Gender,
-  Pokemon,
-  PokemonOfDatabase,
-  Stat,
-  TypeDefense,
-} from '../pokemon.interface';
+import { IDatabaseColumn } from '../interfaces/databaseColumn.interface';
+import { IPokemon } from '../interfaces/pokemon.interface';
+import { IPokemonDatabase } from '../interfaces/pokemonDatabase.interface';
+import { EggCycleType } from '../types/eggCycle.type';
+import { EvolvingToType } from '../types/evolvingTo.type';
+import { GenderType } from '../types/gender.type';
+import { PokemonDatabaseType } from '../types/pokemonDatabase.type';
+import { StatType } from '../types/stat.type';
+import { TypeDefenseType } from '../types/typeDefense.type';
 
 @Entity()
-@ObjectType({ implements: () => [DatabaseColumn, Pokemon, PokemonOfDatabase] })
-export class PokemonOfDatabaseEntity implements DatabaseColumn, Pokemon, PokemonOfDatabase {
+@ObjectType({ implements: () => [IDatabaseColumn, IPokemon, IPokemonDatabase] })
+export class PokemonDatabase implements IDatabaseColumn, IPokemon, IPokemonDatabase {
   @Expose()
   @ObjectIdColumn({ type: 'uuid' })
   public _id?: string;
@@ -33,13 +32,13 @@ export class PokemonOfDatabaseEntity implements DatabaseColumn, Pokemon, Pokemon
   public icon?: string;
   @Expose()
   @Column()
-  public stats: Stat[];
+  public stats: StatType[];
   @Expose()
   @Column()
   public types: string[];
   @Expose()
   @Column()
-  public typeDefenses: TypeDefense[];
+  public typeDefenses: TypeDefenseType[];
   @Expose()
   @Column()
   public species: string;
@@ -72,31 +71,31 @@ export class PokemonOfDatabaseEntity implements DatabaseColumn, Pokemon, Pokemon
   public eegGroups: string[];
   @Expose()
   @Column()
-  public gender: Gender[];
+  public gender: GenderType[];
   @Expose()
   @Column()
-  public eggCycle: EggCycle | null;
+  public eggCycle: EggCycleType | null;
   @Expose()
   @Column()
   public form: string | null;
   @Expose()
   @Column()
-  public evolvingTo?: EvolvingTo[];
+  public evolvingTo?: EvolvingToType[];
   @Expose()
   @Column()
-  public differentForm?: PokemonOfDatabase[];
+  public differentForm?: PokemonDatabaseType[];
   @Expose()
   @Column()
-  public createdAt?: number;
+  public createdAt?: Date;
   @Expose()
   @Column()
   public searchCount?: number;
 
-  constructor(pokemon: Partial<PokemonOfDatabaseEntity>) {
+  constructor(pokemon: Partial<PokemonDatabase>) {
     if (pokemon?.no) {
-      Object.assign(this, plainToClass(PokemonOfDatabaseEntity, pokemon, { excludeExtraneousValues: true }));
+      Object.assign(this, plainToClass(PokemonDatabase, pokemon, { excludeExtraneousValues: true }));
       this._id = this._id ?? v4();
-      this.createdAt = this.createdAt ?? +new Date();
+      this.createdAt = this.createdAt ?? new Date();
       this.searchCount = this.searchCount ?? 0;
     }
   }
