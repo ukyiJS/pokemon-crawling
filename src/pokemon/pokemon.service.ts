@@ -6,6 +6,7 @@ import { CrawlingPokemonDatabase } from './crawling/pokemonDatabase';
 import { CrawlingPokemonIconImageOfSerebiiNet } from './crawling/pokemonIconImageOfSerebiiNet';
 import { CrawlingPokemonImageOfSerebiiNet } from './crawling/pokemonImageOfSerebiiNet';
 import { CrawlingPokemonsWiki } from './crawling/PokemonsWiki';
+import { AbilityNames } from './enums/abilityName.enum';
 import { PokemonNames } from './enums/pokemonName.enum';
 import { TypeNames } from './enums/pokemonType.enum';
 import { SpeciesNames } from './enums/speciesName.enum';
@@ -126,32 +127,46 @@ export class PokemonService extends Puppeteer {
   public async updatePokemonName(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
     const convertToKorName = this.convertToKorName.bind(null, PokemonNames);
     const convertToNameOfEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, PokemonNames, 'name');
-    return pokemons.map(pokemon => {
-      const name = convertToKorName(pokemon.name);
-      const evolvingTo = convertToNameOfEvolvingTo(pokemon.evolvingTo);
-      const differentForm = pokemon.differentForm?.map(({ name, ...differentForm }) => {
-        return { ...differentForm, name: convertToKorName(name) };
-      });
-
-      return { ...pokemon, name, differentForm, evolvingTo };
-    });
+    return pokemons.map(({ name, evolvingTo, differentForm, ...pokemon }) => ({
+      ...pokemon,
+      name: convertToKorName(name),
+      evolvingTo: convertToNameOfEvolvingTo(evolvingTo),
+      differentForm: differentForm?.map(({ name, ...differentForm }) => ({
+        ...differentForm,
+        name: convertToKorName(name),
+      })),
+    }));
   }
 
   public async updatePokemonTypes(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
     const convertToKorName = this.convertToKorName.bind(null, TypeNames);
     const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, TypeNames, 'types');
-    return pokemons.map(pokemon => {
-      const types = pokemon.types.map(convertToKorName);
-      const evolvingTo = convertToKorNameByEvolvingTo(pokemon.evolvingTo);
-      return { ...pokemon, types, evolvingTo };
-    });
+    return pokemons.map(({ types, evolvingTo, ...pokemon }) => ({
+      ...pokemon,
+      types: types.map(convertToKorName),
+      evolvingTo: convertToKorNameByEvolvingTo(evolvingTo),
+    }));
   }
 
   public async updatePokemonSpecies(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
     const convertToKorName = this.convertToKorName.bind(null, SpeciesNames);
-    return pokemons.map(pokemon => {
-      const species = convertToKorName(pokemon.species);
-      return { ...pokemon, species };
-    });
+    return pokemons.map(({ species, ...pokemon }) => ({ ...pokemon, species: convertToKorName(species) }));
+  }
+
+  public async updatePokemonAbilities(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
+    const convertToKorName = this.convertToKorName.bind(null, AbilityNames);
+
+    let result = <PokemonDatabase[]>[];
+    for (const { differentForm, abilities, hiddenAbility, ...pokemon } of pokemons) {
+      const convertedPokemon = {
+        ...pokemon,
+        differentForm: await this.updatePokemonAbilities(differentForm ?? []),
+        abilities: abilities.map(ability => ability && convertToKorName(ability)),
+        hiddenAbility: hiddenAbility && convertToKorName(hiddenAbility),
+      };
+      result = [...result, convertedPokemon];
+    }
+
+    return result;
   }
 }
