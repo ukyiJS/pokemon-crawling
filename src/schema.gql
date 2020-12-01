@@ -13,7 +13,7 @@ type EvolvingToType {
   image: String!
   form: String
   condition: String!
-  evolvingTo: [EvolvingToType!]!
+  evolvingTo: [EvolvingToType!]
 }
 
 type EggCycleType {
@@ -72,8 +72,8 @@ type PokemonDatabase implements IDatabaseColumn & IPokemon & IPokemonDatabase {
   gender: [GenderType!]!
   form: String
   icon: String!
-  evolvingTo: [EvolvingToType!]!
-  differentForm: [PokemonDatabaseType!]!
+  evolvingTo: [EvolvingToType!]
+  differentForm: [PokemonDatabaseType!]
 }
 
 interface IDatabaseColumn {
@@ -104,8 +104,8 @@ interface IPokemon {
 
 interface IPokemonDatabase {
   icon: String!
-  evolvingTo: [EvolvingToType!]!
-  differentForm: [PokemonDatabaseType!]!
+  evolvingTo: [EvolvingToType!]
+  differentForm: [PokemonDatabaseType!]
 }
 
 type ColorType {
@@ -138,5 +138,6 @@ type Query {
 type Mutation {
   addPokemonOfDatabase: Boolean!
   updatePokemonName: [PokemonDatabase!]!
+  updatePokemonTypes: [PokemonDatabase!]!
   addPokemonOfWiki: Boolean!
 }
