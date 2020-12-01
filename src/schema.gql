@@ -143,5 +143,6 @@ type Mutation {
   updatePokemonSpecies: [PokemonDatabase!]!
   updatePokemonAbilities: [PokemonDatabase!]!
   updatePokemonEggGroups: [PokemonDatabase!]!
+  updateForm: [PokemonDatabase!]!
   addPokemonOfWiki: Boolean!
 }
