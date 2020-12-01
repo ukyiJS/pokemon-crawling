@@ -12,6 +12,6 @@ export abstract class EvolvingToType {
   public form: string | null;
   @Field()
   public condition?: string;
-  @Field(() => [EvolvingToType])
+  @Field(() => [EvolvingToType], { nullable: true })
   public evolvingTo?: EvolvingToType[];
 }
