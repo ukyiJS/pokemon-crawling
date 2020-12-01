@@ -7,7 +7,8 @@ import { CrawlingPokemonIconImageOfSerebiiNet } from './crawling/pokemonIconImag
 import { CrawlingPokemonImageOfSerebiiNet } from './crawling/pokemonImageOfSerebiiNet';
 import { CrawlingPokemonsWiki } from './crawling/PokemonsWiki';
 import { PokemonNames } from './enums/pokemonName.enum';
-import { PokemonTypes } from './enums/pokemonType.enum';
+import { TypeNames } from './enums/pokemonType.enum';
+import { SpeciesNames } from './enums/speciesName.enum';
 import { IPokemonDatabase } from './interfaces/pokemonDatabase.interface';
 import { IPokemonWiki } from './interfaces/pokemonWiki.interface';
 import { PokemonDatabase } from './model/pokemonDatabase.entity';
@@ -137,12 +138,20 @@ export class PokemonService extends Puppeteer {
   }
 
   public async updatePokemonTypes(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
-    const convertToKorName = this.convertToKorName.bind(null, PokemonTypes);
-    const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, PokemonTypes, 'types');
+    const convertToKorName = this.convertToKorName.bind(null, TypeNames);
+    const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, TypeNames, 'types');
     return pokemons.map(pokemon => {
       const types = pokemon.types.map(convertToKorName);
       const evolvingTo = convertToKorNameByEvolvingTo(pokemon.evolvingTo);
       return { ...pokemon, types, evolvingTo };
+    });
+  }
+
+  public async updatePokemonSpecies(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
+    const convertToKorName = this.convertToKorName.bind(null, SpeciesNames);
+    return pokemons.map(pokemon => {
+      const species = convertToKorName(pokemon.species);
+      return { ...pokemon, species };
     });
   }
 }
