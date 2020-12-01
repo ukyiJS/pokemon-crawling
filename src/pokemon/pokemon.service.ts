@@ -92,9 +92,7 @@ export class PokemonService extends Puppeteer {
   }
 
   private convertToKorName = <T>(enums: T, nameToConvert: string | string[]): string | string[] => {
-    const removeSpecialSymbol = (text: string) => {
-      return text.replace(/(♂)|(♀)/, (str, $1, $2) => ($1 && 'M') || ($2 && 'F') || str).replace(/[^a-z0-9]/gi, '');
-    };
+    const removeSpecialSymbol = (text: string) => text.replace(/[^a-z0-9]/gi, '');
     const findKorName = (name: string) => {
       const [, result] = Object.entries(enums).find(([key]) => {
         return RegExp(`${removeSpecialSymbol(key)}$`, 'gi').test(removeSpecialSymbol(name));
@@ -129,7 +127,10 @@ export class PokemonService extends Puppeteer {
   };
 
   public async updatePokemonName(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
-    const convertToKorName = (name: string): string => <string>this.convertToKorName(PokemonNames, name);
+    const convertToKorName = (name: string): string => {
+      const pokemonName = name.replace(/(♂)|(♀)/, (str, $1, $2) => ($1 && 'M') || ($2 && 'F') || str);
+      return <string>this.convertToKorName(PokemonNames, pokemonName);
+    };
     const convertToNameOfEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, PokemonNames, 'name');
     const convert = ({ name, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
       ...pokemon,
