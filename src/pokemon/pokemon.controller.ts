@@ -1,6 +1,8 @@
 import { WriteJsonInterceptor } from '@/common';
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
-import { IPokemonImage, PokemonOfDatabase, PokemonOfWiki } from './pokemon.interface';
+import { IPokemonDatabase } from './interfaces/pokemonDatabase.interface';
+import { IPokemonWiki } from './interfaces/pokemonWiki.interface';
+import { IPokemonImage } from './pokemon.interface';
 import { PokemonService } from './pokemon.service';
 
 @UseInterceptors(WriteJsonInterceptor)
@@ -8,23 +10,23 @@ import { PokemonService } from './pokemon.service';
 export class PokemonController {
   constructor(private readonly pokemonService: PokemonService) {}
 
-  @Get('pokemonsOfWiki')
-  public getPokemonWiki(): Promise<PokemonOfWiki[]> {
-    return this.pokemonService.getPokemonsOfWiki();
+  @Get('pokemonWiki')
+  public getPokemonWiki(): Promise<IPokemonWiki[]> {
+    return this.pokemonService.getPokemonWiki();
   }
 
-  @Get('pokemonsOfDatabase')
-  public getPokemonsOfDatabase(): Promise<PokemonOfDatabase[]> {
-    return this.pokemonService.getPokemonsOfDatabase();
+  @Get('pokemonDatabase')
+  public getPokemonDatabase(): Promise<IPokemonDatabase[]> {
+    return this.pokemonService.getPokemonDatabase();
   }
 
-  @Get('pokemonIconImagesOfSerebiiNet')
-  public getPokemonIconImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
-    return this.pokemonService.getPokemonIconImageOfSerebiiNet();
+  @Get('pokemonImageOfSerebiiNet')
+  public getPokemonImageSerebiiNet(): Promise<IPokemonImage[]> {
+    return this.pokemonService.getPokemonImageOfSerebiiNet();
   }
 
-  @Get('pokemonImagesOfSerebiiNet')
-  public getPokemonImagesOfSerebiiNet(): Promise<IPokemonImage[]> {
-    return this.pokemonService.getPokemonImagesOfSerebiiNet();
+  @Get('pokemonIconImageOfSerebiiNet')
+  public getPokemonIconImageSerebiiNet(): Promise<IPokemonImage[]> {
+    return this.pokemonService.getPokemonIconImagOfSerebiiNet();
   }
 }
