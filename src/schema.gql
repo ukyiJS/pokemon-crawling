@@ -11,6 +11,7 @@ type EvolvingToType {
   no: String!
   name: String!
   image: String!
+  types: [String!]!
   form: String
   condition: String!
   evolvingTo: [EvolvingToType!]
