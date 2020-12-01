@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PokemonOfDatabaseEntity } from './model/pokemonOfDatabase.entity';
-import { PokemonOfWikiEntity } from './model/pokemonOfWiki.entity';
+import { PokemonDatabase } from './model/pokemonDatabase.entity';
+import { PokemonWiki } from './model/pokemonWiki.entity';
 import { PokemonController } from './pokemon.controller';
-import { PokemonResolver } from './pokemon.resolver';
 import { PokemonService } from './pokemon.service';
+import * as resolvers from './resolvers';
 
 @Module({
-  providers: [PokemonService, PokemonResolver],
-  imports: [TypeOrmModule.forFeature([PokemonOfWikiEntity, PokemonOfDatabaseEntity])],
+  providers: [PokemonService, ...Object.values(resolvers)],
+  imports: [TypeOrmModule.forFeature([PokemonWiki, PokemonDatabase])],
   controllers: [PokemonController],
   exports: [PokemonService],
 })
