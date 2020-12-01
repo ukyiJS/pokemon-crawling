@@ -47,4 +47,11 @@ export class PokemonDatabaseResolver {
     if (!pokemons) return [];
     return this.pokemonService.updatePokemonEggGroups(pokemons);
   }
+
+  @Mutation(() => [PokemonDatabase])
+  public async updateForm(): Promise<PokemonDatabase[]> {
+    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
+    if (!pokemons) return [];
+    return this.pokemonService.updateForm(pokemons);
+  }
 }
