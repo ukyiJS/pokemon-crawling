@@ -6,8 +6,8 @@ import { PokemonDatabaseType } from '../types/pokemonDatabase.type';
 export abstract class IPokemonDatabase extends PokemonDatabaseType {
   @Field()
   public icon?: string;
-  @Field(() => [EvolvingToType])
+  @Field(() => [EvolvingToType], { nullable: true })
   public evolvingTo?: EvolvingToType[];
-  @Field(() => [PokemonDatabaseType])
+  @Field(() => [PokemonDatabaseType], { nullable: true })
   public differentForm?: PokemonDatabaseType[];
 }
