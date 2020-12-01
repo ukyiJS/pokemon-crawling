@@ -1,12 +1,12 @@
 import { INestApplication, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { blueBright } from 'chalk';
 import { renderFile } from 'ejs';
 import { join } from 'path';
 import { AppModule } from './app.module';
-import { LoggingInterceptor, TimeoutInterceptor } from './common';
 import { PORT } from './env';
-import { validateEnv } from './utils/validateEnv';
+import { validateEnv } from './utils';
 
 const createServer = async () => {
   validateEnv();
@@ -14,12 +14,11 @@ const createServer = async () => {
 
   app.engine('html', renderFile).set('view engine', 'html');
   await app
-    .setBaseViewsDir(join(__dirname, '../src', 'views'))
-    .useStaticAssets(join(__dirname, '../src', 'assets'))
-    .useStaticAssets(join(__dirname, '../node_modules'))
-    .useGlobalInterceptors(new LoggingInterceptor(), new TimeoutInterceptor())
+    .setBaseViewsDir(join(process.cwd(), 'src/views'))
+    .useStaticAssets(join(process.cwd(), 'src/assets'))
+    .useStaticAssets(join(process.cwd(), 'node_modules/axios/dist'))
     .listen(PORT);
 
-  Logger.log(`Server running on http://localhost:${PORT}`, 'Server');
+  Logger.log(`🚀 Server running on ${blueBright(`http://localhost:${PORT}`)}`, 'Server', false);
 };
 createServer();
