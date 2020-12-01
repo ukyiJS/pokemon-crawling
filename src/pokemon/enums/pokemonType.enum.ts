@@ -1,4 +1,4 @@
-export enum PokemonTypes {
+export enum TypeNames {
   NORMAL = '노말',
   FIRE = '불',
   WATER = '물',
@@ -18,4 +18,4 @@ export enum PokemonTypes {
   STEEL = '강철',
   FAIRY = '페어리',
 }
-export type PokemonType = typeof PokemonTypes[keyof typeof PokemonTypes];
+export type TypeName = typeof TypeNames[keyof typeof TypeNames];
