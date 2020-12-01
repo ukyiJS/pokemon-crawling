@@ -8,6 +8,8 @@ export abstract class EvolvingToType {
   public name: string;
   @Field()
   public image: string;
+  @Field(() => [String])
+  public types: string[];
   @Field(() => String, { nullable: true })
   public form: string | null;
   @Field()
