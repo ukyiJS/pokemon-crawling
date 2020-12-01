@@ -8,6 +8,7 @@ import { CrawlingPokemonImageOfSerebiiNet } from './crawling/pokemonImageOfSereb
 import { CrawlingPokemonsWiki } from './crawling/PokemonsWiki';
 import { AbilityNames } from './enums/abilityName.enum';
 import { EggGroupNames } from './enums/eggGroupName.enum';
+import { FormNames } from './enums/formName.enum';
 import { PokemonNames } from './enums/pokemonName.enum';
 import { TypeNames } from './enums/pokemonType.enum';
 import { SpeciesNames } from './enums/speciesName.enum';
@@ -91,8 +92,34 @@ export class PokemonService extends Puppeteer {
     return true;
   }
 
-  private convertToKorName = <T>(enums: T, nameToConvert: string | string[]): string | string[] => {
-    const removeSpecialSymbol = (text: string) => text.replace(/[^a-z0-9]/gi, '');
+  private replaceName(name: string): string {
+    return name.replace(/(mega).*x$|(mega).*y$|^(mega).*|^(alola)n.*|^(galar)ian.*/gi, (str, ...$$) => {
+      if (/^galarian.*(?:mode)/.test(str)) return str;
+      const index = $$.findIndex(str => str);
+      const matchText = $$[index];
+      switch (index) {
+        case 0:
+          return `${matchText}X`;
+        case 1:
+          return `${matchText}Y`;
+        case 2:
+        case 3:
+        case 4:
+          return matchText;
+        default:
+          return str;
+      }
+    });
+  }
+
+  private convertToKorName = <T>(
+    enums: T,
+    nameToConvert: string | string[],
+    isReplace?: boolean,
+  ): string | string[] => {
+    const removeSpecialSymbol = (text: string) => {
+      return (isReplace ? this.replaceName(text) : text).replace(/[^a-z0-9]/gi, '');
+    };
     const findKorName = (name: string) => {
       const [, result] = Object.entries(enums).find(([key]) => {
         return RegExp(`${removeSpecialSymbol(key)}$`, 'gi').test(removeSpecialSymbol(name));
@@ -111,26 +138,25 @@ export class PokemonService extends Puppeteer {
 
   private convertToKorNameByEvolvingTo = <T>(
     enums: T,
-    key: keyof EvolvingToType,
-    evolvingTo?: EvolvingToType[],
+    key: keyof Omit<EvolvingToType, 'evolvingTo'>,
+    evolvingTo: EvolvingToType[] = [],
+    isReplace?: boolean,
   ): EvolvingToType[] | undefined => {
     const convertToKorName = this.convertToKorName.bind(null, enums);
     const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, enums, key);
     const convert = (to: EvolvingToType) => {
-      return { ...to, [key]: convertToKorName(<keyof typeof EvolvingToType>to[key]) };
+      const name = to[key];
+      return { ...to, [key]: name && convertToKorName(name, isReplace) };
     };
 
     const result = <EvolvingToType[]>evolvingTo?.map(convert);
     if (!result?.length) return undefined;
 
-    return result.map(to => ({ ...to, evolvingTo: convertToKorNameByEvolvingTo(to?.evolvingTo) }));
+    return result.map(to => ({ ...to, evolvingTo: convertToKorNameByEvolvingTo(to.evolvingTo, isReplace) }));
   };
 
   public async updatePokemonName(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
-    const convertToKorName = (name: string): string => {
-      const pokemonName = name.replace(/(♂)|(♀)/, (str, $1, $2) => ($1 && 'M') || ($2 && 'F') || str);
-      return <string>this.convertToKorName(PokemonNames, pokemonName);
-    };
+    const convertToKorName = (name: string): string => <string>this.convertToKorName(PokemonNames, name);
     const convertToNameOfEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, PokemonNames, 'name');
     const convert = ({ name, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
       ...pokemon,
