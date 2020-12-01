@@ -156,18 +156,15 @@ export class PokemonService extends Puppeteer {
 
   public async updatePokemonAbilities(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
     const convertToKorName = this.convertToKorName.bind(null, AbilityNames);
+    const convert = ({ abilities, hiddenAbility, ...pokemon }: PokemonDatabase) => ({
+      ...pokemon,
+      abilities: abilities.map(ability => ability && convertToKorName(ability)),
+      hiddenAbility: hiddenAbility && convertToKorName(hiddenAbility),
+    });
 
-    let result = <PokemonDatabase[]>[];
-    for (const { differentForm, abilities, hiddenAbility, ...pokemon } of pokemons) {
-      const convertedPokemon = {
-        ...pokemon,
-        differentForm: await this.updatePokemonAbilities(differentForm ?? []),
-        abilities: abilities.map(ability => ability && convertToKorName(ability)),
-        hiddenAbility: hiddenAbility && convertToKorName(hiddenAbility),
-      };
-      result = [...result, convertedPokemon];
-    }
-
-    return result;
+    return pokemons.map(({ differentForm, ...pokemon }) => ({
+      ...convert(pokemon),
+      differentForm: differentForm?.map(convert),
+    }));
   }
 }
