@@ -2,11 +2,16 @@ import { ObjectType } from '@nestjs/graphql';
 import { Expose, plainToClass } from 'class-transformer';
 import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { v4 } from 'uuid';
-import { Color, DatabaseColumn, Gender, Pokemon, PokemonOfWiki } from '../pokemon.interface';
+import { IDatabaseColumn } from '../interfaces/databaseColumn.interface';
+import { IPokemon } from '../interfaces/pokemon.interface';
+import { IPokemonWiki } from '../interfaces/pokemonWiki.interface';
+import { ColorType } from '../types/color.type';
+import { GenderType } from '../types/gender.type';
+import { PokemonWikiType } from '../types/pokemonWiki.type';
 
 @Entity()
-@ObjectType({ implements: () => [DatabaseColumn, Pokemon, PokemonOfWiki] })
-export class PokemonOfWikiEntity implements DatabaseColumn, Pokemon, PokemonOfWiki {
+@ObjectType({ implements: () => [IDatabaseColumn, IPokemon, IPokemonWiki] })
+export class PokemonWiki implements IDatabaseColumn, IPokemon, IPokemonWiki {
   @Expose()
   @ObjectIdColumn({ type: 'uuid' })
   public _id?: string;
@@ -21,7 +26,7 @@ export class PokemonOfWikiEntity implements DatabaseColumn, Pokemon, PokemonOfWi
   public image: string;
   @Expose()
   @Column()
-  public color: Color;
+  public color: ColorType;
   @Expose()
   @Column()
   public types: string[];
@@ -51,25 +56,25 @@ export class PokemonOfWikiEntity implements DatabaseColumn, Pokemon, PokemonOfWi
   public eegGroups: string[];
   @Expose()
   @Column()
-  public gender: Gender[];
+  public gender: GenderType[];
   @Expose()
   @Column()
   public form: string | null;
   @Expose()
   @Column()
-  public differentForm?: PokemonOfWiki[];
+  public differentForm?: PokemonWikiType[];
   @Expose()
   @Column()
-  public createdAt?: number;
+  public createdAt?: Date;
   @Expose()
   @Column()
   public searchCount?: number;
 
-  constructor(pokemon: Partial<PokemonOfWikiEntity>) {
+  constructor(pokemon: Partial<PokemonWiki>) {
     if (pokemon?.no) {
-      Object.assign(this, plainToClass(PokemonOfWikiEntity, pokemon, { excludeExtraneousValues: true }));
+      Object.assign(this, plainToClass(PokemonWiki, pokemon, { excludeExtraneousValues: true }));
       this._id = this._id ?? v4();
-      this.createdAt = this.createdAt ?? +new Date();
+      this.createdAt = this.createdAt ?? new Date();
       this.searchCount = this.searchCount ?? 0;
     }
   }
