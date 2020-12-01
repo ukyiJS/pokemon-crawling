@@ -2,85 +2,36 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-interface PokemonOfWiki {
-  no: String!
-  name: String!
-  image: String!
-  types: [String!]!
-  species: String!
-  height: String!
-  weight: String!
-  abilities: [String]!
-  hiddenAbility: String
-  catchRate: Int!
-  friendship: Int!
-  eegGroups: [String!]!
-  gender: [Gender!]!
-  form: String
-  color: Color!
-  differentForm: [PokemonOfWiki!]!
-}
-
-interface PokemonOfDatabase {
-  no: String!
-  name: String!
-  image: String!
-  types: [String!]!
-  species: String!
-  height: String!
-  weight: String!
-  abilities: [String]!
-  hiddenAbility: String
-  catchRate: Int!
-  friendship: Int!
-  eegGroups: [String!]!
-  gender: [Gender!]!
-  form: String
-  icon: String!
-  evYield: String
-  exp: Int!
-  eggCycle: [EggCycle!]
-  stats: [Stat!]!
-  typeDefenses: [TypeDefense!]!
-  evolvingTo: [EvolvingTo!]!
-  differentForm: [PokemonOfDatabase!]!
-}
-
-type Stat {
-  name: String!
-  value: Int!
-}
-
-type Color {
-  name: String!
-  code: String!
-}
-
-type Gender {
+type GenderType {
   name: String!
   ratio: Float!
 }
 
-type TypeDefense {
-  type: String!
-  damage: Float!
-}
-
-type EggCycle {
-  value: Int!
-  step: Int
-}
-
-type EvolvingTo {
+type EvolvingToType {
   no: String!
   name: String!
   image: String!
   form: String
   condition: String!
-  evolvingTo: [EvolvingTo!]!
+  evolvingTo: [EvolvingToType!]!
 }
 
-type PokemonOfDatabaseEntity implements DatabaseColumn & Pokemon & PokemonOfDatabase {
+type EggCycleType {
+  value: Int!
+  step: Int
+}
+
+type StatType {
+  name: String!
+  value: Int!
+}
+
+type TypeDefenseType {
+  type: String!
+  damage: Float!
+}
+
+type PokemonDatabaseType {
   no: String!
   name: String!
   image: String!
@@ -93,28 +44,19 @@ type PokemonOfDatabaseEntity implements DatabaseColumn & Pokemon & PokemonOfData
   catchRate: Int!
   friendship: Int!
   eegGroups: [String!]!
-  gender: [Gender!]!
+  gender: [GenderType!]!
   form: String
-  _id: String!
-  createdAt: Float!
-  searchCount: Int!
-  icon: String!
   evYield: String
   exp: Int!
-  eggCycle: [EggCycle!]
-  stats: [Stat!]!
-  typeDefenses: [TypeDefense!]!
-  evolvingTo: [EvolvingTo!]!
-  differentForm: [PokemonOfDatabase!]!
+  eggCycle: [EggCycleType!]
+  stats: [StatType!]!
+  typeDefenses: [TypeDefenseType!]!
 }
 
-interface DatabaseColumn {
+type PokemonDatabase implements IDatabaseColumn & IPokemon & IPokemonDatabase {
   _id: String!
-  createdAt: Float!
+  createdAt: Date!
   searchCount: Int!
-}
-
-interface Pokemon {
   no: String!
   name: String!
   image: String!
@@ -127,11 +69,23 @@ interface Pokemon {
   catchRate: Int!
   friendship: Int!
   eegGroups: [String!]!
-  gender: [Gender!]!
+  gender: [GenderType!]!
   form: String
+  icon: String!
+  evolvingTo: [EvolvingToType!]!
+  differentForm: [PokemonDatabaseType!]!
 }
 
-type PokemonOfWikiEntity implements DatabaseColumn & Pokemon & PokemonOfWiki {
+interface IDatabaseColumn {
+  _id: String!
+  createdAt: Date!
+  searchCount: Int!
+}
+
+"""Date custom scalar type"""
+scalar Date
+
+interface IPokemon {
   no: String!
   name: String!
   image: String!
@@ -144,15 +98,45 @@ type PokemonOfWikiEntity implements DatabaseColumn & Pokemon & PokemonOfWiki {
   catchRate: Int!
   friendship: Int!
   eegGroups: [String!]!
-  gender: [Gender!]!
+  gender: [GenderType!]!
   form: String
-  _id: String!
-  createdAt: Float!
-  searchCount: Int!
-  color: Color!
-  differentForm: [PokemonOfWiki!]!
+}
+
+interface IPokemonDatabase {
+  icon: String!
+  evolvingTo: [EvolvingToType!]!
+  differentForm: [PokemonDatabaseType!]!
+}
+
+type ColorType {
+  name: String!
+  code: String!
+}
+
+type PokemonWikiType {
+  no: String!
+  name: String!
+  image: String!
+  types: [String!]!
+  species: String!
+  height: String!
+  weight: String!
+  abilities: [String]!
+  hiddenAbility: String
+  catchRate: Int!
+  friendship: Int!
+  eegGroups: [String!]!
+  gender: [GenderType!]!
+  form: String
+  color: ColorType!
 }
 
 type Query {
   getHello: String!
+}
+
+type Mutation {
+  addPokemonOfDatabase: Boolean!
+  updatePokemonName: [PokemonDatabase!]!
+  addPokemonOfWiki: Boolean!
 }
