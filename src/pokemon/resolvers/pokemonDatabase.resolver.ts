@@ -1,4 +1,6 @@
+import { getJson } from '@/utils';
 import { Mutation, Resolver } from '@nestjs/graphql';
+import { IPokemonDatabase } from '../interfaces/pokemonDatabase.interface';
 import { PokemonDatabase } from '../model/pokemonDatabase.entity';
 import { PokemonService } from '../pokemon.service';
 
@@ -13,6 +15,8 @@ export class PokemonDatabaseResolver {
 
   @Mutation(() => [PokemonDatabase])
   public async updatePokemonName(): Promise<PokemonDatabase[]> {
-    return this.pokemonService.updatePokemonName();
+    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonsOfDatabase.json' });
+    if (!pokemons) return [];
+    return this.pokemonService.updatePokemonName(pokemons);
   }
 }
