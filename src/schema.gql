@@ -141,5 +141,6 @@ type Mutation {
   updatePokemonName: [PokemonDatabase!]!
   updatePokemonTypes: [PokemonDatabase!]!
   updatePokemonSpecies: [PokemonDatabase!]!
+  updatePokemonAbilities: [PokemonDatabase!]!
   addPokemonOfWiki: Boolean!
 }
