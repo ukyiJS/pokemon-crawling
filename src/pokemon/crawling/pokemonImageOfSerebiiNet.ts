@@ -1,8 +1,7 @@
 import { IDifferentFormImage, IPokemonImage } from '@/pokemon/pokemon.interface';
-import { ProgressBar } from '@/utils';
+import { CrawlingUtil, ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
-import { CrawlingUtil } from './util';
 
 type Column = [Element, Element[], Element, Element[], IDifferentFormImage[], IDifferentFormImage[]];
 
