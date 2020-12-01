@@ -69,7 +69,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         return src.replace(/(rockruff)-own-tempo.png$/g, '$1.png');
       };
       public getFormNames = (): string[] => {
-        const formNames = this.$elements.map($element => of($element).replaceText(/[^a-z0-9]/));
+        const formNames = this.$elements.map($element => of($element).replaceText(/[^a-z0-9♂♀]/));
         return formNames.filter(name => !/partner/gi.test(name));
       };
       public getColumn = (): Element[][] => {
@@ -282,6 +282,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
     const [formName, ...formNames] = of($formNames).getFormNames();
     const isForm = formName === pokemon.name ? null : true;
     const form = isForm && formName;
+
     const differentForm = pokemons.map((pokemon, i) => {
       const form = formNames[i];
       const commonInfo = { evYield, catchRate, friendship, eegGroups, gender, eggCycle };
