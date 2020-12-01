@@ -7,6 +7,7 @@ import { CrawlingPokemonIconImageOfSerebiiNet } from './crawling/pokemonIconImag
 import { CrawlingPokemonImageOfSerebiiNet } from './crawling/pokemonImageOfSerebiiNet';
 import { CrawlingPokemonsWiki } from './crawling/PokemonsWiki';
 import { AbilityNames } from './enums/abilityName.enum';
+import { EggGroupNames } from './enums/eggGroupName.enum';
 import { PokemonNames } from './enums/pokemonName.enum';
 import { TypeNames } from './enums/pokemonType.enum';
 import { SpeciesNames } from './enums/speciesName.enum';
@@ -152,6 +153,7 @@ export class PokemonService extends Puppeteer {
 
   public async updatePokemonSpecies(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
     const convertToKorName = this.convertToKorName.bind(null, SpeciesNames);
+
     return pokemons.map(({ species, ...pokemon }) => ({ ...pokemon, species: convertToKorName(species) }));
   }
 
@@ -167,5 +169,11 @@ export class PokemonService extends Puppeteer {
       ...convert(pokemon),
       differentForm: differentForm?.map(convert),
     }));
+  }
+
+  public async updatePokemonEggGroups(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
+    const convertToKorName = this.convertToKorName.bind(null, EggGroupNames);
+
+    return pokemons.map(({ eegGroups, ...pokemon }) => ({ ...pokemon, eegGroups: eegGroups.map(convertToKorName) }));
   }
 }
