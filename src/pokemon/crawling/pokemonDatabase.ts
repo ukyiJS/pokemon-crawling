@@ -12,7 +12,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
   public crawling = async (page: Page): Promise<IPokemonDatabase[]> => {
     let pokemons = <IPokemonDatabase[]>[];
     let curser = 0;
-    const loopCount = 6;
+    const loopCount = 893;
     const { updateProgressBar } = new ProgressBar(loopCount);
 
     const mainSelector = '#main';
@@ -211,10 +211,11 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         const no = of($element.querySelector('.infocard-lg-data > small')).replaceText(/\D/);
         const name = of($data?.querySelector('.ent-name')).getText();
         const image = of($image).getSrc();
+        const types = of($element.querySelectorAll('small:last-child > a')).getTexts();
         const isForm = of($data).getChildren().length > 5;
         const form = isForm ? of($data?.querySelector('small:nth-of-type(2)')).getText() : null;
 
-        return { no, name, image, form, condition: this.condition, evolvingTo: [] };
+        return { no, name, image, types, form, condition: this.condition, evolvingTo: [] };
       };
       public getEvolvingTo = (): EvolvingToType[] => {
         return this.$elements.map($element => {
