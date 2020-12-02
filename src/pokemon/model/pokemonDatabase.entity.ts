@@ -56,7 +56,7 @@ export class PokemonDatabase implements IDatabaseColumn, IPokemon, IPokemonDatab
   public hiddenAbility: string | null;
   @Expose()
   @Column()
-  public evYield: string | null;
+  public evYield: string[] | null;
   @Expose()
   @Column()
   public catchRate: number;
