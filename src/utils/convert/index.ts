@@ -96,4 +96,18 @@ export class Convert {
       differentForm: differentForm?.map(convert),
     }));
   };
+  public convertPokemonTypes = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
+    const convertToKorName = (name: string): string => <string>this.convertToKorName(TypeNames, name);
+    const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, TypeNames, 'types');
+    const convert = ({ types, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
+      ...pokemon,
+      types: types.map(type => convertToKorName(type)),
+    });
+
+    return pokemons.map(({ evolvingTo, differentForm, ...pokemon }) => ({
+      ...convert(pokemon),
+      evolvingTo: convertToKorNameByEvolvingTo(evolvingTo),
+      differentForm: differentForm?.map(convert),
+    }));
+  };
 }
