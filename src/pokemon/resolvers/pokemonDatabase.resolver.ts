@@ -7,7 +7,11 @@ import { PokemonService } from '../pokemon.service';
 
 @Resolver(() => PokemonDatabase)
 export class PokemonDatabaseResolver {
-  constructor(private readonly pokemonService: PokemonService) {}
+  pokemons: PokemonDatabase[] | null;
+
+  constructor(private readonly pokemonService: PokemonService) {
+    this.pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
+  }
 
   @Mutation(() => Boolean)
   public async addPokemonOfDatabase(): Promise<boolean> {
@@ -16,64 +20,55 @@ export class PokemonDatabaseResolver {
 
   @Mutation(() => [PokemonDatabase])
   public async updateImageOfPokemonDatabase(): Promise<FindAndModifyWriteOpResultObject[]> {
-    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
-    if (!pokemons) return [];
-    return this.pokemonService.updateImageOfPokemonDatabase(pokemons);
+    if (!this.pokemons) return [];
+    return this.pokemonService.updateImageOfPokemonDatabase(this.pokemons);
   }
 
   @Mutation(() => [PokemonDatabase])
   public async updateIconImageOfPokemonDatabase(): Promise<FindAndModifyWriteOpResultObject[]> {
-    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
-    if (!pokemons) return [];
-    return this.pokemonService.updateIconImageOfPokemonDatabase(pokemons);
+    if (!this.pokemons) return [];
+    return this.pokemonService.updateIconImageOfPokemonDatabase(this.pokemons);
   }
 
   @Mutation(() => [PokemonDatabase])
   public async updatePokemonName(): Promise<PokemonDatabase[]> {
-    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
-    if (!pokemons) return [];
-    return this.pokemonService.updatePokemonName(pokemons);
+    if (!this.pokemons) return [];
+    return this.pokemonService.updatePokemonName(this.pokemons);
   }
 
   @Mutation(() => [PokemonDatabase])
   public async updatePokemonTypes(): Promise<PokemonDatabase[]> {
-    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
-    if (!pokemons) return [];
-    return this.pokemonService.updatePokemonTypes(pokemons);
+    if (!this.pokemons) return [];
+    return this.pokemonService.updatePokemonTypes(this.pokemons);
   }
 
   @Mutation(() => [PokemonDatabase])
   public async updatePokemonSpecies(): Promise<PokemonDatabase[]> {
-    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
-    if (!pokemons) return [];
-    return this.pokemonService.updatePokemonSpecies(pokemons);
+    if (!this.pokemons) return [];
+    return this.pokemonService.updatePokemonSpecies(this.pokemons);
   }
 
   @Mutation(() => [PokemonDatabase])
   public async updatePokemonAbilities(): Promise<PokemonDatabase[]> {
-    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
-    if (!pokemons) return [];
-    return this.pokemonService.updatePokemonAbilities(pokemons);
+    if (!this.pokemons) return [];
+    return this.pokemonService.updatePokemonAbilities(this.pokemons);
   }
 
   @Mutation(() => [PokemonDatabase])
   public async updatePokemonEggGroups(): Promise<PokemonDatabase[]> {
-    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
-    if (!pokemons) return [];
-    return this.pokemonService.updatePokemonEggGroups(pokemons);
+    if (!this.pokemons) return [];
+    return this.pokemonService.updatePokemonEggGroups(this.pokemons);
   }
 
   @Mutation(() => [PokemonDatabase])
   public async updatePokemonForm(): Promise<PokemonDatabase[]> {
-    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
-    if (!pokemons) return [];
-    return this.pokemonService.updatePokemonForm(pokemons);
+    if (!this.pokemons) return [];
+    return this.pokemonService.updatePokemonForm(this.pokemons);
   }
 
   @Mutation(() => [PokemonDatabase])
   public async updatePokemonEvolutionCondition(): Promise<PokemonDatabase[]> {
-    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
-    if (!pokemons) return [];
-    return this.pokemonService.updatePokemonEvolutionCondition(pokemons);
+    if (!this.pokemons) return [];
+    return this.pokemonService.updatePokemonEvolutionCondition(this.pokemons);
   }
 }
