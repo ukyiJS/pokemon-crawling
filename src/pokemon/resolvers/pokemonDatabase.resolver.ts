@@ -22,6 +22,13 @@ export class PokemonDatabaseResolver {
   }
 
   @Mutation(() => [PokemonDatabase])
+  public async updateIconImageOfPokemonDatabase(): Promise<FindAndModifyWriteOpResultObject[]> {
+    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
+    if (!pokemons) return [];
+    return this.pokemonService.updateIconImageOfPokemonDatabase(pokemons);
+  }
+
+  @Mutation(() => [PokemonDatabase])
   public async updatePokemonName(): Promise<PokemonDatabase[]> {
     const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
     if (!pokemons) return [];
