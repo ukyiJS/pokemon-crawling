@@ -297,7 +297,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
     const $tabsPanel = $main.querySelectorAll('.tabset-basics > .tabs-panel-list > .tabs-panel');
     const $pokemons = of($tabsPanel).getPokemonElements();
     const $formNames = $main.querySelectorAll('.tabset-basics > .tabs-tab-list > .tabs-tab');
-    const $evolvingTo = document.querySelectorAll('#main > div.infocard-list-evo');
+    const $evolvingTo = $main.querySelectorAll('div.infocard-list-evo');
 
     const [pokemon, ...pokemons] = $pokemons.map($pokemon => of($pokemon).getPokemon());
     const [formName, ...formNames] = of($formNames).getFormNames();
