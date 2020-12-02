@@ -110,7 +110,7 @@ export class PokemonService extends Puppeteer {
   }
 
   public async addPokemonWiki(): Promise<boolean> {
-    const pokemons = getJson<IPokemonWiki[]>({ fileName: 'pokemonsOfWiki.json' });
+    const pokemons = getJson<IPokemonWiki[]>({ fileName: 'pokemonOfWiki.json' });
     if (!pokemons) return false;
 
     const savePokemon = (pokemon: PokemonWiki) => {
@@ -120,15 +120,11 @@ export class PokemonService extends Puppeteer {
     return true;
   }
 
-  public async addPokemonDatabase(): Promise<boolean> {
-    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonsOfDatabase.json' });
-    if (!pokemons) return false;
+  public async addPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
+    if (!pokemons) return null;
 
-    const savePokemon = (pokemon: PokemonDatabase) => {
-      return this.pokemonDatabaseRepository.save(new PokemonDatabase(pokemon));
-    };
-    await Promise.all(pokemons.map(savePokemon));
-    return true;
+    const savedPokemons = pokemons.map(pokemon => this.pokemonDatabaseRepository.save(new PokemonDatabase(pokemon)));
+    return Promise.all(savedPokemons);
   }
 
   public async updatePokemonName(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
