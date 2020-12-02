@@ -10,3 +10,7 @@ export interface IPokemonImage {
   form?: string | null;
   differentForm?: IDifferentFormImage[];
 }
+
+export interface ObjectLiteral<T> {
+  [key: string]: T;
+}
