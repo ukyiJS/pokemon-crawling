@@ -1,7 +1,7 @@
 import { getJson, ImageUtil, Puppeteer } from '@/utils';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindAndModifyWriteOpResultObject, MongoRepository } from 'typeorm';
+import { MongoRepository } from 'typeorm';
 import { CrawlingPokemonDatabase } from './crawling/pokemonDatabase';
 import { CrawlingPokemonIconImageOfSerebiiNet } from './crawling/pokemonIconImageOfSerebiiNet';
 import { CrawlingPokemonImageOfSerebiiNet } from './crawling/pokemonImageOfSerebiiNet';
@@ -180,7 +180,13 @@ export class PokemonService extends Puppeteer {
   public async updatePokemonEggGroups(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    return this.convertPokemonEggGroups(pokemons);
+    const updatedPokemons = this.convertPokemonEggGroups(pokemons).map(({ no, name }) => {
+      return this.pokemonDatabaseRepository
+        .findOneAndUpdate({ no }, { $set: { name } }, { returnOriginal: false })
+        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
+    });
+
+    return Promise.all(updatedPokemons);
   }
 
   public async updatePokemonForm(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
