@@ -1,3 +1,4 @@
+import { PokemonDatabase } from '@/pokemon/model/pokemonDatabase.entity';
 import { IPokemonImage } from '@/pokemon/pokemon.interface';
 import { Logger } from '@nestjs/common';
 import axios, { AxiosPromise } from 'axios';
@@ -78,5 +79,28 @@ export class ImageUtil {
       Logger.log(`${cursor} : ${fileName}`, 'Download');
       updateProgressBar(cursor);
     }
+  };
+  private getImageUrl = (name: string): string => {
+    return `https://raw.githubusercontent.com/ukyiJS/pokemon-crawling/image/${name}.png`;
+  };
+  private setImageUrl = (dirName: string, no: string): string => {
+    const imageUrl = this.getImageUrl(`${dirName}/${no}`);
+    return imageUrl;
+  };
+  private updatePokemonImage = ({ no, ...pokemon }: PokemonDatabase): PokemonDatabase => {
+    const dirName = this.getGenerationName(+no);
+    const image = this.setImageUrl(dirName, no);
+    return { ...pokemon, no, image };
+  };
+  public updatePokemonImages = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
+    return pokemons.map(({ no, differentForm, ...pokemon }) => {
+      const pokemonImage = this.updatePokemonImage({ no, ...pokemon });
+      const differentFormImage = differentForm?.map(({ no, ...differentForm }) => ({
+        ...this.updatePokemonImage({ no, ...differentForm }),
+        no,
+      }));
+
+      return { ...pokemonImage, no, differentForm: differentFormImage };
+    });
   };
 }
