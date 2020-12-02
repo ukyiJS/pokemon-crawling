@@ -3,8 +3,9 @@ import { Logger, LogLevel } from '@nestjs/common';
 import puppeteer from 'puppeteer-extra';
 import adblocker from 'puppeteer-extra-plugin-adblocker';
 import { Browser, LaunchOptions, Page } from 'puppeteer-extra/dist/puppeteer';
+import { Convert } from '../convert';
 
-export class Puppeteer {
+export class Puppeteer extends Convert {
   protected initPuppeteer = async (url: string, options?: LaunchOptions): Promise<{ browser: Browser; page: Page }> => {
     puppeteer.use(adblocker({ blockTrackers: true }));
 
