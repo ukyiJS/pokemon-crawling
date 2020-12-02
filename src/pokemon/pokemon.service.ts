@@ -16,7 +16,7 @@ import { IPokemonDatabase } from './interfaces/pokemonDatabase.interface';
 import { IPokemonWiki } from './interfaces/pokemonWiki.interface';
 import { PokemonDatabase } from './model/pokemonDatabase.entity';
 import { PokemonWiki } from './model/pokemonWiki.entity';
-import { IPokemonImage } from './pokemon.interface';
+import { IPokemonImage, ObjectLiteral } from './pokemon.interface';
 import { EvolvingToType } from './types/evolvingTo.type';
 
 @Injectable()
@@ -112,7 +112,7 @@ export class PokemonService extends Puppeteer {
     });
   }
 
-  private convertToKorName = <T>(
+  private convertToKorName = <T extends ObjectLiteral<string>>(
     enums: T,
     nameToConvert: string | string[],
     isReplace?: boolean,
@@ -120,7 +120,7 @@ export class PokemonService extends Puppeteer {
     const removeSpecialSymbol = (text: string) => {
       return (isReplace ? this.replaceName(text) : text).replace(/[^a-z0-9]/gi, '');
     };
-    const findKorName = (name: string) => {
+    const findKorName = (name: string): string => {
       const [, result] = Object.entries(enums).find(([key]) => {
         return RegExp(`${removeSpecialSymbol(key)}$`, 'gi').test(removeSpecialSymbol(name));
       })!;
@@ -136,7 +136,7 @@ export class PokemonService extends Puppeteer {
     }
   };
 
-  private convertToKorNameByEvolvingTo = <T>(
+  private convertToKorNameByEvolvingTo = <T extends ObjectLiteral<string>>(
     enums: T,
     key: keyof Omit<EvolvingToType, 'evolvingTo'>,
     evolvingTo: EvolvingToType[] = [],
