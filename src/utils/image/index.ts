@@ -120,4 +120,11 @@ export class ImageUtil {
       return { ...pokemon, no, image, evolvingTo: evolvingToImage, differentForm: differentFormImage };
     });
   };
+  public updatePokemonIconImages = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
+    return pokemons.map(({ no, ...pokemon }) => ({
+      ...pokemon,
+      no,
+      icon: this.setImageUrl('icon', no),
+    }));
+  };
 }
