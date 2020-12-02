@@ -69,7 +69,10 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         return src.replace(/(rockruff)-own-tempo.png$/g, '$1.png');
       };
       public getFormNames = (): string[] => {
-        const formNames = this.$elements.map($element => of($element).replaceText(/[^a-z0-9♂♀]/));
+        const formNames = this.$elements.map($element => {
+          const text = of($element).replaceText(/[^a-z0-9♂♀]/);
+          return text.replace(/(form)e$/gi, '$1');
+        });
         return formNames.filter(name => !/partner/gi.test(name));
       };
       public getColumn = (): Element[][] => {
@@ -84,7 +87,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         }, []);
         return $columns;
       };
-      public getName = (): string => of(this.$element?.querySelector('h1')).getText();
+      public getName = (): string => of(this.$element?.querySelector('h1')).replaceText(/\s/);
       public getImage = (): string => of(this.$element?.querySelector('img')).getSrc();
       public getTypes = (): string[] => of(this.$element?.querySelectorAll('a')).getTexts();
       public getHeightOrWeight = (): string => this.matchText(/(\w.*)(?=\s\()/).replace(/\s/g, '');
@@ -277,17 +280,16 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
     const $evolvingTo = document.querySelectorAll('#main > div.infocard-list-evo');
 
     const [pokemon, ...pokemons] = $pokemons.map($pokemon => of($pokemon).getPokemon());
-    const { evYield, catchRate, friendship, eegGroups, gender, eggCycle } = pokemon;
-
     const [formName, ...formNames] = of($formNames).getFormNames();
-    const isForm = formName === pokemon.name ? null : true;
+    const isForm = formName.replace(/[^a-z]/gi, '') === pokemon.name.replace(/[^a-z]/gi, '') ? null : true;
     const form = isForm && formName;
 
-    const differentForm = pokemons.map((pokemon, i) => {
+    const differentForm = pokemons.map((differentForm, i) => {
       const form = formNames[i];
+      const { evYield, catchRate, friendship, eegGroups, gender, eggCycle } = pokemon;
       const commonInfo = { evYield, catchRate, friendship, eegGroups, gender, eggCycle };
       if (/^GalarianZenMode/gi.test(form)) commonInfo.evYield = '2 SpecialAttack';
-      return { ...pokemon, ...commonInfo, form };
+      return { ...differentForm, ...commonInfo, form };
     });
 
     return { ...pokemon, evolvingTo: of($evolvingTo).getEvolvingTo(), form, differentForm };
