@@ -115,4 +115,17 @@ export class Convert {
 
     return pokemons.map(({ species, ...pokemon }) => ({ ...pokemon, species: convertToKorName(species) }));
   };
+  public convertPokemonAbilities = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
+    const convertToKorName = (name: string): string => <string>this.convertToKorName(AbilityNames, name);
+    const convert = ({ abilities, hiddenAbility, ...pokemon }: PokemonDatabase) => ({
+      ...pokemon,
+      abilities: abilities.map(ability => ability && convertToKorName(ability)),
+      hiddenAbility: hiddenAbility && convertToKorName(hiddenAbility),
+    });
+
+    return pokemons.map(({ differentForm, ...pokemon }) => ({
+      ...convert(pokemon),
+      differentForm: differentForm?.map(convert),
+    }));
+  };
 }
