@@ -231,7 +231,7 @@ export class Convert {
 
     const match = <(keyof typeof ConditionTypes)[] | undefined>condition
       .toUpperCase()
-      .match(/(level)|(use)|(trade)|(friendship)/i)
+      .match(/(level).*(?:\d).*|(use)|(trade)|(friendship)/i)
       ?.slice(1);
     if (!match) return ConditionTypes.OTHER;
 
@@ -258,6 +258,7 @@ export class Convert {
     const convertEvolvingTo = (evolvingTo?: EvolvingToType[]): EvolvingToType[] | undefined => {
       const result = evolvingTo?.map(({ evolvingTo, ...pokemon }) => ({
         ...pokemon,
+        condition: undefined,
         evolvingTo: evolvingTo?.map(this.convertCondition),
       }));
 
