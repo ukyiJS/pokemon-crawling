@@ -101,8 +101,10 @@ export class PokemonService extends Puppeteer {
   }
 
   public async updateIconImageOfPokemonDatabase(
-    pokemons: PokemonDatabase[],
-  ): Promise<FindAndModifyWriteOpResultObject[]> {
+    pokemons: PokemonDatabase[] | null,
+  ): Promise<FindAndModifyWriteOpResultObject[] | null> {
+    if (!pokemons) return null;
+
     const { updatePokemonIconImages } = new ImageUtil();
     const updatedPokemons = updatePokemonIconImages(pokemons).map(({ no, icon }) => {
       return this.pokemonDatabaseRepository
