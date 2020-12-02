@@ -1,5 +1,5 @@
 import { getJson } from '@/utils';
-import { Mutation, Resolver } from '@nestjs/graphql';
+import { Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { FindAndModifyWriteOpResultObject } from 'typeorm';
 import { IPokemonDatabase } from '../interfaces/pokemonDatabase.interface';
 import { PokemonDatabase } from '../model/pokemonDatabase.entity';
@@ -15,16 +15,25 @@ export class PokemonDatabaseResolver {
 
   @Mutation(() => [PokemonDatabase], { nullable: true })
   public async addPokemonOfDatabase(): Promise<PokemonDatabase[] | null> {
-    return this.pokemonService.addPokemonDatabase(this.pokemons);
+    const pokemons = await this.pokemonService.addPokemonDatabase(this.pokemons);
+    this.pokemons = pokemons;
+
+    return pokemons;
+  }
+
+  @ResolveField(() => String)
+  public async image(@Parent() pokemon: PokemonDatabase): Promise<string> {
+    const [{ image }] = (await this.pokemonService.updateImageOfPokemonDatabase([pokemon]))!;
+    return image;
   }
 
   @Mutation(() => [PokemonDatabase], { nullable: true })
-  public async updateImageOfPokemonDatabase(): Promise<FindAndModifyWriteOpResultObject[] | null> {
+  public async updateImageOfPokemonDatabase(): Promise<PokemonDatabase[] | null> {
     return this.pokemonService.updateImageOfPokemonDatabase(this.pokemons);
   }
 
   @Mutation(() => [PokemonDatabase], { nullable: true })
-  public async updateIconImageOfPokemonDatabase(): Promise<FindAndModifyWriteOpResultObject[] | null> {
+  public async updateIconImageOfPokemonDatabase(): Promise<PokemonDatabase[] | null> {
     return this.pokemonService.updateIconImageOfPokemonDatabase(this.pokemons);
   }
 
