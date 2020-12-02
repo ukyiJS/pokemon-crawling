@@ -21,6 +21,12 @@ export enum LevelAdditionalConditionNames {
 }
 export type LevelAdditionalConditionName = typeof LevelAdditionalConditionNames[keyof typeof LevelAdditionalConditionNames];
 
+export enum FriendshipAdditionalConditionNames {
+  DAYTIME = '낮에',
+  NIGHTTIME = '밤에',
+}
+export type FriendshipAdditionalConditionName = typeof FriendshipAdditionalConditionNames[keyof typeof FriendshipAdditionalConditionNames];
+
 export enum UseItemConditionNames {
   THUNDER_STONE = '천둥의돌',
   ICE_STONE = '얼음의돌',
