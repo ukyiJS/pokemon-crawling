@@ -13,7 +13,8 @@ type EvolvingToType {
   image: String!
   types: [String!]!
   form: String
-  condition: String!
+  condition: String
+  conditions: [String!]
   evolvingTo: [EvolvingToType!]
 }
 
@@ -143,6 +144,7 @@ type Mutation {
   updatePokemonSpecies: [PokemonDatabase!]!
   updatePokemonAbilities: [PokemonDatabase!]!
   updatePokemonEggGroups: [PokemonDatabase!]!
-  updateForm: [PokemonDatabase!]!
+  updatePokemonForm: [PokemonDatabase!]!
+  updatePokemonEvolutionCondition: [PokemonDatabase!]!
   addPokemonOfWiki: Boolean!
 }
