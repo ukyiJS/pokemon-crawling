@@ -73,7 +73,7 @@ type PokemonDatabase implements IDatabaseColumn & IPokemon & IPokemonDatabase {
   eegGroups: [String!]!
   gender: [GenderType!]!
   form: String
-  icon: String!
+  icon: String
   evolvingTo: [EvolvingToType!]
   differentForm: [PokemonDatabaseType!]
 }
@@ -105,7 +105,7 @@ interface IPokemon {
 }
 
 interface IPokemonDatabase {
-  icon: String!
+  icon: String
   evolvingTo: [EvolvingToType!]
   differentForm: [PokemonDatabaseType!]
 }
@@ -133,18 +133,45 @@ type PokemonWikiType {
   color: ColorType!
 }
 
+type PokemonWiki implements IDatabaseColumn & IPokemon & IPokemonWiki {
+  _id: String!
+  createdAt: Date!
+  searchCount: Int!
+  no: String!
+  name: String!
+  image: String!
+  types: [String!]!
+  species: String!
+  height: String!
+  weight: String!
+  abilities: [String]!
+  hiddenAbility: String
+  catchRate: Int!
+  friendship: Int!
+  eegGroups: [String!]!
+  gender: [GenderType!]!
+  form: String
+  differentForm: [PokemonWikiType!]!
+}
+
+interface IPokemonWiki {
+  differentForm: [PokemonWikiType!]!
+}
+
 type Query {
   getHello: String!
 }
 
 type Mutation {
-  addPokemonOfDatabase: Boolean!
-  updatePokemonName: [PokemonDatabase!]!
-  updatePokemonTypes: [PokemonDatabase!]!
-  updatePokemonSpecies: [PokemonDatabase!]!
-  updatePokemonAbilities: [PokemonDatabase!]!
-  updatePokemonEggGroups: [PokemonDatabase!]!
-  updatePokemonForm: [PokemonDatabase!]!
-  updatePokemonEvolutionCondition: [PokemonDatabase!]!
-  addPokemonOfWiki: Boolean!
+  addPokemonOfDatabase: [PokemonDatabase!]
+  updateImageOfPokemonDatabase: [PokemonDatabase!]
+  updateIconImageOfPokemonDatabase: [PokemonDatabase!]
+  updatePokemonName: [PokemonDatabase!]
+  updatePokemonTypes: [PokemonDatabase!]
+  updatePokemonSpecies: [PokemonDatabase!]
+  updatePokemonAbilities: [PokemonDatabase!]
+  updatePokemonEggGroups: [PokemonDatabase!]
+  updatePokemonForm: [PokemonDatabase!]
+  updatePokemonEvolutionCondition: [PokemonDatabase!]
+  addPokemonOfWiki: [PokemonWiki!]
 }
