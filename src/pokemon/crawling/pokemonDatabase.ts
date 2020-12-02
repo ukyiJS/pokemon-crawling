@@ -68,11 +68,31 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         const src = this.$element?.getAttribute('src') ?? this.$element?.getAttribute('data-src') ?? '';
         return src.replace(/(rockruff)-own-tempo.png$/g, '$1.png');
       };
-      public getFormNames = (): string[] => {
-        const formNames = this.$elements.map($element => {
-          const text = of($element).replaceText(/[^a-z0-9♂♀]/);
-          return text.replace(/(form)e$/gi, (str, $1) => $1 ?? str);
+      private getFormName = (): string => {
+        const formName = of(this.$element).replaceText(/[^a-z0-9♂♀]/);
+        const regExp = /(mega).*x$|(mega).*y$|^(mega).*|^(primal).*|^(alola)n.*|^(galar)ian.*/gi;
+
+        return formName.replace(regExp, (str, ...$$) => {
+          if (/^galarian.*(?:mode)/.test(str)) return str;
+          const index = $$.findIndex(str => str);
+          const matchText = $$[index];
+          switch (index) {
+            case 0:
+              return `${matchText}X`;
+            case 1:
+              return `${matchText}Y`;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+              return matchText;
+            default:
+              return str;
+          }
         });
+      };
+      public getFormNames = (): string[] => {
+        const formNames = this.$elements.map(this.getFormName);
         return formNames.filter(name => !/partner/gi.test(name));
       };
       public getColumn = (): Element[][] => {
@@ -216,7 +236,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         const image = of($image).getSrc();
         const types = of($element.querySelectorAll('small:last-child > a')).getTexts();
         const isForm = of($data).getChildren().length > 5;
-        const form = isForm ? of($data?.querySelector('small:nth-of-type(2)')).getText() : null;
+        const form = isForm ? of($data?.querySelector('small:nth-of-type(2)')).getFormName() : null;
 
         return { no, name, image, types, form, condition: this.condition, evolvingTo: [] };
       };
