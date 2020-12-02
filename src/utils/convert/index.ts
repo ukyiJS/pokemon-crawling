@@ -24,26 +24,6 @@ export class Convert {
   private equals = (value1: string, value2: string): boolean => {
     return new RegExp(`${this.replaceText(value1)}$`, 'gi').test(this.replaceText(value2));
   };
-  private replaceFormName = (name: string): string => {
-    return name.replace(/(mega).*x$|(mega).*y$|^(mega).*|^(primal).*|^(alola)n.*|^(galar)ian.*/gi, (str, ...$$) => {
-      if (/^galarian.*(?:mode)/.test(str)) return str;
-      const index = $$.findIndex(str => str);
-      const matchText = $$[index];
-      switch (index) {
-        case 0:
-          return `${matchText}X`;
-        case 1:
-          return `${matchText}Y`;
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-          return matchText;
-        default:
-          return str;
-      }
-    });
-  };
   public getGenerationName = (no: number): string => {
     if (no < 152) return 'gen1';
     if (no < 252) return 'gen2';
@@ -57,11 +37,8 @@ export class Convert {
   private convertToKorName = <T extends ObjectLiteral<string>>(
     enums: T,
     nameToConvert: string | string[],
-    isReplace?: boolean,
   ): string | string[] => {
-    const removeSpecialSymbol = (text: string) => {
-      return (isReplace ? this.replaceFormName(text) : text).replace(/[^a-z0-9]/gi, '');
-    };
+    const removeSpecialSymbol = (text: string) => text.replace(/[^a-z0-9]/gi, '');
     const findKorName = (name: string): string => {
       const [, result] = Object.entries(enums).find(([key]) => {
         return RegExp(`${removeSpecialSymbol(key)}$`, 'gi').test(removeSpecialSymbol(name));
@@ -81,19 +58,18 @@ export class Convert {
     enums: T,
     key: keyof Omit<EvolvingToType, 'evolvingTo'>,
     evolvingTo: EvolvingToType[] = [],
-    isReplace?: boolean,
   ): EvolvingToType[] | undefined => {
     const convertToKorName = this.convertToKorName.bind(null, enums);
     const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, enums, key);
     const convert = (to: EvolvingToType) => {
       const name = to[key];
-      return { ...to, [key]: name && convertToKorName(name, isReplace) };
+      return { ...to, [key]: name && convertToKorName(name) };
     };
 
     const result = <EvolvingToType[]>evolvingTo?.map(convert);
     if (!result?.length) return undefined;
 
-    return result.map(to => ({ ...to, evolvingTo: convertToKorNameByEvolvingTo(to.evolvingTo, isReplace) }));
+    return result.map(to => ({ ...to, evolvingTo: convertToKorNameByEvolvingTo(to.evolvingTo) }));
   };
   public convertPokemonName = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
     const convertToKorName = (name: string): string => <string>this.convertToKorName(PokemonNames, name);
@@ -150,12 +126,12 @@ export class Convert {
     const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, FormNames, 'form');
     const convert = ({ form, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
       ...pokemon,
-      form: form && <string>this.convertToKorName(FormNames, form, true),
+      form: form && <string>this.convertToKorName(FormNames, form),
     });
 
     return pokemons.map(({ evolvingTo, differentForm, ...pokemon }) => ({
       ...convert(pokemon),
-      evolvingTo: convertToKorNameByEvolvingTo(evolvingTo, true),
+      evolvingTo: convertToKorNameByEvolvingTo(evolvingTo),
       differentForm: differentForm?.map(convert),
     }));
   };
