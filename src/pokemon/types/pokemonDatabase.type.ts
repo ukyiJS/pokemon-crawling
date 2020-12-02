@@ -7,7 +7,7 @@ import { TypeDefenseType } from './typeDefense.type';
 @ObjectType()
 export abstract class PokemonDatabaseType extends IPokemon {
   @Field(() => String, { nullable: true })
-  public evYield: string | null;
+  public evYield: string[] | null;
   @Field(() => Int)
   public exp: number;
   @Field(() => [EggCycleType], { nullable: true })
