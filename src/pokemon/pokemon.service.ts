@@ -89,127 +89,86 @@ export class PokemonService extends Puppeteer {
     if (!pokemons) return null;
 
     const { updatePokemonImages } = new ImageUtil();
-    const updatedPokemons = updatePokemonImages(pokemons).map(({ no, image, differentForm }) => {
-      return this.pokemonDatabaseRepository
-        .findOneAndUpdate({ no }, { $set: { image, differentForm } }, { returnOriginal: false })
-        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
-    });
-
-    return Promise.all(updatedPokemons);
+    return updatePokemonImages(pokemons);
   }
 
   public async updateIconImageOfPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
     const { updatePokemonIconImages } = new ImageUtil();
-    const updatedPokemons = updatePokemonIconImages(pokemons).map(({ no, icon }) => {
-      return this.pokemonDatabaseRepository
-        .findOneAndUpdate({ no }, { $set: { icon } }, { returnOriginal: false })
-        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
-    });
-
-    return Promise.all(updatedPokemons);
+    return updatePokemonIconImages(pokemons);
   }
 
-  public async addPokemonWiki(): Promise<boolean> {
-    const pokemons = getJson<IPokemonWiki[]>({ fileName: 'pokemonOfWiki.json' });
-    if (!pokemons) return false;
+  public async addPokemonWiki(pokemons: PokemonWiki[] | null): Promise<PokemonWiki[] | null> {
+    if (!pokemons) return null;
 
-    const savePokemon = (pokemon: PokemonWiki) => {
-      return this.pokemonWiKiRepository.save(new PokemonWiki(pokemon));
-    };
-    await Promise.all(pokemons.map(savePokemon));
-    return true;
+    const savedPokemons = pokemons.map(pokemon => this.pokemonDatabaseRepository.save(new PokemonWiki(pokemon)));
+    return Promise.all(savedPokemons);
   }
 
   public async addPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
     const savedPokemons = pokemons.map(pokemon => this.pokemonDatabaseRepository.save(new PokemonDatabase(pokemon)));
-    return Promise.all(savedPokemons);
+    const savedResult = await Promise.all(savedPokemons);
+
+    const updatedPokemons = await this.updateIconImageOfPokemonDatabase(savedResult)
+      .then(result => this.updateImageOfPokemonDatabase(result))
+      .then(result => this.updatePokemonName(result))
+      .then(result => this.updatePokemonTypes(result))
+      .then(result => this.updatePokemonSpecies(result))
+      .then(result => this.updatePokemonAbilities(result))
+      .then(result => this.updatePokemonEggGroups(result))
+      .then(result => this.updatePokemonForm(result))
+      .then(result => this.updatePokemonEvolutionCondition(result));
+
+    const updatedResult = updatedPokemons!.map(({ no, ...pokemon }) => {
+      return this.pokemonDatabaseRepository
+        .findOneAndUpdate({ no }, { $set: pokemon }, { returnOriginal: false })
+        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
+    });
+    return Promise.all(updatedResult);
   }
 
   public async updatePokemonName(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    const updatedPokemons = this.convertPokemonName(pokemons).map(({ no, name }) => {
-      return this.pokemonDatabaseRepository
-        .findOneAndUpdate({ no }, { $set: { name } }, { returnOriginal: false })
-        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
-    });
-
-    return Promise.all(updatedPokemons);
+    return this.convertPokemonName(pokemons);
   }
 
   public async updatePokemonTypes(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    const updatedPokemons = this.convertPokemonTypes(pokemons).map(({ no, name }) => {
-      return this.pokemonDatabaseRepository
-        .findOneAndUpdate({ no }, { $set: { name } }, { returnOriginal: false })
-        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
-    });
-
-    return Promise.all(updatedPokemons);
+    return this.convertPokemonTypes(pokemons);
   }
 
   public async updatePokemonSpecies(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    const updatedPokemons = this.convertPokemonSpecies(pokemons).map(({ no, name }) => {
-      return this.pokemonDatabaseRepository
-        .findOneAndUpdate({ no }, { $set: { name } }, { returnOriginal: false })
-        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
-    });
-
-    return Promise.all(updatedPokemons);
+    return this.convertPokemonSpecies(pokemons);
   }
 
   public async updatePokemonAbilities(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    const updatedPokemons = this.convertPokemonAbilities(pokemons).map(({ no, name }) => {
-      return this.pokemonDatabaseRepository
-        .findOneAndUpdate({ no }, { $set: { name } }, { returnOriginal: false })
-        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
-    });
-
-    return Promise.all(updatedPokemons);
+    return this.convertPokemonAbilities(pokemons);
   }
 
   public async updatePokemonEggGroups(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    const updatedPokemons = this.convertPokemonEggGroups(pokemons).map(({ no, name }) => {
-      return this.pokemonDatabaseRepository
-        .findOneAndUpdate({ no }, { $set: { name } }, { returnOriginal: false })
-        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
-    });
-
-    return Promise.all(updatedPokemons);
+    return this.convertPokemonEggGroups(pokemons);
   }
 
   public async updatePokemonForm(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    const updatedPokemons = this.convertPokemonForm(pokemons).map(({ no, name }) => {
-      return this.pokemonDatabaseRepository
-        .findOneAndUpdate({ no }, { $set: { name } }, { returnOriginal: false })
-        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
-    });
-
-    return Promise.all(updatedPokemons);
+    return this.convertPokemonForm(pokemons);
   }
 
   public async updatePokemonEvolutionCondition(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    const updatedPokemons = this.convertPokemonEvolutionCondition(pokemons).map(({ no, name }) => {
-      return this.pokemonDatabaseRepository
-        .findOneAndUpdate({ no }, { $set: { name } }, { returnOriginal: false })
-        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
-    });
-
-    return Promise.all(updatedPokemons);
+    return this.convertPokemonEvolutionCondition(pokemons);
   }
 }
