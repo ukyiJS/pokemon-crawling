@@ -24,16 +24,6 @@ export class Convert {
   private equals = (value1: string, value2: string): boolean => {
     return new RegExp(`${this.replaceText(value1)}$`, 'gi').test(this.replaceText(value2));
   };
-  public getGenerationName = (no: number): string => {
-    if (no < 152) return 'gen1';
-    if (no < 252) return 'gen2';
-    if (no < 387) return 'gen3';
-    if (no < 494) return 'gen4';
-    if (no < 650) return 'gen5';
-    if (no < 722) return 'gen6';
-    if (no < 810) return 'gen7';
-    return 'gen8';
-  };
   private convertToKorName = <T extends ObjectLiteral<string>>(
     enums: T,
     nameToConvert: string | string[],
