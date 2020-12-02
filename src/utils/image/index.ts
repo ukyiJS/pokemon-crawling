@@ -1,5 +1,6 @@
 import { PokemonDatabase } from '@/pokemon/model/pokemonDatabase.entity';
 import { IPokemonImage } from '@/pokemon/pokemon.interface';
+import { EvolvingToType } from '@/pokemon/types/evolvingTo.type';
 import { Logger } from '@nestjs/common';
 import axios, { AxiosPromise } from 'axios';
 import { createWriteStream, existsSync, mkdirSync, ReadStream } from 'fs';
@@ -83,24 +84,40 @@ export class ImageUtil {
   private getImageUrl = (name: string): string => {
     return `https://raw.githubusercontent.com/ukyiJS/pokemon-crawling/image/${name}.png`;
   };
-  private setImageUrl = (dirName: string, no: string): string => {
-    const imageUrl = this.getImageUrl(`${dirName}/${no}`);
+  private setImageUrl = (dirName: string, no: string, form?: string): string => {
+    const fileName = form ? `${no}-${form}` : no;
+    const imageUrl = this.getImageUrl(`${dirName}/${fileName}`);
     return imageUrl;
   };
-  private updatePokemonImage = ({ no, ...pokemon }: PokemonDatabase): PokemonDatabase => {
+  private updatePokemonImage = (no: string): string => {
     const dirName = this.getGenerationName(+no);
     const image = this.setImageUrl(dirName, no);
-    return { ...pokemon, no, image };
+    return image;
   };
   public updatePokemonImages = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
-    return pokemons.map(({ no, differentForm, ...pokemon }) => {
-      const pokemonImage = this.updatePokemonImage({ no, ...pokemon });
-      const differentFormImage = differentForm?.map(({ no, ...differentForm }) => ({
-        ...this.updatePokemonImage({ no, ...differentForm }),
+    const convertEvolvingToImage = (evolvingTo?: EvolvingToType[]): EvolvingToType[] | undefined => {
+      if (!evolvingTo) return undefined;
+
+      const result = evolvingTo.map(({ no, evolvingTo, ...pokemon }) => ({
+        ...pokemon,
         no,
+        image: this.updatePokemonImage(no),
+        evolvingTo: convertEvolvingToImage(evolvingTo),
       }));
 
-      return { ...pokemonImage, no, differentForm: differentFormImage };
+      return result;
+    };
+
+    return pokemons.map(({ no, differentForm, evolvingTo, ...pokemon }) => {
+      const image = this.updatePokemonImage(no);
+      const differentFormImage = differentForm?.map(({ no, ...pokemon }) => ({
+        ...pokemon,
+        no,
+        image: this.updatePokemonImage(no),
+      }));
+      const evolvingToImage = convertEvolvingToImage(evolvingTo);
+
+      return { ...pokemon, no, image, evolvingTo: evolvingToImage, differentForm: differentFormImage };
     });
   };
 }
