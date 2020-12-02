@@ -74,6 +74,17 @@ export class PokemonService extends Puppeteer {
     return true;
   }
 
+  public async downloadPokemonIconImageOfSerebiiNet(): Promise<boolean> {
+    const pokemonImages = getJson<IPokemonImage[]>({ fileName: 'pokemonIconImageOfSerebiiNet.json' });
+    if (!pokemonImages) return false;
+
+    const { convertImageToDownload, mutilDownloads } = new ImageUtil();
+    const imagesToDownload = convertImageToDownload(pokemonImages, '');
+    await mutilDownloads(imagesToDownload);
+
+    return true;
+  }
+
   public async addPokemonWiki(): Promise<boolean> {
     const pokemons = getJson<IPokemonWiki[]>({ fileName: 'pokemonsOfWiki.json' });
     if (!pokemons) return false;
