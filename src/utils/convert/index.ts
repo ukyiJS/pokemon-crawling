@@ -133,4 +133,17 @@ export class Convert {
 
     return pokemons.map(({ eegGroups, ...pokemon }) => ({ ...pokemon, eegGroups: eegGroups.map(convertToKorName) }));
   };
+  public convertPokemonForm = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
+    const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, FormNames, 'form');
+    const convert = ({ form, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
+      ...pokemon,
+      form: form && <string>this.convertToKorName(FormNames, form, true),
+    });
+
+    return pokemons.map(({ evolvingTo, differentForm, ...pokemon }) => ({
+      ...convert(pokemon),
+      evolvingTo: convertToKorNameByEvolvingTo(evolvingTo, true),
+      differentForm: differentForm?.map(convert),
+    }));
+  };
 }
