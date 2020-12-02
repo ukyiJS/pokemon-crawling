@@ -13,9 +13,9 @@ export class PokemonDatabaseResolver {
     this.pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
   }
 
-  @Mutation(() => Boolean)
-  public async addPokemonOfDatabase(): Promise<boolean> {
-    return this.pokemonService.addPokemonDatabase();
+  @Mutation(() => [PokemonDatabase], { nullable: true })
+  public async addPokemonOfDatabase(): Promise<PokemonDatabase[] | null> {
+    return this.pokemonService.addPokemonDatabase(this.pokemons);
   }
 
   @Mutation(() => [PokemonDatabase])
