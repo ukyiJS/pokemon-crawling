@@ -70,7 +70,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
       };
       private getFormName = (): string => {
         const formName = of(this.$element).replaceText(/[^a-z0-9♂♀]/);
-        const regExp = /(mega).*x$|(mega).*y$|^(alola)n.*|^(galar)ian.*|^(mega).*|^(primal).*/gi;
+        const regExp = /(mega).*x$|(mega).*y$|^(alola)n.*|^(galar)ian.*|^(mega).*|^(primal).*|(form)e$/gi;
 
         return formName.replace(regExp, (str, ...$$) => {
           if (/^galarian.*(?:mode)/.test(str)) return str;
@@ -86,6 +86,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
               return `${matchText}Form`;
             case 4:
             case 5:
+            case 6:
               return matchText;
             default:
               return str;
