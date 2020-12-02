@@ -93,7 +93,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         });
       };
       public getFormNames = (): string[] => {
-        const formNames = this.$elements.map(this.getFormName);
+        const formNames = this.$elements.map($element => of($element).getFormName());
         return formNames.filter(name => !/partner/gi.test(name));
       };
       public getColumn = (): Element[][] => {
