@@ -100,4 +100,8 @@ export class PokemonService extends Puppeteer {
   public async updatePokemonAbilities(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
     return this.convertPokemonAbilities(pokemons);
   }
+
+  public async updatePokemonEggGroups(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
+    return this.convertPokemonEggGroups(pokemons);
+  }
 }
