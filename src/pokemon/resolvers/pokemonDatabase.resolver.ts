@@ -27,6 +27,12 @@ export class PokemonDatabaseResolver {
     return image;
   }
 
+  @ResolveField(() => String)
+  public async icon(@Parent() pokemon: PokemonDatabase): Promise<string> {
+    const [{ icon }] = (await this.pokemonService.updateIconImageOfPokemonDatabase([pokemon]))!;
+    return <string>icon;
+  }
+
   @Mutation(() => [PokemonDatabase], { nullable: true })
   public async updateImageOfPokemonDatabase(): Promise<PokemonDatabase[] | null> {
     return this.pokemonService.updateImageOfPokemonDatabase(this.pokemons);
