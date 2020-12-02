@@ -1,4 +1,4 @@
-import { getJson, Puppeteer } from '@/utils';
+import { getJson, ImageUtil, Puppeteer } from '@/utils';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
@@ -61,6 +61,17 @@ export class PokemonService extends Puppeteer {
     await browser.close();
 
     return pokemonImages;
+  }
+
+  public async downloadPokemonImagesOfSerebiiNet(): Promise<boolean> {
+    const pokemonImages = getJson<IPokemonImage[]>({ fileName: 'pokemonImagesOfSerebiiNet.json' });
+    if (!pokemonImages) return false;
+
+    const { convertImageToDownload, mutilDownloads } = new ImageUtil();
+    const imagesToDownload = convertImageToDownload(pokemonImages);
+    await mutilDownloads(imagesToDownload);
+
+    return true;
   }
 
   public async addPokemonWiki(): Promise<boolean> {
