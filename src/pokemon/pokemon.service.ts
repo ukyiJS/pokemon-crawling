@@ -139,7 +139,9 @@ export class PokemonService extends Puppeteer {
     return this.convertPokemonName(pokemons);
   }
 
-  public async updatePokemonTypes(pokemons: PokemonDatabase[]): Promise<PokemonDatabase[]> {
+  public async updatePokemonTypes(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
+    if (!pokemons) return null;
+
     return this.convertPokemonTypes(pokemons);
   }
 
