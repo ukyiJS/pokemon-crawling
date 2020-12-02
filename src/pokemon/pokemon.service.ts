@@ -85,31 +85,27 @@ export class PokemonService extends Puppeteer {
     return true;
   }
 
-  public async updateImageOfPokemonDatabase(
-    pokemons: PokemonDatabase[] | null,
-  ): Promise<FindAndModifyWriteOpResultObject[] | null> {
+  public async updateImageOfPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
     const { updatePokemonImages } = new ImageUtil();
     const updatedPokemons = updatePokemonImages(pokemons).map(({ no, image, differentForm }) => {
       return this.pokemonDatabaseRepository
         .findOneAndUpdate({ no }, { $set: { image, differentForm } }, { returnOriginal: false })
-        .then(({ value: pokemon }) => pokemon);
+        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
     });
 
     return Promise.all(updatedPokemons);
   }
 
-  public async updateIconImageOfPokemonDatabase(
-    pokemons: PokemonDatabase[] | null,
-  ): Promise<FindAndModifyWriteOpResultObject[] | null> {
+  public async updateIconImageOfPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
     const { updatePokemonIconImages } = new ImageUtil();
     const updatedPokemons = updatePokemonIconImages(pokemons).map(({ no, icon }) => {
       return this.pokemonDatabaseRepository
         .findOneAndUpdate({ no }, { $set: { icon } }, { returnOriginal: false })
-        .then(({ value: pokemon }) => pokemon);
+        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
     });
 
     return Promise.all(updatedPokemons);
