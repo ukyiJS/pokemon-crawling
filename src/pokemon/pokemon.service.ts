@@ -79,7 +79,7 @@ export class PokemonService extends Puppeteer {
     if (!pokemonImages) return false;
 
     const { convertImageToDownload, mutilDownloads } = new ImageUtil();
-    const imagesToDownload = convertImageToDownload(pokemonImages, '');
+    const imagesToDownload = convertImageToDownload(pokemonImages, 'icon');
     await mutilDownloads(imagesToDownload);
 
     return true;
