@@ -120,7 +120,10 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
       public getHiddenAbility = (): string | null => {
         return of(this.$element?.querySelector('small > a')).replaceText(/[^a-z]/) || null;
       };
-      public getEvYield = (): string | null => of(this.$element).replaceText(/(?<=\D)\s/) || null;
+      public getEvYield = (): string[] | null => {
+        const evYield = of(this.$element).replaceText(/(?<=\D)\s/);
+        return evYield.split(',') || null;
+      };
       public getCatchRate = (): number => +of(this.$element).matchText(/(\d+)/);
       public getFriendship = (): number => +of(this.$element).matchText(/(\d+)/) || 70;
       public getExp = (): number => +of(this.$element).matchText(/(\d+)/);
@@ -309,7 +312,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
       const form = formNames[i];
       const { evYield, catchRate, friendship, eegGroups, gender, eggCycle } = pokemon;
       const commonInfo = { evYield, catchRate, friendship, eegGroups, gender, eggCycle };
-      if (/^GalarianZenMode/gi.test(form)) commonInfo.evYield = '2 SpecialAttack';
+      if (/^GalarianZenMode/gi.test(form)) commonInfo.evYield = ['2 SpecialAttack'];
       return { ...differentForm, ...commonInfo, form };
     });
 
