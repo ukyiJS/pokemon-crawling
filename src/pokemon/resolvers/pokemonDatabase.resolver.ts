@@ -1,5 +1,6 @@
 import { getJson } from '@/utils';
 import { Mutation, Resolver } from '@nestjs/graphql';
+import { FindAndModifyWriteOpResultObject } from 'typeorm';
 import { IPokemonDatabase } from '../interfaces/pokemonDatabase.interface';
 import { PokemonDatabase } from '../model/pokemonDatabase.entity';
 import { PokemonService } from '../pokemon.service';
@@ -11,6 +12,13 @@ export class PokemonDatabaseResolver {
   @Mutation(() => Boolean)
   public async addPokemonOfDatabase(): Promise<boolean> {
     return this.pokemonService.addPokemonDatabase();
+  }
+
+  @Mutation(() => [PokemonDatabase])
+  public async updateImageOfPokemonDatabase(): Promise<FindAndModifyWriteOpResultObject[]> {
+    const pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
+    if (!pokemons) return [];
+    return this.pokemonService.updateImageOfPokemonDatabase(pokemons);
   }
 
   @Mutation(() => [PokemonDatabase])
