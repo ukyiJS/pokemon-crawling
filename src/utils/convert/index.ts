@@ -110,4 +110,9 @@ export class Convert {
       differentForm: differentForm?.map(convert),
     }));
   };
+  public convertPokemonSpecies = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
+    const convertToKorName = (name: string): string => <string>this.convertToKorName(SpeciesNames, name);
+
+    return pokemons.map(({ species, ...pokemon }) => ({ ...pokemon, species: convertToKorName(species) }));
+  };
 }
