@@ -71,7 +71,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
       public getFormNames = (): string[] => {
         const formNames = this.$elements.map($element => {
           const text = of($element).replaceText(/[^a-z0-9♂♀]/);
-          return text.replace(/(form)e$/gi, '$1');
+          return text.replace(/(form)e$/gi, (str, $1) => $1 ?? str);
         });
         return formNames.filter(name => !/partner/gi.test(name));
       };
@@ -179,7 +179,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         const isCondition = /arrow$/.test(this.$element?.className ?? '');
         if (!isCondition) return false;
 
-        this.condition = of(this.$element).replaceText(/[()]/);
+        this.condition = of(this.$element).replaceText(/[()]|, in Gen 8/);
 
         return true;
       };
