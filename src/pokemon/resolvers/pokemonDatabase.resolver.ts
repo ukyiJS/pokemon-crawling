@@ -43,9 +43,8 @@ export class PokemonDatabaseResolver {
     return this.pokemonService.updatePokemonSpecies(this.pokemons);
   }
 
-  @Mutation(() => [PokemonDatabase])
-  public async updatePokemonAbilities(): Promise<PokemonDatabase[]> {
-    if (!this.pokemons) return [];
+  @Mutation(() => [PokemonDatabase], { nullable: true })
+  public async updatePokemonAbilities(): Promise<PokemonDatabase[] | null> {
     return this.pokemonService.updatePokemonAbilities(this.pokemons);
   }
 
