@@ -51,11 +51,11 @@ export class ImageUtil {
     if (no < 810) return 'gen7';
     return 'gen8';
   };
-  public convertImageToDownload = (images: IPokemonImage[], extension = 'png'): DataToDownload[] => {
+  public convertImageToDownload = (images: IPokemonImage[], dirName?: string, extension = 'png'): DataToDownload[] => {
     return images.reduce<DataToDownload[]>((acc, { no, image, differentForm }) => {
       const fileName = `${no}.${extension}`;
-      const dirName = this.getGenerationName(+no);
-      const downloadData = { no, url: image, fileName, dirName };
+      const _dirName = dirName || this.getGenerationName(+no);
+      const downloadData = { no, url: image, fileName, dirName: _dirName };
 
       if (!differentForm?.length) return [...acc, downloadData];
 
@@ -63,7 +63,7 @@ export class ImageUtil {
         no,
         url: image,
         fileName: fileName.replace(/(\d+)(.png)/g, `$1-${form}$2`),
-        dirName,
+        dirName: _dirName,
       }));
       return [...acc, downloadData, ...convertedDifferentForm];
     }, []);
