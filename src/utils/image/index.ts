@@ -84,24 +84,25 @@ export class ImageUtil {
   private getImageUrl = (name: string): string => {
     return `https://raw.githubusercontent.com/ukyiJS/pokemon-crawling/image/${name}.png`;
   };
-  private setImageUrl = (dirName: string, no: string, form?: string): string => {
+  private setImageUrl = (dirName: string, no: string, form?: string | null): string => {
     const fileName = form ? `${no}-${form}` : no;
     const imageUrl = this.getImageUrl(`${dirName}/${fileName}`);
     return imageUrl;
   };
-  private updatePokemonImage = (no: string): string => {
+  private updatePokemonImage = (no: string, form?: string | null): string => {
     const dirName = this.getGenerationName(+no);
-    const image = this.setImageUrl(dirName, no);
+    const image = this.setImageUrl(dirName, no, form);
     return image;
   };
   public updatePokemonImages = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
     const convertEvolvingToImage = (evolvingTo?: EvolvingToType[]): EvolvingToType[] | undefined => {
       if (!evolvingTo) return undefined;
 
-      const result = evolvingTo.map(({ no, evolvingTo, ...pokemon }) => ({
+      const result = evolvingTo.map(({ no, evolvingTo, form, ...pokemon }) => ({
         ...pokemon,
         no,
-        image: this.updatePokemonImage(no),
+        form,
+        image: this.updatePokemonImage(no, form),
         evolvingTo: convertEvolvingToImage(evolvingTo),
       }));
 
@@ -110,10 +111,11 @@ export class ImageUtil {
 
     return pokemons.map(({ no, differentForm, evolvingTo, ...pokemon }) => {
       const image = this.updatePokemonImage(no);
-      const differentFormImage = differentForm?.map(({ no, ...pokemon }) => ({
+      const differentFormImage = differentForm?.map(({ no, form, ...pokemon }) => ({
         ...pokemon,
         no,
-        image: this.updatePokemonImage(no),
+        form,
+        image: this.updatePokemonImage(no, form),
       }));
       const evolvingToImage = convertEvolvingToImage(evolvingTo);
 
