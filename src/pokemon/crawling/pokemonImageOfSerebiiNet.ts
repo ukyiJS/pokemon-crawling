@@ -32,7 +32,7 @@ export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
       await this.onPageClick(page, nextClickSelector);
     }
 
-    return pokemons;
+    return this.getUniqueObjectArray(pokemons, 'no');
   };
 
   private getPokemonOfSerebiiNet = (): ISerebiiNet => {
