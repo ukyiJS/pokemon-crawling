@@ -160,6 +160,7 @@ interface IPokemonWiki {
 
 type Query {
   getHello: String!
+  downloadPokemonImageOfPokemonWiki: Boolean!
 }
 
 type Mutation {
@@ -173,5 +174,5 @@ type Mutation {
   updatePokemonEggGroups: [PokemonDatabase!]
   updatePokemonForm: [PokemonDatabase!]
   updatePokemonEvolutionCondition: [PokemonDatabase!]
-  addPokemonOfWiki: [PokemonWiki!]
+  addPokemonWiki: [PokemonWiki!]
 }
