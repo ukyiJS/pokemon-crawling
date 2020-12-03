@@ -15,9 +15,12 @@ import { PokemonNames } from '@/pokemon/enums/pokemonName.enum';
 import { TypeNames } from '@/pokemon/enums/pokemonType.enum';
 import { SpeciesNames } from '@/pokemon/enums/speciesName.enum';
 import { PokemonDatabase } from '@/pokemon/model/pokemonDatabase.entity';
-import { ObjectLiteral } from '@/pokemon/pokemon.interface';
 import { EvolvingToType } from '@/pokemon/types/evolvingTo.type';
 import { Logger } from '@nestjs/common';
+
+interface ObjectLiteral<T> {
+  [key: string]: T;
+}
 
 export class Convert {
   private replaceText = (text: string) => text.replace(/[^a-z0-9=><,]/gi, '');
@@ -64,9 +67,9 @@ export class Convert {
   public convertPokemonName = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
     const convertToKorName = (name: string): string => <string>this.convertToKorName(PokemonNames, name);
     const convertToNameOfEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, PokemonNames, 'name');
-    const convert = ({ name, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
+    const convert = ({ name: { kor, eng }, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
       ...pokemon,
-      name: convertToKorName(name),
+      name: { eng, kor: convertToKorName(kor) },
     });
 
     return pokemons.map(({ evolvingTo, differentForm, ...pokemon }) => ({
