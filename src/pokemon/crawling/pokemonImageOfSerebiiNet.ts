@@ -25,7 +25,7 @@ export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
       pokemons = [...pokemons, pokemon];
 
       curser = +pokemon.no;
-      Logger.log(`${pokemon.no} : ${pokemon.name}`, 'Result');
+      Logger.log(`${pokemon.no} : ${pokemon.name.kor}`, 'Result');
       updateProgressBar((curser / loopCount) * 100);
 
       if (curser >= loopCount) break;
