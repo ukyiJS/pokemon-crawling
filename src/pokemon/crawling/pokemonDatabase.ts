@@ -277,7 +277,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
 
         const pokemon = {
           no: of($no).getText(),
-          name: of($main).getName(),
+          name: { eng: of($main).getName(), kor: '' },
           image: of($image).getImage(),
           types: of($types).getTypes(),
           species: of($species).getText(),
@@ -306,7 +306,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
 
     const [pokemon, ...pokemons] = $pokemons.map($pokemon => of($pokemon).getPokemon());
     const [formName, ...formNames] = of($formNames).getFormNames();
-    const isForm = formName.replace(/[^a-z]/gi, '') === pokemon.name.replace(/[^a-z]/gi, '') ? null : true;
+    const isForm = formName.replace(/[^a-z]/gi, '') === pokemon.name.eng.replace(/[^a-z]/gi, '') ? null : true;
     const form = isForm && formName;
 
     const differentForm = pokemons.map((differentForm, i) => {
