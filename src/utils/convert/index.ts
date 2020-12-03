@@ -56,7 +56,8 @@ export class Convert {
     const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, enums, key);
     const convert = (to: EvolvingToType) => {
       const name = to[key];
-      return { ...to, [key]: name && convertToKorName(name) };
+      if (key === 'name') return { ...to, name: { ...to.name, kor: name && convertToKorName(<string>name) } };
+      return { ...to, [key]: name && convertToKorName(<string | string[]>name) };
     };
 
     const result = <EvolvingToType[]>evolvingTo?.map(convert);
