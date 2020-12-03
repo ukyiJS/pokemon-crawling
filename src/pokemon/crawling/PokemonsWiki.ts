@@ -28,7 +28,7 @@ export class CrawlingPokemonsWiki extends CrawlingUtil {
       if (curser >= loopCount) break;
       await this.onPageClick(page, nextClickSelector);
     }
-    return this.getUniqueObjectArray<IPokemonWiki>(pokemons, 'no');
+    return this.getUniqueObjectArray(pokemons, 'no');
   };
 
   private getPokemons = (): IPokemonWiki => {
