@@ -56,7 +56,8 @@ export class Convert {
     const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, enums, key);
     const convert = (to: EvolvingToType) => {
       const name = to[key];
-      if (key === 'name') return { ...to, name: { ...to.name, kor: name && convertToKorName(<string>name) } };
+      if (key === 'name') return { ...to, name: { ...to.name, kor: convertToKorName(to[key].eng) } };
+
       return { ...to, [key]: name && convertToKorName(<string | string[]>name) };
     };
 
@@ -66,11 +67,13 @@ export class Convert {
     return result.map(to => ({ ...to, evolvingTo: convertToKorNameByEvolvingTo(to.evolvingTo) }));
   };
   public convertPokemonName = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
-    const convertToKorName = (name: string): string => <string>this.convertToKorName(PokemonNames, name);
+    const convertToKorName = (name: string): string => {
+      return <string>this.convertToKorName(PokemonNames, name);
+    };
     const convertToNameOfEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, PokemonNames, 'name');
-    const convert = ({ name: { kor, eng }, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
+    const convert = ({ name: { eng }, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
       ...pokemon,
-      name: { eng, kor: convertToKorName(kor) },
+      name: { eng, kor: convertToKorName(eng) },
     });
 
     return pokemons.map(({ evolvingTo, differentForm, ...pokemon }) => ({
