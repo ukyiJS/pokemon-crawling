@@ -164,6 +164,7 @@ type Query {
   getHello: String!
   downloadPokemonImageOfPokemonWiki: Boolean!
   downloadPokemonImageOfSerebiiNet: Boolean!
+  downloadPokemonIconImageOfSerebiiNet: Boolean!
 }
 
 type Mutation {
