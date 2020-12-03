@@ -25,7 +25,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
       pokemons = [...pokemons, pokemon];
 
       curser = +pokemon?.no;
-      Logger.log(`${pokemon.no} : ${pokemon.name}`, 'Crawling');
+      Logger.log(`${pokemon.no} : ${pokemon.name.eng}`, 'Crawling');
       updateProgressBar(curser);
 
       if (curser >= loopCount) break;
