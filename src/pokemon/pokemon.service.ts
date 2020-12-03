@@ -1,4 +1,4 @@
-import { getJson, ImageUtil, Puppeteer } from '@/utils';
+import { ImageUtil, Puppeteer } from '@/utils';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
@@ -66,9 +66,9 @@ export class PokemonService extends Puppeteer {
   public async downloadPokemonImageOfSerebiiNet(pokemonImages: IPokemonImage[] | null): Promise<boolean> {
     if (!pokemonImages) return false;
 
-    const { convertImageToDownload, mutilDownloads } = new ImageUtil();
+    const { convertImageToDownload, multiDownloads } = new ImageUtil();
     const imagesToDownload = convertImageToDownload(pokemonImages, 'serebiiNet', true);
-    await mutilDownloads(imagesToDownload);
+    await multiDownloads(imagesToDownload);
 
     return true;
   }
@@ -76,9 +76,9 @@ export class PokemonService extends Puppeteer {
   public async downloadPokemonIconImageOfSerebiiNet(pokemonImages: IPokemonImage[] | null): Promise<boolean> {
     if (!pokemonImages) return false;
 
-    const { convertImageToDownload, mutilDownloads } = new ImageUtil();
+    const { convertImageToDownload, multiDownloads } = new ImageUtil();
     const imagesToDownload = convertImageToDownload(pokemonImages, 'serebiiNet/icon');
-    await mutilDownloads(imagesToDownload);
+    await multiDownloads(imagesToDownload);
 
     return true;
   }
@@ -93,9 +93,9 @@ export class PokemonService extends Puppeteer {
       form,
       differentForm: differentForm?.map(({ no, name, image, form }) => ({ no, name, image, form })),
     }));
-    const { convertImageToDownload, mutilDownloads } = new ImageUtil();
+    const { convertImageToDownload, multiDownloads } = new ImageUtil();
     const imagesToDownload = convertImageToDownload(pokemonImages, 'wiki', true);
-    await mutilDownloads(imagesToDownload);
+    await multiDownloads(imagesToDownload);
 
     return true;
   }

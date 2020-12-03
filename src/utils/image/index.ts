@@ -73,7 +73,7 @@ export class ImageUtil {
       return [...acc, downloadData, ...convertedDifferentForm];
     }, []);
   };
-  public mutilDownloads = async (imagesToDownload: DataToDownload[]): Promise<void> => {
+  public multiDownloads = async (imagesToDownload: DataToDownload[]): Promise<void> => {
     const { updateProgressBar } = new ProgressBar(imagesToDownload.length);
 
     for (const [index, { url, fileName, dirName }] of imagesToDownload.entries()) {
