@@ -2,7 +2,7 @@ import { WriteJsonInterceptor } from '@/common';
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { IPokemonDatabase } from './interfaces/pokemonDatabase.interface';
 import { IPokemonWiki } from './interfaces/pokemonWiki.interface';
-import { IPokemonImage } from './pokemon.interface';
+import { SerebiiNet } from './model/serebiiNet.entity';
 import { PokemonService } from './pokemon.service';
 
 @UseInterceptors(WriteJsonInterceptor)
@@ -21,12 +21,12 @@ export class PokemonController {
   }
 
   @Get('pokemonImageOfSerebiiNet')
-  public getPokemonImageSerebiiNet(): Promise<IPokemonImage[]> {
+  public getPokemonImageSerebiiNet(): Promise<SerebiiNet[]> {
     return this.pokemonService.getPokemonImageOfSerebiiNet();
   }
 
   @Get('pokemonIconImageOfSerebiiNet')
-  public getPokemonIconImageSerebiiNet(): Promise<IPokemonImage[]> {
+  public getPokemonIconImageSerebiiNet(): Promise<SerebiiNet[]> {
     return this.pokemonService.getPokemonIconImagOfSerebiiNet();
   }
 }
