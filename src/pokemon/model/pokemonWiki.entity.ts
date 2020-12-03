@@ -7,6 +7,7 @@ import { IPokemon } from '../interfaces/pokemon.interface';
 import { IPokemonWiki } from '../interfaces/pokemonWiki.interface';
 import { ColorType } from '../types/color.type';
 import { GenderType } from '../types/gender.type';
+import { LanguageType } from '../types/language.type';
 import { PokemonWikiType } from '../types/pokemonWiki.type';
 
 @Entity()
@@ -20,7 +21,7 @@ export class PokemonWiki implements IDatabaseColumn, IPokemon, IPokemonWiki {
   public no: string;
   @Expose()
   @Column()
-  public name: string;
+  public name: LanguageType;
   @Expose()
   @Column()
   public image: string;
