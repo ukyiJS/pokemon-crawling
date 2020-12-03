@@ -1,3 +1,4 @@
+import { LOOP_COUNT } from '@/env';
 import { CrawlingUtil, ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
@@ -10,11 +11,11 @@ import { TypeDefenseType } from '../types/typeDefense.type';
 
 export class CrawlingPokemonDatabase extends CrawlingUtil {
   public crawling = async (page: Page): Promise<IPokemonDatabase[]> => {
-    let pokemons = <IPokemonDatabase[]>[];
     let curser = 0;
-    const loopCount = 893;
+    const loopCount = +(LOOP_COUNT ?? 893);
     const { updateProgressBar } = new ProgressBar(loopCount);
 
+    let pokemons = <IPokemonDatabase[]>[];
     const mainSelector = '#main';
     const tabSelector = '.tabset-basics > .tabs-panel-list > .tabs-panel';
     const nextClickSelector = '.entity-nav-next';
@@ -232,19 +233,17 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
       };
       public getEvolutionPokemon = (): EvolvingToType => {
         const $element = this.$element!;
+        const [$no, $name, $typeOrForm, isForm] = of($element.querySelector('.infocard-lg-data'))
+          .getChildren()
+          .filter(({ tagName }) => tagName !== 'BR');
 
-        const $image = $element.querySelector('.infocard-lg-img .img-sprite');
-        const $data = $element.querySelector('.infocard-lg-data');
+        const no = of($no).replaceText(/\D/);
+        const name = { eng: of($name).getText(), kor: '' };
+        const image = of($element.querySelector('.infocard-lg-img .img-sprite')).getSrc();
+        const types = of($typeOrForm.querySelectorAll('a')).getTexts();
+        const form = isForm ? of($typeOrForm).getFormName() : null;
 
-        const no = of($element.querySelector('.infocard-lg-data > small')).replaceText(/\D/);
-        const name = of($data?.querySelector('.ent-name')).getText();
-        const image = of($image).getSrc();
-        const types = of($element.querySelectorAll('small:last-child > a')).getTexts();
-        const isForm = of($data).getChildren().length > 5;
-        const form = isForm ? of($data?.querySelector('small:nth-of-type(2)')).getFormName() : null;
-        const { condition } = this;
-
-        return { no, name: { eng: name, kor: '' }, image, types, form, condition, evolvingTo: [] };
+        return { no, name, image, types, form, condition: this.condition };
       };
       public getEvolvingTo = (): EvolvingToType[] => {
         return this.$elements.map($element => {
@@ -303,7 +302,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
     const $tabsPanel = $main.querySelectorAll('.tabset-basics > .tabs-panel-list > .tabs-panel');
     const $pokemons = of($tabsPanel).getPokemonElements();
     const $formNames = $main.querySelectorAll('.tabset-basics > .tabs-tab-list > .tabs-tab');
-    const $evolvingTo = $main.querySelectorAll('div.infocard-list-evo');
+    const $evolvingTo = document.querySelectorAll('#main > div.infocard-list-evo');
 
     const [pokemon, ...pokemons] = $pokemons.map($pokemon => of($pokemon).getPokemon());
     const [formName, ...formNames] = of($formNames).getFormNames();

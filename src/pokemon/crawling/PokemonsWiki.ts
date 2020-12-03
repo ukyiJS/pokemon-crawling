@@ -1,3 +1,4 @@
+import { LOOP_COUNT } from '@/env';
 import { CrawlingUtil, ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
@@ -9,7 +10,7 @@ import { LanguageType } from '../types/language.type';
 export class CrawlingPokemonsWiki extends CrawlingUtil {
   public crawling = async (page: Page): Promise<IPokemonWiki[]> => {
     let curser = 0;
-    const loopCount = 893;
+    const loopCount = +(LOOP_COUNT ?? 893);
     const { updateProgressBar } = new ProgressBar(loopCount);
 
     let pokemons = <IPokemonWiki[]>[];

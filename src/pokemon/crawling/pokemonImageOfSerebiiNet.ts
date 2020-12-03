@@ -1,3 +1,4 @@
+import { LOOP_COUNT } from '@/env';
 import { CrawlingUtil, ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
@@ -12,7 +13,7 @@ type ImageAndForm = Omit<Omit<ISerebiiNet, 'no'>, 'name'>;
 export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
   public crawling = async (page: Page): Promise<ISerebiiNet[]> => {
     let curser = 0;
-    const loopCount = 893;
+    const loopCount = +(LOOP_COUNT ?? 893);
     const { updateProgressBar } = new ProgressBar(loopCount);
 
     let pokemons = <SerebiiNet[]>[];
