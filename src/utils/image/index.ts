@@ -22,10 +22,16 @@ export class ImageUtil {
       Logger.log(downloadDir, 'CreateDirectory');
     }
     const dir = join(process.cwd(), dirName);
-    if (!existsSync(dir)) {
+
+    dirName.split('/').reduce((acc, dir) => {
+      const depthDir = `${acc}/${dirName}`;
+      if (existsSync(dir)) return depthDir;
+
       mkdirSync(dir);
-      Logger.log(dir, 'CreateDirectory');
-    }
+      Logger.log(downloadDir, 'CreateDirectory');
+
+      return acc ? depthDir : dir;
+    }, '');
 
     let download = <ReadStream>{};
     try {
@@ -53,10 +59,15 @@ export class ImageUtil {
     if (no < 810) return 'gen7';
     return 'gen8';
   };
-  public convertImageToDownload = (images: IPokemonImage[], dirName?: string, extension = 'png'): DataToDownload[] => {
+  public convertImageToDownload = (
+    images: IPokemonImage[],
+    dirName: string,
+    isGeneration = false,
+    extension = 'png',
+  ): DataToDownload[] => {
     return images.reduce<DataToDownload[]>((acc, { no, image, differentForm }) => {
       const fileName = `${no}.${extension}`;
-      const _dirName = dirName || this.getGenerationName(+no);
+      const _dirName = isGeneration ? this.getGenerationName(+no) : dirName;
       const downloadData = { no, url: image, fileName, dirName: _dirName };
 
       if (!differentForm?.length) return [...acc, downloadData];
