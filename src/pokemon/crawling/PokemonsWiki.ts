@@ -23,7 +23,7 @@ export class CrawlingPokemonsWiki extends CrawlingUtil {
       pokemons = [...pokemons, pokemon];
 
       curser = +pokemon.no;
-      Logger.log(`${pokemon.no} : ${pokemon.name}`, 'Result');
+      Logger.log(`${pokemon.no} : ${pokemon.name.kor}`, 'Result');
       updateProgressBar(curser);
 
       if (curser >= loopCount) break;
