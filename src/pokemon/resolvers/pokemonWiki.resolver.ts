@@ -1,5 +1,5 @@
 import { getJson } from '@/utils';
-import { Mutation, Resolver } from '@nestjs/graphql';
+import { Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PokemonWiki } from '../model/pokemonWiki.entity';
 import { PokemonService } from '../pokemon.service';
 
@@ -11,7 +11,12 @@ export class PokemonWikiResolver {
   }
 
   @Mutation(() => [PokemonWiki], { nullable: true })
-  public async addPokemonOfWiki(): Promise<PokemonWiki[] | null> {
+  public async addPokemonWiki(): Promise<PokemonWiki[] | null> {
     return this.pokemonService.addPokemonWiki(this.pokemons);
+  }
+
+  @Query(() => Boolean)
+  public downloadPokemonImageOfPokemonWiki(): Promise<boolean> {
+    return this.pokemonService.downloadPokemonImageOfWiki(this.pokemons);
   }
 }
