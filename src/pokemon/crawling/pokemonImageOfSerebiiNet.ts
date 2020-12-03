@@ -1,37 +1,41 @@
-import { IDifferentFormImage, IPokemonImage } from '@/pokemon/pokemon.interface';
 import { CrawlingUtil, ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
+import { ISerebiiNet } from '../interfaces/serebiiNet.interface';
+import { SerebiiNet } from '../model/serebiiNet.entity';
+import { LanguageType } from '../types/language.type';
+import { SerebiiNetType } from '../types/serebiiNet.type';
 
-type Column = [Element, Element[], Element, Element[], IDifferentFormImage[], IDifferentFormImage[]];
+type Column = [Element, Element[], Element, Element[], SerebiiNetType[], SerebiiNetType[]];
+type ImageAndForm = Omit<Omit<ISerebiiNet, 'no'>, 'name'>;
 
 export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
-  public crawling = async (page: Page): Promise<IPokemonImage[]> => {
+  public crawling = async (page: Page): Promise<ISerebiiNet[]> => {
     let curser = 0;
     const loopCount = 893;
     const { updateProgressBar } = new ProgressBar(loopCount);
 
-    let pokemonImages = <IPokemonImage[]>[];
+    let pokemons = <SerebiiNet[]>[];
     const nextClickSelector = 'main > table:last-child > tbody > tr > td:last-child a';
 
     while (true) {
       await page.waitForSelector('#content > main > div > table.dextable > tbody > tr');
 
-      const pokemonImage = await page.evaluate(this.getPokemonImages);
-      pokemonImages = [...pokemonImages, pokemonImage];
+      const pokemon = await page.evaluate(this.getPokemonOfSerebiiNet);
+      pokemons = [...pokemons, pokemon];
 
-      curser = +pokemonImage.no;
-      Logger.log(`${pokemonImage.no} : ${pokemonImage.name}`, 'Result');
+      curser = +pokemon.no;
+      Logger.log(`${pokemon.no} : ${pokemon.name}`, 'Result');
       updateProgressBar((curser / loopCount) * 100);
 
       if (curser >= loopCount) break;
       await this.onPageClick(page, nextClickSelector);
     }
 
-    return pokemonImages;
+    return pokemons;
   };
 
-  private getPokemonImages = (): IPokemonImage => {
+  private getPokemonOfSerebiiNet = (): ISerebiiNet => {
     const { of, getExceptionalPokemon } = new (class {
       private $element: Element | Element[] | null;
 
@@ -52,8 +56,8 @@ export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
         const $gigantamaxTable = $table.find(e => /^gigantamax/gi.test(e.querySelector('td')?.textContent ?? ''));
 
         const $differentForms = of($differentFormTable).getDifferentFormElements();
-        const $megaEvolution = of($megaEvolutionTable).getDifferentEvolution();
-        const $gigantamax = of($gigantamaxTable).getDifferentEvolution();
+        const $megaEvolution = <SerebiiNetType[]>of($megaEvolutionTable).getDifferentEvolution();
+        const $gigantamax = <SerebiiNetType[]>of($gigantamaxTable).getDifferentEvolution();
 
         return [$no, $name, $image, $differentForms, $megaEvolution, $gigantamax];
       };
@@ -70,7 +74,7 @@ export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
         return this.getText().replace(new RegExp(searchValue, 'gi'), replaceValue);
       };
       private getChildren = () => Array.from(this.getElement()?.children ?? []);
-      private getImageAndForm = (): IDifferentFormImage | null => {
+      private getImageAndForm = (): ImageAndForm | null => {
         const $image = this.getElement()?.querySelector('img');
         if (!$image) return null;
 
@@ -85,8 +89,8 @@ export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
         })();
         return { image, form };
       };
-      private getImageAndForms = (): IDifferentFormImage[] => {
-        return this.getElements().reduce<IDifferentFormImage[]>((acc, $element) => {
+      private getImageAndForms = (): ImageAndForm[] => {
+        return this.getElements().reduce<ImageAndForm[]>((acc, $element) => {
           const images = of($element).getImageAndForm();
           return images ? [...acc, images] : acc;
         }, []);
@@ -97,7 +101,7 @@ export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
 
         return Array.from($differentForm.querySelectorAll('tr:last-child tr:nth-child(2) > td'));
       };
-      private getDifferentEvolution = (): IDifferentFormImage[] => {
+      private getDifferentEvolution = (): ImageAndForm[] => {
         const $differentEvolution = this.getElement();
         if (!$differentEvolution) return [];
 
@@ -120,36 +124,41 @@ export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
         const href = (<HTMLAnchorElement>this.getElement())?.href;
         return (regExp ? href?.match(regExp)?.[1] : href) ?? '';
       };
-      public getDifferentForm = (): IPokemonImage => {
+      public getDifferentForm = (): ISerebiiNet => {
         const [$differentForm, ...$differentForms] = this.getElements();
         const { image, form } = of($differentForm).getImageAndForm()!;
 
         const differentForm = of($differentForms).getImageAndForms();
 
-        const pokemon = <IPokemonImage>{ image, form, differentForm };
+        const pokemon = <ISerebiiNet>{ image, form, differentForm };
 
-        if (/^originalcap/gi.test(form)) {
+        if (/^originalcap/gi.test(form ?? '')) {
           const basicImage = document.querySelector<HTMLImageElement>('#sprite-regular')?.src ?? '';
-          return { ...pokemon, image: basicImage, form: null, differentForm: [{ image, form }, ...differentForm] };
+          return {
+            ...pokemon,
+            image: basicImage,
+            form: null,
+            differentForm: <SerebiiNetType[]>[...differentForm, { image, form }],
+          };
         }
 
         return pokemon;
       };
-      public getExceptionalPokemon = (engName: string): { no: string; name: string } | null => {
+      public getExceptionalPokemon = (eng: string): { no: string; name: LanguageType } | null => {
         const exceptionalPokemons = [
-          { engName: 'Kubfu', korName: '치고마' },
-          { engName: 'Urshifu', korName: '우라오스' },
-          { engName: 'Zarude', korName: '자루도' },
-          { engName: 'Regieleki', korName: '레지에레키' },
-          { engName: 'Regidrago', korName: '레지드래고' },
-          { engName: 'Glastrier', korName: '블리자포스' },
-          { engName: 'Spectrier', korName: '레이스포스' },
+          { eng: 'Kubfu', kor: '치고마' },
+          { eng: 'Urshifu', kor: '우라오스' },
+          { eng: 'Zarude', kor: '자루도' },
+          { eng: 'Regieleki', kor: '레지에레키' },
+          { eng: 'Regidrago', kor: '레지드래고' },
+          { eng: 'Glastrier', kor: '블리자포스' },
+          { eng: 'Spectrier', kor: '레이스포스' },
         ];
 
-        const exceptionalPokemonIndex = exceptionalPokemons.findIndex(p => p.engName === engName);
+        const exceptionalPokemonIndex = exceptionalPokemons.findIndex(p => p.eng === eng);
         if (exceptionalPokemonIndex < 0) return null;
 
-        return { no: `${891 + exceptionalPokemonIndex}`, name: exceptionalPokemons[exceptionalPokemonIndex].korName };
+        return { no: `${891 + exceptionalPokemonIndex}`, name: exceptionalPokemons[exceptionalPokemonIndex] };
       };
     })();
 
@@ -157,27 +166,27 @@ export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
       document.querySelector('#content > main > div > table.dextable > tbody > tr:nth-of-type(2)'),
     ).getColumn();
 
-    const [engName, korName] = of($name).getTexts();
+    const [eng, kor] = of($name).getTexts();
     const no = of($no).replaceText(/#/);
-    const pokemon = { no, name: korName, engName };
+    const pokemon = { no, name: { eng, kor } };
     const megaEvolution = $megaEvolution.map(mega => ({ ...pokemon, ...mega }));
     const dynamax = $dynamax.map(dynamax => ({ ...pokemon, ...dynamax }));
 
-    let pokemonImages = <IPokemonImage & { differentForm: IDifferentFormImage[] }>{
+    let pokemons = <Required<ISerebiiNet>>{
       ...pokemon,
       image: of($image).getSrc(),
       form: null,
       differentForm: megaEvolution.concat(dynamax),
     };
 
-    const exceptionalPokemon = getExceptionalPokemon(engName);
-    if (exceptionalPokemon) pokemonImages = { ...pokemonImages, ...exceptionalPokemon };
+    const exceptionalPokemon = getExceptionalPokemon(eng);
+    if (exceptionalPokemon) pokemons = { ...pokemons, ...exceptionalPokemon };
 
     if ($differentForm.length) {
       const { image, form, differentForm: _differentForm } = of($differentForm).getDifferentForm();
-      const differentForm = pokemonImages.differentForm.concat(_differentForm!.map(d => ({ ...pokemon, ...d })));
-      return { ...pokemonImages, image, form, differentForm };
+      const differentForm = pokemons.differentForm.concat(_differentForm!.map(d => ({ ...pokemon, ...d })));
+      return { ...pokemons, image, form, differentForm };
     }
-    return pokemonImages;
+    return pokemons;
   };
 }
