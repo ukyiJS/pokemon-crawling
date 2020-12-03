@@ -6,7 +6,7 @@ import { LanguageType } from '../types/language.type';
 export abstract class IPokemon {
   @Field()
   public no: string;
-  @Field()
+  @Field(() => LanguageType)
   public name: LanguageType;
   @Field()
   public image: string;
