@@ -68,7 +68,7 @@ export class PokemonService extends Puppeteer {
     if (!pokemonImages) return false;
 
     const { convertImageToDownload, mutilDownloads } = new ImageUtil();
-    const imagesToDownload = convertImageToDownload(pokemonImages, 'serebiiNet');
+    const imagesToDownload = convertImageToDownload(pokemonImages, 'serebiiNet', true);
     await mutilDownloads(imagesToDownload);
 
     return true;
@@ -96,7 +96,7 @@ export class PokemonService extends Puppeteer {
       differentForm: differentForm?.map(({ no, name, image, form }) => ({ no, name, image, form })),
     }));
     const { convertImageToDownload, mutilDownloads } = new ImageUtil();
-    const imagesToDownload = convertImageToDownload(pokemonImages, 'wiki');
+    const imagesToDownload = convertImageToDownload(pokemonImages, 'wiki', true);
     await mutilDownloads(imagesToDownload);
 
     return true;
