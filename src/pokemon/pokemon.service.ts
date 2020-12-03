@@ -85,6 +85,23 @@ export class PokemonService extends Puppeteer {
     return true;
   }
 
+  public async downloadPokemonImageOfWiki(pokemons: PokemonWiki[] | null): Promise<boolean> {
+    if (!pokemons) return false;
+
+    const pokemonImages = <IPokemonImage[]>pokemons.map(({ no, name, image, form, differentForm }) => ({
+      no,
+      name,
+      image,
+      form,
+      differentForm: differentForm?.map(({ no, name, image, form }) => ({ no, name, image, form })),
+    }));
+    const { convertImageToDownload, mutilDownloads } = new ImageUtil();
+    const imagesToDownload = convertImageToDownload(pokemonImages, 'wiki');
+    await mutilDownloads(imagesToDownload);
+
+    return true;
+  }
+
   public async updateImageOfPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
