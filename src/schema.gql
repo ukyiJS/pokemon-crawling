@@ -7,6 +7,11 @@ type GenderType {
   ratio: Float!
 }
 
+type LanguageType {
+  kor: String!
+  eng: String!
+}
+
 type EvolvingToType {
   no: String!
   name: String!
@@ -35,7 +40,7 @@ type TypeDefenseType {
 
 type PokemonDatabaseType {
   no: String!
-  name: String!
+  name: LanguageType!
   image: String!
   types: [String!]!
   species: String!
@@ -60,7 +65,7 @@ type PokemonDatabase implements IDatabaseColumn & IPokemon & IPokemonDatabase {
   createdAt: Date!
   searchCount: Int!
   no: String!
-  name: String!
+  name: LanguageType!
   image: String!
   types: [String!]!
   species: String!
@@ -84,14 +89,12 @@ interface IDatabaseColumn {
   searchCount: Int!
 }
 
-"""
-Date custom scalar type
-"""
+"""Date custom scalar type"""
 scalar Date
 
 interface IPokemon {
   no: String!
-  name: String!
+  name: LanguageType!
   image: String!
   types: [String!]!
   species: String!
@@ -112,6 +115,13 @@ interface IPokemonDatabase {
   differentForm: [PokemonDatabaseType!]
 }
 
+type SerebiiNetType {
+  no: String!
+  name: LanguageType!
+  image: String!
+  form: String
+}
+
 type ColorType {
   name: String!
   code: String!
@@ -119,7 +129,7 @@ type ColorType {
 
 type PokemonWikiType {
   no: String!
-  name: String!
+  name: LanguageType!
   image: String!
   types: [String!]!
   species: String!
@@ -140,7 +150,7 @@ type PokemonWiki implements IDatabaseColumn & IPokemon & IPokemonWiki {
   createdAt: Date!
   searchCount: Int!
   no: String!
-  name: String!
+  name: LanguageType!
   image: String!
   types: [String!]!
   species: String!
