@@ -31,7 +31,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
       if (curser >= loopCount) break;
       await this.onPageClick(page, nextClickSelector);
     }
-    return pokemons;
+    return this.getUniqueObjectArray(pokemons, 'no');
   };
 
   private getPokemon = ($main: Element): IPokemonDatabase => {
