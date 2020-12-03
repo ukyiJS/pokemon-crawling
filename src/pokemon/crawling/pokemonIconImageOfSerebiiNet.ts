@@ -1,9 +1,9 @@
-import { IPokemonImage } from '@/pokemon/pokemon.interface';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
+import { SerebiiNet } from '../model/serebiiNet.entity';
 
 export class CrawlingPokemonIconImageOfSerebiiNet {
-  public crawling = async (page: Page): Promise<IPokemonImage[]> => {
-    return page.evaluate((): IPokemonImage[] => {
+  public crawling = async (page: Page): Promise<SerebiiNet[]> => {
+    return page.evaluate((): SerebiiNet[] => {
       const { of } = new (class {
         private $element: Element | null;
         private $elements: Element[];
@@ -43,7 +43,7 @@ export class CrawlingPokemonIconImageOfSerebiiNet {
         .map(([$no, $image, $name]) => {
           const no = of($no).replaceText(/\D/);
           const image = of($image).getSrc();
-          const name = of($name).getText();
+          const name = { eng: of($name).getText(), kor: '' };
           return { no, name, image };
         });
     });
