@@ -1,11 +1,12 @@
 import { Field, ObjectType } from '@nestjs/graphql';
+import { LanguageType } from './language.type';
 
 @ObjectType()
 export abstract class EvolvingToType {
   @Field()
   public no: string;
-  @Field()
-  public name: string;
+  @Field(() => LanguageType)
+  public name: LanguageType;
   @Field()
   public image: string;
   @Field(() => [String])
