@@ -8,6 +8,7 @@ import { IPokemonDatabase } from '../interfaces/pokemonDatabase.interface';
 import { EggCycleType } from '../types/eggCycle.type';
 import { EvolvingToType } from '../types/evolvingTo.type';
 import { GenderType } from '../types/gender.type';
+import { LanguageType } from '../types/language.type';
 import { PokemonDatabaseType } from '../types/pokemonDatabase.type';
 import { StatType } from '../types/stat.type';
 import { TypeDefenseType } from '../types/typeDefense.type';
@@ -23,7 +24,7 @@ export class PokemonDatabase implements IDatabaseColumn, IPokemon, IPokemonDatab
   public no: string;
   @Expose()
   @Column()
-  public name: string;
+  public name: LanguageType;
   @Expose()
   @Column()
   public image: string;
