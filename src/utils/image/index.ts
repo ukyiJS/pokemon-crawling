@@ -1,5 +1,5 @@
 import { PokemonDatabase } from '@/pokemon/model/pokemonDatabase.entity';
-import { IPokemonImage } from '@/pokemon/pokemon.interface';
+import { SerebiiNet } from '@/pokemon/model/serebiiNet.entity';
 import { EvolvingToType } from '@/pokemon/types/evolvingTo.type';
 import { Logger } from '@nestjs/common';
 import axios, { AxiosPromise } from 'axios';
@@ -52,7 +52,7 @@ export class ImageUtil {
     return 'gen8';
   };
   public convertImageToDownload = (
-    images: IPokemonImage[],
+    images: SerebiiNet[],
     dirName: string,
     isGeneration = false,
     extension = 'png',
@@ -67,7 +67,7 @@ export class ImageUtil {
       const convertedDifferentForm = differentForm.map(({ image, form }) => ({
         no,
         url: image,
-        fileName: fileName.replace(/(\d+)(.png)/g, `$1-${form.replace(/\s/g, '')}$2`),
+        fileName: fileName.replace(/(\d+)(.png)/g, `$1-${form!.replace(/\s/g, '')}$2`),
         dirName: _dirName,
       }));
       return [...acc, downloadData, ...convertedDifferentForm];
