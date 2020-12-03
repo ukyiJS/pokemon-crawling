@@ -10,7 +10,7 @@ import { IPokemonDatabase } from './interfaces/pokemonDatabase.interface';
 import { IPokemonWiki } from './interfaces/pokemonWiki.interface';
 import { PokemonDatabase } from './model/pokemonDatabase.entity';
 import { PokemonWiki } from './model/pokemonWiki.entity';
-import { IPokemonImage } from './pokemon.interface';
+import { SerebiiNet } from './model/serebiiNet.entity';
 
 @Injectable()
 export class PokemonService extends Puppeteer {
@@ -43,7 +43,7 @@ export class PokemonService extends Puppeteer {
     return pokemons;
   }
 
-  public async getPokemonIconImagOfSerebiiNet(): Promise<IPokemonImage[]> {
+  public async getPokemonIconImagOfSerebiiNet(): Promise<SerebiiNet[]> {
     const { browser, page } = await this.initPuppeteer('https://serebii.net/pokemon/nationalpokedex.shtml');
     const { crawling } = new CrawlingPokemonIconImageOfSerebiiNet();
 
@@ -53,7 +53,7 @@ export class PokemonService extends Puppeteer {
     return pokemonIconImages;
   }
 
-  public async getPokemonImageOfSerebiiNet(): Promise<IPokemonImage[]> {
+  public async getPokemonImageOfSerebiiNet(): Promise<SerebiiNet[]> {
     const { browser, page } = await this.initPuppeteer('https://serebii.net/pokemon/bulbasaur');
     const { crawling } = new CrawlingPokemonImageOfSerebiiNet();
 
@@ -63,7 +63,7 @@ export class PokemonService extends Puppeteer {
     return pokemonImages;
   }
 
-  public async downloadPokemonImageOfSerebiiNet(pokemonImages: IPokemonImage[] | null): Promise<boolean> {
+  public async downloadPokemonImageOfSerebiiNet(pokemonImages: SerebiiNet[] | null): Promise<boolean> {
     if (!pokemonImages) return false;
 
     const { convertImageToDownload, multiDownloads } = new ImageUtil();
@@ -73,7 +73,7 @@ export class PokemonService extends Puppeteer {
     return true;
   }
 
-  public async downloadPokemonIconImageOfSerebiiNet(pokemonImages: IPokemonImage[] | null): Promise<boolean> {
+  public async downloadPokemonIconImageOfSerebiiNet(pokemonImages: SerebiiNet[] | null): Promise<boolean> {
     if (!pokemonImages) return false;
 
     const { convertImageToDownload, multiDownloads } = new ImageUtil();
@@ -86,7 +86,7 @@ export class PokemonService extends Puppeteer {
   public async downloadPokemonImageOfWiki(pokemons: PokemonWiki[] | null): Promise<boolean> {
     if (!pokemons) return false;
 
-    const pokemonImages = <IPokemonImage[]>pokemons.map(({ no, name, image, form, differentForm }) => ({
+    const pokemonImages = <SerebiiNet[]>pokemons.map(({ no, name, image, form, differentForm }) => ({
       no,
       name,
       image,
@@ -117,7 +117,7 @@ export class PokemonService extends Puppeteer {
   public async addPokemonWiki(pokemons: PokemonWiki[] | null): Promise<PokemonWiki[] | null> {
     if (!pokemons) return null;
 
-    const savedPokemons = pokemons.map(pokemon => this.pokemonDatabaseRepository.save(new PokemonWiki(pokemon)));
+    const savedPokemons = pokemons.map(pokemon => this.pokemonWiKiRepository.save(new PokemonWiki(pokemon)));
     return Promise.all(savedPokemons);
   }
 
