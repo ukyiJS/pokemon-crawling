@@ -16,22 +16,14 @@ export type DataToDownload = {
 
 export class ImageUtil {
   public download = async (url: string, fileName: string, dirName = 'download'): Promise<void> => {
-    const downloadDir = join(process.cwd(), 'download');
-    if (!existsSync(downloadDir)) {
-      mkdirSync(downloadDir);
-      Logger.log(downloadDir, 'CreateDirectory');
-    }
-    const dir = join(process.cwd(), dirName);
-
-    dirName.split('/').reduce((acc, dir) => {
-      const depthDir = `${acc}/${dir}`;
-      if (existsSync(dir)) return acc ? depthDir : dir;
-
+    const dir = dirName.split('/').reduce((acc, dirName) => {
+      const dir = join(acc, dirName);
+      if (existsSync(dir)) return dir;
       mkdirSync(dir);
-      Logger.log(downloadDir, 'CreateDirectory');
+      Logger.log(dir, 'CreateDirectory');
 
-      return acc ? depthDir : dir;
-    }, '');
+      return dir;
+    }, join(process.cwd()));
 
     let download = <ReadStream>{};
     try {
