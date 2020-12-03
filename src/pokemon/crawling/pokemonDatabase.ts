@@ -309,13 +309,14 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
     const isForm = formName.replace(/[^a-z]/gi, '') === pokemon.name.eng.replace(/[^a-z]/gi, '') ? null : true;
     const form = isForm && formName;
 
-    const differentForm = pokemons.map((differentForm, i) => {
+    let differentForm = <IPokemonDatabase[] | undefined>pokemons.map((differentForm, i) => {
       const form = formNames[i];
       const { evYield, catchRate, friendship, eegGroups, gender, eggCycle } = pokemon;
       const commonInfo = { evYield, catchRate, friendship, eegGroups, gender, eggCycle };
       if (/^GalarianZenMode/gi.test(form)) commonInfo.evYield = ['2 SpecialAttack'];
       return { ...differentForm, ...commonInfo, form };
     });
+    differentForm = differentForm?.length ? differentForm : undefined;
 
     return { ...pokemon, evolvingTo: of($evolvingTo).getEvolvingTo(), form, differentForm };
   };
