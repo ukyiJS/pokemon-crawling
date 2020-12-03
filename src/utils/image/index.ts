@@ -24,8 +24,8 @@ export class ImageUtil {
     const dir = join(process.cwd(), dirName);
 
     dirName.split('/').reduce((acc, dir) => {
-      const depthDir = `${acc}/${dirName}`;
-      if (existsSync(dir)) return depthDir;
+      const depthDir = `${acc}/${dir}`;
+      if (existsSync(dir)) return acc ? depthDir : dir;
 
       mkdirSync(dir);
       Logger.log(downloadDir, 'CreateDirectory');
@@ -67,7 +67,7 @@ export class ImageUtil {
   ): DataToDownload[] => {
     return images.reduce<DataToDownload[]>((acc, { no, image, differentForm }) => {
       const fileName = `${no}.${extension}`;
-      const _dirName = isGeneration ? this.getGenerationName(+no) : dirName;
+      const _dirName = isGeneration ? `${dirName}/${this.getGenerationName(+no)}` : dirName;
       const downloadData = { no, url: image, fileName, dirName: _dirName };
 
       if (!differentForm?.length) return [...acc, downloadData];
@@ -75,7 +75,7 @@ export class ImageUtil {
       const convertedDifferentForm = differentForm.map(({ image, form }) => ({
         no,
         url: image,
-        fileName: fileName.replace(/(\d+)(.png)/g, `$1-${form}$2`),
+        fileName: fileName.replace(/(\d+)(.png)/g, `$1-${form.replace(/\s/g, '')}$2`),
         dirName: _dirName,
       }));
       return [...acc, downloadData, ...convertedDifferentForm];
@@ -85,7 +85,7 @@ export class ImageUtil {
     const { updateProgressBar } = new ProgressBar(imagesToDownload.length);
 
     for (const [index, { url, fileName, dirName }] of imagesToDownload.entries()) {
-      await this.download(url, fileName, dirName);
+      await this.download(url, fileName, `download/${dirName}`);
 
       const cursor = index + 1;
       Logger.log(`${cursor} : ${fileName}`, 'Download');
