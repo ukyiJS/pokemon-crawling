@@ -14,7 +14,7 @@ type LanguageType {
 
 type EvolvingToType {
   no: String!
-  name: String!
+  name: LanguageType!
   image: String!
   types: [String!]!
   form: String
