@@ -1,6 +1,6 @@
 import { getJson } from '@/utils';
 import { Query, Resolver } from '@nestjs/graphql';
-import { IPokemonImage } from '../pokemon.interface';
+import { SerebiiNet } from '../model/serebiiNet.entity';
 import { PokemonService } from '../pokemon.service';
 
 @Resolver()
@@ -9,13 +9,13 @@ export class SerebiiNetResolver {
 
   @Query(() => Boolean)
   public downloadPokemonImageOfSerebiiNet(): Promise<boolean> {
-    const pokemons = getJson<IPokemonImage[]>({ fileName: 'pokemonImageOfSerebiiNet.json' });
+    const pokemons = getJson<SerebiiNet[]>({ fileName: 'pokemonImageOfSerebiiNet.json' });
     return this.pokemonService.downloadPokemonImageOfSerebiiNet(pokemons);
   }
 
   @Query(() => Boolean)
   public downloadPokemonIconImageOfSerebiiNet(): Promise<boolean> {
-    const pokemons = getJson<IPokemonImage[]>({ fileName: 'pokemonIconImageOfSerebiiNet.json' });
+    const pokemons = getJson<SerebiiNet[]>({ fileName: 'pokemonIconImageOfSerebiiNet.json' });
     return this.pokemonService.downloadPokemonIconImageOfSerebiiNet(pokemons);
   }
 }
