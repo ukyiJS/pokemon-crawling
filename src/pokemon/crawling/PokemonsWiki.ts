@@ -4,6 +4,7 @@ import { Page } from 'puppeteer-extra/dist/puppeteer';
 import { IPokemonWiki } from '../interfaces/pokemonWiki.interface';
 import { ColorType } from '../types/color.type';
 import { GenderType } from '../types/gender.type';
+import { LanguageType } from '../types/language.type';
 
 export class CrawlingPokemonsWiki extends CrawlingUtil {
   public crawling = async (page: Page): Promise<IPokemonWiki[]> => {
@@ -62,9 +63,9 @@ export class CrawlingPokemonsWiki extends CrawlingUtil {
         return Array.from(this.getElement()?.querySelectorAll('.body > tbody > tr > td:not(.nostyle)') ?? []);
       };
       public getNo = (): string => of(this.getElement()?.querySelector('.index')).replaceText(/\D/);
-      public getNames = (): { name: string; engName: string } => {
-        const [name, , engName] = of(this.getElement()?.querySelectorAll(`div[class^='name-']`) ?? []).getTexts();
-        return { name, engName };
+      public getNames = (): LanguageType => {
+        const [kor, , eng] = of(this.getElement()?.querySelectorAll(`div[class^='name-']`) ?? []).getTexts();
+        return { kor, eng };
       };
       public getImage = (): string => {
         const href = (<HTMLAnchorElement>this.getElement()?.querySelector('a'))?.href ?? '';
@@ -125,7 +126,7 @@ export class CrawlingPokemonsWiki extends CrawlingUtil {
 
         return {
           no: of($pokemon).getNo(),
-          ...of($pokemon).getNames(),
+          name: of($pokemon).getNames(),
           image: of($pokemon).getImage(),
           species: of($species).getText(),
           types: of($types).getTypes(),
@@ -165,10 +166,9 @@ export class CrawlingPokemonsWiki extends CrawlingUtil {
     const pokemon = { ...of($pokemon).getPokemon(), form };
 
     const differentForm = $differentForm.map(($pokemon, i) => {
-      const { name } = pokemon;
       const forms = [formName, ...differentFormNames];
       const form = forms[i].replace(/리전폼/g, () => {
-        return /파오리|불비달마/g.test(name) ? '가라르 폼' : '알로라 폼';
+        return /파오리|불비달마/g.test(pokemon.name.kor) ? '가라르 폼' : '알로라 폼';
       });
 
       if (/^메가|^원시|^울트라/g.test(form)) {
