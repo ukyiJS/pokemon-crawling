@@ -242,8 +242,9 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         const types = of($element.querySelectorAll('small:last-child > a')).getTexts();
         const isForm = of($data).getChildren().length > 5;
         const form = isForm ? of($data?.querySelector('small:nth-of-type(2)')).getFormName() : null;
+        const { condition } = this;
 
-        return { no, name, image, types, form, condition: this.condition, evolvingTo: [] };
+        return { no, name: { eng: name, kor: '' }, image, types, form, condition, evolvingTo: [] };
       };
       public getEvolvingTo = (): EvolvingToType[] => {
         return this.$elements.map($element => {
