@@ -1,6 +1,6 @@
 import { ObjectType } from '@nestjs/graphql';
 import { Expose, plainToClass } from 'class-transformer';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ObjectIdColumn } from 'typeorm';
 import { v4 } from 'uuid';
 import { IDatabaseColumn } from '../interfaces/databaseColumn.interface';
 import { ISerebiiNet } from '../interfaces/serebiiNet.interface';
@@ -11,7 +11,7 @@ import { SerebiiNetType } from '../types/serebiiNet.type';
 @ObjectType({ implements: () => [IDatabaseColumn, ISerebiiNet] })
 export class SerebiiNet implements IDatabaseColumn, ISerebiiNet {
   @Expose()
-  @Column()
+  @ObjectIdColumn({ type: 'uuid' })
   public _id?: string;
   @Expose()
   @Column()
