@@ -17,6 +17,7 @@ export const {
   MONGODB_DATABASE = '',
   EXECUTABLE_PATH,
   PROFILE_PATH,
+  LOOP_COUNT,
 } = process.env;
 
 export const MONGODB_ATLAS_URL = `mongodb+srv://${MONGODB_USER}:${MONGODB_PASS}${MONGODB_HOST}/${MONGODB_DATABASE}`;
