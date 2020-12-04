@@ -21,8 +21,8 @@ export class PokemonController {
   }
 
   @Get('pokemonImageOfSerebiiNet')
-  public getPokemonImageSerebiiNet(): Promise<SerebiiNet[]> {
-    return this.pokemonService.getPokemonImageOfSerebiiNet();
+  public crawlingPokemonImageOfSerebiiNet(): Promise<SerebiiNet[]> {
+    return this.pokemonService.crawlingPokemonImageOfSerebiiNet();
   }
 
   @Get('pokemonIconImageOfSerebiiNet')

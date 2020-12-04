@@ -34,7 +34,7 @@ describe('PokemonService', () => {
   });
 
   it('Pokemon Images Test', async () => {
-    const pokemons = await service.getPokemonImageOfSerebiiNet();
+    const pokemons = await service.crawlingPokemonImageOfSerebiiNet();
     expect(pokemons).not.toHaveLength(0);
   });
   it('Pokemon Icon Images Test', async () => {
