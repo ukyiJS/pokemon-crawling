@@ -43,7 +43,7 @@ export class PokemonService extends Puppeteer {
     return pokemons;
   }
 
-  public async getPokemonIconImagOfSerebiiNet(): Promise<SerebiiNet[]> {
+  public async crawlingPokemonIconImagOfSerebiiNet(): Promise<SerebiiNet[]> {
     const { browser, page } = await this.initPuppeteer('https://serebii.net/pokemon/nationalpokedex.shtml');
     const { crawling } = new CrawlingPokemonIconImageOfSerebiiNet();
 
