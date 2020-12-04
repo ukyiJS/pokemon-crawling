@@ -1,8 +1,9 @@
-import { ImageUtil, Puppeteer } from '@/utils';
+import { ImageUtil } from '@/utils';
+import { ConvertService } from '@/utils/convert/convert.service';
+import { PuppeteerService } from '@/utils/puppeteer/puppeteer.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
-import { ConfigService } from '@nestjs/config';
 import { CrawlingPokemonDatabase } from './crawling/pokemonDatabase';
 import { CrawlingPokemonIconImageOfSerebiiNet } from './crawling/pokemonIconImageOfSerebiiNet';
 import { CrawlingPokemonImageOfSerebiiNet } from './crawling/pokemonImageOfSerebiiNet';
@@ -14,19 +15,16 @@ import { PokemonWiki } from './model/pokemonWiki.entity';
 import { SerebiiNet } from './model/serebiiNet.entity';
 
 @Injectable()
-export class PokemonService extends Puppeteer {
-  constructor(
-    @InjectRepository(PokemonWiki)
-    private readonly pokemonWiKiRepository: MongoRepository<PokemonWiki>,
-    @InjectRepository(PokemonDatabase)
-    private readonly pokemonDatabaseRepository: MongoRepository<PokemonDatabase>,
-    protected readonly configService: ConfigService,
-  ) {
-    super(configService);
-  }
+export class PokemonService {
+  @InjectRepository(PokemonWiki)
+  private readonly pokemonWiKiRepository: MongoRepository<PokemonWiki>;
+  @InjectRepository(PokemonDatabase)
+  private readonly pokemonDatabaseRepository: MongoRepository<PokemonDatabase>;
+  private readonly puppeteerService: PuppeteerService;
+  private readonly convertService: ConvertService;
 
   public async crawlingPokemonWiki(): Promise<IPokemonWiki[]> {
-    const { browser, page } = await this.initPuppeteer('https://pokemon.fandom.com/ko/wiki/이상해씨');
+    const { browser, page } = await this.puppeteerService.init('https://pokemon.fandom.com/ko/wiki/이상해씨');
     const { crawling } = new CrawlingPokemonsWiki();
 
     const pokemons = await crawling(page);
@@ -36,7 +34,7 @@ export class PokemonService extends Puppeteer {
   }
 
   public async crawlingPokemonDatabase(): Promise<IPokemonDatabase[]> {
-    const { browser, page } = await this.initPuppeteer('https://pokemondb.net/pokedex/bulbasaur');
+    const { browser, page } = await this.puppeteerService.init('https://pokemondb.net/pokedex/bulbasaur');
     const { crawling } = new CrawlingPokemonDatabase();
 
     const pokemons = await crawling(page);
@@ -46,7 +44,7 @@ export class PokemonService extends Puppeteer {
   }
 
   public async crawlingPokemonIconImagOfSerebiiNet(): Promise<SerebiiNet[]> {
-    const { browser, page } = await this.initPuppeteer('https://serebii.net/pokemon/nationalpokedex.shtml');
+    const { browser, page } = await this.puppeteerService.init('https://serebii.net/pokemon/nationalpokedex.shtml');
     const { crawling } = new CrawlingPokemonIconImageOfSerebiiNet();
 
     const pokemonIconImages = await crawling(page);
@@ -56,7 +54,7 @@ export class PokemonService extends Puppeteer {
   }
 
   public async crawlingPokemonImageOfSerebiiNet(): Promise<SerebiiNet[]> {
-    const { browser, page } = await this.initPuppeteer('https://serebii.net/pokemon/bulbasaur');
+    const { browser, page } = await this.puppeteerService.init('https://serebii.net/pokemon/bulbasaur');
     const { crawling } = new CrawlingPokemonImageOfSerebiiNet();
 
     const pokemonImages = await crawling(page);
@@ -163,42 +161,42 @@ export class PokemonService extends Puppeteer {
   public async updatePokemonName(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    return this.convertPokemonName(pokemons);
+    return this.convertService.convertPokemonName(pokemons);
   }
 
   public async updatePokemonTypes(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    return this.convertPokemonTypes(pokemons);
+    return this.convertService.convertPokemonTypes(pokemons);
   }
 
   public async updatePokemonSpecies(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    return this.convertPokemonSpecies(pokemons);
+    return this.convertService.convertPokemonSpecies(pokemons);
   }
 
   public async updatePokemonAbilities(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    return this.convertPokemonAbilities(pokemons);
+    return this.convertService.convertPokemonAbilities(pokemons);
   }
 
   public async updatePokemonEggGroups(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    return this.convertPokemonEggGroups(pokemons);
+    return this.convertService.convertPokemonEggGroups(pokemons);
   }
 
   public async updatePokemonForm(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    return this.convertPokemonForm(pokemons);
+    return this.convertService.convertPokemonForm(pokemons);
   }
 
   public async updatePokemonEvolutionCondition(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
 
-    return this.convertPokemonEvolutionCondition(pokemons);
+    return this.convertService.convertPokemonEvolutionCondition(pokemons);
   }
 }
