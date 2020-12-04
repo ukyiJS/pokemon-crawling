@@ -102,6 +102,13 @@ export class PokemonService extends Puppeteer {
     });
   }
 
+  public async getPokemonOfPokemonDatabase(): Promise<PokemonDatabase[]> {
+    return this.pokemonDatabaseRepository.find({
+      order: { no: 'ASC' },
+      cache: true,
+    });
+  }
+
   public async downloadPokemonImageOfSerebiiNet(pokemonImages: SerebiiNet[] | null): Promise<boolean> {
     if (!pokemonImages) return false;
 
