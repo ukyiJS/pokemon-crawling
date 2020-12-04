@@ -10,19 +10,19 @@ Nestjs crawling
 
 create `.env.dev` `.env.prod`
 
-env value `PORT` `MONGODB_USER` `MONGODB_HOST` `MONGODB_DATABASE` `EXECUTABLE_PATH` `PROFILE_PATH`
+env value `DATABASE_URL` `PUPPETEER_BROWSER_PATH` `PUPPETEER_PROFILE_PATH`
 
 #### window
 
-`EXECUTABLE_PATH=C:/Program Files/Google/Chrome/Application/chrome.exe`
+`PUPPETEER_BROWSER_PATH=C:/Program Files/Google/Chrome/Application/chrome.exe`
 
 #### wsl
 
-`EXECUTABLE_PATH=/mnt/c/Program Files/Google/Chrome/Application/chrome.exe`
+`PUPPETEER_BROWSER_PATH=/mnt/c/Program Files/Google/Chrome/Application/chrome.exe`
 
 #### macos
 
-`EXECUTABLE_PATH=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`
+`PUPPETEER_BROWSER_PATH=/Applications/Google Chrome.app/Contents/MacOS/Google Chrome`
 
 ## Installation
 
