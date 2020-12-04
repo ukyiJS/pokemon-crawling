@@ -23,7 +23,7 @@ export class PokemonService extends Puppeteer {
     super();
   }
 
-  public async getPokemonWiki(): Promise<IPokemonWiki[]> {
+  public async crawlingPokemonWiki(): Promise<IPokemonWiki[]> {
     const { browser, page } = await this.initPuppeteer('https://pokemon.fandom.com/ko/wiki/이상해씨');
     const { crawling } = new CrawlingPokemonsWiki();
 

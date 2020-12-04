@@ -11,8 +11,8 @@ export class PokemonController {
   constructor(private readonly pokemonService: PokemonService) {}
 
   @Get('pokemonWiki')
-  public getPokemonWiki(): Promise<IPokemonWiki[]> {
-    return this.pokemonService.getPokemonWiki();
+  public crawlingPokemonWiki(): Promise<IPokemonWiki[]> {
+    return this.pokemonService.crawlingPokemonWiki();
   }
 
   @Get('pokemonDatabase')

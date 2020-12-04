@@ -24,7 +24,7 @@ describe('PokemonService', () => {
   });
 
   it.only('Pokemons of Wiki Test', async () => {
-    const pokemons = await service.getPokemonWiki();
+    const pokemons = await service.crawlingPokemonWiki();
     expect(pokemons).not.toHaveLength(0);
   });
 
