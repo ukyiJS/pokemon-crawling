@@ -8,7 +8,6 @@ import { IPokemonWiki } from '../interfaces/pokemonWiki.interface';
 import { ColorType } from '../types/color.type';
 import { GenderType } from '../types/gender.type';
 import { LanguageType } from '../types/language.type';
-import { PokemonWikiType } from '../types/pokemonWiki.type';
 
 @Entity()
 @ObjectType({ implements: () => [IDatabaseColumn, IPokemon, IPokemonWiki] })
@@ -63,7 +62,7 @@ export class PokemonWiki implements IDatabaseColumn, IPokemon, IPokemonWiki {
   public form: string | null;
   @Expose()
   @Column()
-  public differentForm?: PokemonWikiType[];
+  public differentForm?: IPokemon[];
   @Expose()
   @Column()
   public createdAt?: Date;
