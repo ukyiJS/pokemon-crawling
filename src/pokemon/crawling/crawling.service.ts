@@ -11,10 +11,9 @@ import { CrawlingPokemonWiki } from './PokemonsWiki';
 
 @Injectable()
 export class CrawlingService {
-  private readonly configService: ConfigService;
   private loopCount: number;
 
-  constructor() {
+  constructor(private readonly configService: ConfigService) {
     this.loopCount = this.configService.get('crawling.loopCount') ?? 893;
   }
 
