@@ -4,10 +4,7 @@ import { PuppeteerService } from '@/utils/puppeteer/puppeteer.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
-import { CrawlingPokemonDatabase } from './crawling/pokemonDatabase';
-import { CrawlingPokemonIconImageOfSerebiiNet } from './crawling/pokemonIconImageOfSerebiiNet';
-import { CrawlingPokemonImageOfSerebiiNet } from './crawling/pokemonImageOfSerebiiNet';
-import { CrawlingPokemonsWiki } from './crawling/PokemonsWiki';
+import { CrawlingService } from './crawling/crawling.service';
 import { IPokemonDatabase } from './interfaces/pokemonDatabase.interface';
 import { IPokemonWiki } from './interfaces/pokemonWiki.interface';
 import { PokemonDatabase } from './model/pokemonDatabase.entity';
@@ -22,12 +19,11 @@ export class PokemonService {
   private readonly pokemonDatabaseRepository: MongoRepository<PokemonDatabase>;
   private readonly puppeteerService: PuppeteerService;
   private readonly convertService: ConvertService;
+  private readonly crawlingService: CrawlingService;
 
   public async crawlingPokemonWiki(): Promise<IPokemonWiki[]> {
     const { browser, page } = await this.puppeteerService.init('https://pokemon.fandom.com/ko/wiki/이상해씨');
-    const { crawling } = new CrawlingPokemonsWiki();
-
-    const pokemons = await crawling(page);
+    const pokemons = await this.crawlingService.crawlingPokemonWiki(page);
     await browser.close();
 
     return pokemons;
@@ -35,9 +31,7 @@ export class PokemonService {
 
   public async crawlingPokemonDatabase(): Promise<IPokemonDatabase[]> {
     const { browser, page } = await this.puppeteerService.init('https://pokemondb.net/pokedex/bulbasaur');
-    const { crawling } = new CrawlingPokemonDatabase();
-
-    const pokemons = await crawling(page);
+    const pokemons = await this.crawlingService.crawlingPokemonDatabase(page);
     await browser.close();
 
     return pokemons;
@@ -45,9 +39,7 @@ export class PokemonService {
 
   public async crawlingPokemonIconImagOfSerebiiNet(): Promise<SerebiiNet[]> {
     const { browser, page } = await this.puppeteerService.init('https://serebii.net/pokemon/nationalpokedex.shtml');
-    const { crawling } = new CrawlingPokemonIconImageOfSerebiiNet();
-
-    const pokemonIconImages = await crawling(page);
+    const pokemonIconImages = await this.crawlingService.crawlingPokemonIconImageOfSerebiiNet(page);
     await browser.close();
 
     return pokemonIconImages;
@@ -55,9 +47,7 @@ export class PokemonService {
 
   public async crawlingPokemonImageOfSerebiiNet(): Promise<SerebiiNet[]> {
     const { browser, page } = await this.puppeteerService.init('https://serebii.net/pokemon/bulbasaur');
-    const { crawling } = new CrawlingPokemonImageOfSerebiiNet();
-
-    const pokemonImages = await crawling(page);
+    const pokemonImages = await this.crawlingService.crawlingPokemonImageOfSerebiiNet(page);
     await browser.close();
 
     return pokemonImages;
