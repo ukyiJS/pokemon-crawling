@@ -63,6 +63,37 @@ export class PokemonService extends Puppeteer {
     return pokemonImages;
   }
 
+  public async addPokemonWiki(pokemons: PokemonWiki[] | null): Promise<PokemonWiki[] | null> {
+    if (!pokemons) return null;
+
+    const savedPokemons = pokemons.map(pokemon => this.pokemonWiKiRepository.save(new PokemonWiki(pokemon)));
+    return Promise.all(savedPokemons);
+  }
+
+  public async addPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
+    if (!pokemons) return null;
+
+    const savedPokemons = pokemons.map(pokemon => this.pokemonDatabaseRepository.save(new PokemonDatabase(pokemon)));
+    const savedResult = await Promise.all(savedPokemons);
+
+    const updatedPokemons = await this.updateIconImageOfPokemonDatabase(savedResult)
+      .then(result => this.updateImageOfPokemonDatabase(result))
+      .then(result => this.updatePokemonName(result))
+      .then(result => this.updatePokemonTypes(result))
+      .then(result => this.updatePokemonSpecies(result))
+      .then(result => this.updatePokemonAbilities(result))
+      .then(result => this.updatePokemonEggGroups(result))
+      .then(result => this.updatePokemonForm(result))
+      .then(result => this.updatePokemonEvolutionCondition(result));
+
+    const updatedResult = updatedPokemons!.map(({ no, ...pokemon }) => {
+      return this.pokemonDatabaseRepository
+        .findOneAndUpdate({ no }, { $set: pokemon }, { returnOriginal: false })
+        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
+    });
+    return Promise.all(updatedResult);
+  }
+
   public async downloadPokemonImageOfSerebiiNet(pokemonImages: SerebiiNet[] | null): Promise<boolean> {
     if (!pokemonImages) return false;
 
@@ -112,37 +143,6 @@ export class PokemonService extends Puppeteer {
 
     const { updatePokemonIconImages } = new ImageUtil();
     return updatePokemonIconImages(pokemons);
-  }
-
-  public async addPokemonWiki(pokemons: PokemonWiki[] | null): Promise<PokemonWiki[] | null> {
-    if (!pokemons) return null;
-
-    const savedPokemons = pokemons.map(pokemon => this.pokemonWiKiRepository.save(new PokemonWiki(pokemon)));
-    return Promise.all(savedPokemons);
-  }
-
-  public async addPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
-    if (!pokemons) return null;
-
-    const savedPokemons = pokemons.map(pokemon => this.pokemonDatabaseRepository.save(new PokemonDatabase(pokemon)));
-    const savedResult = await Promise.all(savedPokemons);
-
-    const updatedPokemons = await this.updateIconImageOfPokemonDatabase(savedResult)
-      .then(result => this.updateImageOfPokemonDatabase(result))
-      .then(result => this.updatePokemonName(result))
-      .then(result => this.updatePokemonTypes(result))
-      .then(result => this.updatePokemonSpecies(result))
-      .then(result => this.updatePokemonAbilities(result))
-      .then(result => this.updatePokemonEggGroups(result))
-      .then(result => this.updatePokemonForm(result))
-      .then(result => this.updatePokemonEvolutionCondition(result));
-
-    const updatedResult = updatedPokemons!.map(({ no, ...pokemon }) => {
-      return this.pokemonDatabaseRepository
-        .findOneAndUpdate({ no }, { $set: pokemon }, { returnOriginal: false })
-        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
-    });
-    return Promise.all(updatedResult);
   }
 
   public async updatePokemonName(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
