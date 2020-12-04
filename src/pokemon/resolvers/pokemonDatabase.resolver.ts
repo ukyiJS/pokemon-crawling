@@ -6,7 +6,7 @@ import { PokemonService } from '../pokemon.service';
 
 @Resolver(() => PokemonDatabase)
 export class PokemonDatabaseResolver {
-  pokemons: PokemonDatabase[] | null;
+  private pokemons: PokemonDatabase[] | null;
 
   constructor(private readonly pokemonService: PokemonService) {
     this.pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
