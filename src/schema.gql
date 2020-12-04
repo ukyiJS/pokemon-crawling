@@ -176,6 +176,7 @@ interface IPokemonWiki {
 type Query {
   getHello: String!
   getPokemonOfPokemonDatabase: [PokemonDatabase!]!
+  getPokemonOfPokemonWiki: [PokemonWiki!]!
   downloadPokemonImageOfPokemonWiki: Boolean!
   downloadPokemonImageOfSerebiiNet: Boolean!
   downloadPokemonIconImageOfSerebiiNet: Boolean!
