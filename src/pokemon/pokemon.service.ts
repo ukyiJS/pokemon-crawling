@@ -96,6 +96,12 @@ export class PokemonService extends Puppeteer {
     return Promise.all(updatedResult);
   }
 
+  public async getPokemonOfPokemonWiki(): Promise<PokemonWiki[]> {
+    return this.pokemonWiKiRepository.find({
+      order: { no: 'ASC' },
+    });
+  }
+
   public async downloadPokemonImageOfSerebiiNet(pokemonImages: SerebiiNet[] | null): Promise<boolean> {
     if (!pokemonImages) return false;
 
