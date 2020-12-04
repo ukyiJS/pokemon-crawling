@@ -1,5 +1,5 @@
 import { getJson } from '@/utils';
-import { Mutation, Resolver } from '@nestjs/graphql';
+import { Mutation, Query, Resolver } from '@nestjs/graphql';
 import { IPokemonDatabase } from '../interfaces/pokemonDatabase.interface';
 import { PokemonDatabase } from '../model/pokemonDatabase.entity';
 import { PokemonService } from '../pokemon.service';
@@ -10,6 +10,11 @@ export class PokemonDatabaseResolver {
 
   constructor(private readonly pokemonService: PokemonService) {
     this.pokemons = getJson<IPokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
+  }
+
+  @Query(() => [PokemonDatabase])
+  public async getPokemonOfPokemonDatabase(): Promise<PokemonDatabase[]> {
+    return this.pokemonService.getPokemonOfPokemonDatabase();
   }
 
   @Mutation(() => [PokemonDatabase], { nullable: true })
