@@ -1,11 +1,15 @@
-import { EXECUTABLE_PATH, PROFILE_PATH } from '@/env';
+import { PuppeteerEnv } from '@/config';
 import { Logger, LogLevel } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import puppeteer from 'puppeteer-extra';
 import adblocker from 'puppeteer-extra-plugin-adblocker';
 import { Browser, LaunchOptions, Page } from 'puppeteer-extra/dist/puppeteer';
 import { Convert } from '../convert';
 
 export class Puppeteer extends Convert {
+  constructor(protected readonly configService: ConfigService) {
+    super();
+  }
   protected initPuppeteer = async (url: string, options?: LaunchOptions): Promise<{ browser: Browser; page: Page }> => {
     puppeteer.use(adblocker({ blockTrackers: true }));
 
@@ -18,9 +22,11 @@ export class Puppeteer extends Convert {
     const width = 1920;
     const height = 1080;
     const windowSize = `--window-size${width},${height}`;
+    const { browserPath, profilePath } = this.configService.get<PuppeteerEnv>('puppeteer')!;
+
     const {
-      executablePath = EXECUTABLE_PATH,
-      userDataDir = PROFILE_PATH,
+      executablePath = browserPath,
+      userDataDir = profilePath,
       headless = false,
       devtools = true,
       defaultViewport = { width, height },
