@@ -114,7 +114,9 @@ interface IDatabaseColumn {
   searchCount: Int!
 }
 
-"""Date custom scalar type"""
+"""
+Date custom scalar type
+"""
 scalar Date
 
 interface IPokemonDatabase {
@@ -173,6 +175,7 @@ interface IPokemonWiki {
 
 type Query {
   getHello: String!
+  getPokemonOfPokemonDatabase: [PokemonDatabase!]!
   downloadPokemonImageOfPokemonWiki: Boolean!
   downloadPokemonImageOfSerebiiNet: Boolean!
   downloadPokemonIconImageOfSerebiiNet: Boolean!
