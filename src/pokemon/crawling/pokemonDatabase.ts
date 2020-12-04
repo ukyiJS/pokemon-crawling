@@ -1,5 +1,3 @@
-import { LOOP_COUNT } from '@/env';
-import { CrawlingUtil, ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
 import { IPokemonDatabase } from '../interfaces/pokemonDatabase.interface';
@@ -8,14 +6,13 @@ import { EvolvingToType } from '../types/evolvingTo.type';
 import { GenderType } from '../types/gender.type';
 import { StatType } from '../types/stat.type';
 import { TypeDefenseType } from '../types/typeDefense.type';
+import { CrawlingUtil } from './crawlingUtil';
 
 export class CrawlingPokemonDatabase extends CrawlingUtil {
-  public crawling = async (page: Page): Promise<IPokemonDatabase[]> => {
+  public crawling = async (page: Page, loopCount: number): Promise<IPokemonDatabase[]> => {
     let curser = 0;
-    const loopCount = +(LOOP_COUNT ?? 893);
-    const { updateProgressBar } = new ProgressBar(loopCount);
-
     let pokemons = <IPokemonDatabase[]>[];
+
     const mainSelector = '#main';
     const tabSelector = '.tabset-basics > .tabs-panel-list > .tabs-panel';
     const nextClickSelector = '.entity-nav-next';
@@ -27,7 +24,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
 
       curser = +pokemon?.no;
       Logger.log(`${pokemon.no} : ${pokemon.name.eng}`, 'Crawling');
-      updateProgressBar(curser);
+      this.updateProgressBar(curser, loopCount);
 
       if (curser >= loopCount) break;
       await this.onPageClick(page, nextClickSelector);
