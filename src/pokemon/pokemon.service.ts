@@ -2,6 +2,7 @@ import { ImageUtil, Puppeteer } from '@/utils';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 import { CrawlingPokemonDatabase } from './crawling/pokemonDatabase';
 import { CrawlingPokemonIconImageOfSerebiiNet } from './crawling/pokemonIconImageOfSerebiiNet';
 import { CrawlingPokemonImageOfSerebiiNet } from './crawling/pokemonImageOfSerebiiNet';
@@ -19,8 +20,9 @@ export class PokemonService extends Puppeteer {
     private readonly pokemonWiKiRepository: MongoRepository<PokemonWiki>,
     @InjectRepository(PokemonDatabase)
     private readonly pokemonDatabaseRepository: MongoRepository<PokemonDatabase>,
+    protected readonly configService: ConfigService,
   ) {
-    super();
+    super(configService);
   }
 
   public async crawlingPokemonWiki(): Promise<IPokemonWiki[]> {
