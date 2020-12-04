@@ -2,6 +2,29 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+interface IPokemon {
+  no: String!
+  name: LanguageType!
+  image: String!
+  color: ColorType
+  types: [String!]!
+  species: String!
+  height: String!
+  weight: String!
+  abilities: [String]!
+  hiddenAbility: String
+  catchRate: Int!
+  friendship: Int!
+  eegGroups: [String!]!
+  gender: [GenderType!]!
+  form: String
+}
+
+type ColorType {
+  name: String!
+  code: String!
+}
+
 type GenderType {
   name: String!
   ratio: Float!
@@ -42,6 +65,7 @@ type PokemonDatabaseType {
   no: String!
   name: LanguageType!
   image: String!
+  color: ColorType
   types: [String!]!
   species: String!
   height: String!
@@ -67,6 +91,7 @@ type PokemonDatabase implements IDatabaseColumn & IPokemon & IPokemonDatabase {
   no: String!
   name: LanguageType!
   image: String!
+  color: ColorType
   types: [String!]!
   species: String!
   height: String!
@@ -92,23 +117,6 @@ interface IDatabaseColumn {
 """Date custom scalar type"""
 scalar Date
 
-interface IPokemon {
-  no: String!
-  name: LanguageType!
-  image: String!
-  types: [String!]!
-  species: String!
-  height: String!
-  weight: String!
-  abilities: [String]!
-  hiddenAbility: String
-  catchRate: Int!
-  friendship: Int!
-  eegGroups: [String!]!
-  gender: [GenderType!]!
-  form: String
-}
-
 interface IPokemonDatabase {
   icon: String
   evolvingTo: [EvolvingToType!]
@@ -122,29 +130,6 @@ type SerebiiNetType {
   form: String
 }
 
-type ColorType {
-  name: String!
-  code: String!
-}
-
-type PokemonWikiType {
-  no: String!
-  name: LanguageType!
-  image: String!
-  types: [String!]!
-  species: String!
-  height: String!
-  weight: String!
-  abilities: [String]!
-  hiddenAbility: String
-  catchRate: Int!
-  friendship: Int!
-  eegGroups: [String!]!
-  gender: [GenderType!]!
-  form: String
-  color: ColorType!
-}
-
 type PokemonWiki implements IDatabaseColumn & IPokemon & IPokemonWiki {
   _id: String!
   createdAt: Date!
@@ -152,6 +137,7 @@ type PokemonWiki implements IDatabaseColumn & IPokemon & IPokemonWiki {
   no: String!
   name: LanguageType!
   image: String!
+  color: ColorType
   types: [String!]!
   species: String!
   height: String!
@@ -163,11 +149,26 @@ type PokemonWiki implements IDatabaseColumn & IPokemon & IPokemonWiki {
   eegGroups: [String!]!
   gender: [GenderType!]!
   form: String
-  differentForm: [PokemonWikiType!]!
+  differentForm: [IPokemon!]!
 }
 
 interface IPokemonWiki {
-  differentForm: [PokemonWikiType!]!
+  no: String!
+  name: LanguageType!
+  image: String!
+  color: ColorType
+  types: [String!]!
+  species: String!
+  height: String!
+  weight: String!
+  abilities: [String]!
+  hiddenAbility: String
+  catchRate: Int!
+  friendship: Int!
+  eegGroups: [String!]!
+  gender: [GenderType!]!
+  form: String
+  differentForm: [IPokemon!]!
 }
 
 type Query {
