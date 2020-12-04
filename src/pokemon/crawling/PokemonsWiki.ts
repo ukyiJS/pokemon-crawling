@@ -1,18 +1,14 @@
-import { LOOP_COUNT } from '@/env';
-import { CrawlingUtil, ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
 import { IPokemonWiki } from '../interfaces/pokemonWiki.interface';
 import { ColorType } from '../types/color.type';
 import { GenderType } from '../types/gender.type';
 import { LanguageType } from '../types/language.type';
+import { CrawlingUtil } from './crawlingUtil';
 
-export class CrawlingPokemonsWiki extends CrawlingUtil {
-  public crawling = async (page: Page): Promise<IPokemonWiki[]> => {
+export class CrawlingPokemonWiki extends CrawlingUtil {
+  public crawling = async (page: Page, loopCount: number): Promise<IPokemonWiki[]> => {
     let curser = 0;
-    const loopCount = +(LOOP_COUNT ?? 893);
-    const { updateProgressBar } = new ProgressBar(loopCount);
-
     let pokemons = <IPokemonWiki[]>[];
     const nextClickSelector = '.w-100.mb-1 > tbody > tr > td:last-child td:last-child > a';
 
@@ -20,12 +16,11 @@ export class CrawlingPokemonsWiki extends CrawlingUtil {
       await page.waitForSelector('.infobox-pokemon');
 
       const pokemon = await page.evaluate(this.getPokemons);
-
       pokemons = [...pokemons, pokemon];
-
       curser = +pokemon.no;
+
       Logger.log(`${pokemon.no} : ${pokemon.name.kor}`, 'Result');
-      updateProgressBar(curser);
+      this.updateProgressBar(curser, loopCount);
 
       if (curser >= loopCount) break;
       await this.onPageClick(page, nextClickSelector);
