@@ -1,8 +1,9 @@
 import { Page } from 'puppeteer-extra/dist/puppeteer';
+import { ISerebiiNet } from '../interfaces/serebiiNet.interface';
 import { SerebiiNet } from '../model/serebiiNet.entity';
 
 export class CrawlingPokemonIconImageOfSerebiiNet {
-  public crawling = async (page: Page): Promise<SerebiiNet[]> => {
+  public crawling = async (page: Page): Promise<ISerebiiNet[]> => {
     return page.evaluate((): SerebiiNet[] => {
       const { of } = new (class {
         private $element: Element | null;
