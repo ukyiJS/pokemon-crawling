@@ -1,12 +1,18 @@
-import { cleanEnv, port, str } from 'envalid';
+import { object, string, number } from '@hapi/joi';
 
-export const validateEnv = (): void => {
-  cleanEnv(process.env, {
-    PORT: port(),
-    MONGODB_USER: str(),
-    MONGODB_PASS: str(),
-    MONGODB_HOST: str(),
-    MONGODB_DATABASE: str(),
-    EXECUTABLE_PATH: str(),
-  });
-};
+enum Environment {
+  DEV = 'development',
+  PROD = 'production',
+  TEST = 'test',
+}
+
+export const validationSchema = object({
+  NODE_ENV: string()
+    .valid(...Object.values(Environment))
+    .default(Environment.DEV),
+  PORT: number().default(3000),
+  DATABASE_URL: string().required(),
+  PUPPETEER_BROWSER_PATH: string().required(),
+  PUPPETEER_PROFILE_PATH: string(),
+  LOOP_COUNT: number().max(897).default(893),
+});
