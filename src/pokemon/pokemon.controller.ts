@@ -16,8 +16,8 @@ export class PokemonController {
   }
 
   @Get('pokemonDatabase')
-  public getPokemonDatabase(): Promise<IPokemonDatabase[]> {
-    return this.pokemonService.getPokemonDatabase();
+  public crawlingPokemonDatabase(): Promise<IPokemonDatabase[]> {
+    return this.pokemonService.crawlingPokemonDatabase();
   }
 
   @Get('pokemonImageOfSerebiiNet')

@@ -33,7 +33,7 @@ export class PokemonService extends Puppeteer {
     return pokemons;
   }
 
-  public async getPokemonDatabase(): Promise<IPokemonDatabase[]> {
+  public async crawlingPokemonDatabase(): Promise<IPokemonDatabase[]> {
     const { browser, page } = await this.initPuppeteer('https://pokemondb.net/pokedex/bulbasaur');
     const { crawling } = new CrawlingPokemonDatabase();
 

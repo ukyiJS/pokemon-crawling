@@ -29,7 +29,7 @@ describe('PokemonService', () => {
   });
 
   it('Pokemons of Database Test', async () => {
-    const pokemons = await service.getPokemonDatabase();
+    const pokemons = await service.crawlingPokemonDatabase();
     expect(pokemons).not.toHaveLength(0);
   });
 
