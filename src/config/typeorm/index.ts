@@ -5,6 +5,7 @@ import { getMetadataArgsStorage } from 'typeorm';
 @Injectable()
 export class TypeormService implements TypeOrmOptionsFactory {
   constructor(private readonly configService: ConfigService) {}
+
   public async createTypeOrmOptions(): Promise<TypeOrmModuleOptions> {
     return {
       type: 'mongodb',
