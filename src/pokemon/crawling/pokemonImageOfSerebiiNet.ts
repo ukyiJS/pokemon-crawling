@@ -1,21 +1,17 @@
-import { LOOP_COUNT } from '@/env';
-import { CrawlingUtil, ProgressBar } from '@/utils';
 import { Logger } from '@nestjs/common';
 import { Page } from 'puppeteer-extra/dist/puppeteer';
 import { ISerebiiNet } from '../interfaces/serebiiNet.interface';
 import { SerebiiNet } from '../model/serebiiNet.entity';
 import { LanguageType } from '../types/language.type';
 import { SerebiiNetType } from '../types/serebiiNet.type';
+import { CrawlingUtil } from './crawlingUtil';
 
 type Column = [Element, Element[], Element, Element[], SerebiiNetType[], SerebiiNetType[]];
 type ImageAndForm = Omit<Omit<ISerebiiNet, 'no'>, 'name'>;
 
 export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
-  public crawling = async (page: Page): Promise<ISerebiiNet[]> => {
+  public crawling = async (page: Page, loopCount: number): Promise<ISerebiiNet[]> => {
     let curser = 0;
-    const loopCount = +(LOOP_COUNT ?? 893);
-    const { updateProgressBar } = new ProgressBar(loopCount);
-
     let pokemons = <SerebiiNet[]>[];
     const nextClickSelector = 'main > table:last-child > tbody > tr > td:last-child a';
 
@@ -27,7 +23,7 @@ export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
 
       curser = +pokemon.no;
       Logger.log(`${pokemon.no} : ${pokemon.name.kor}`, 'Result');
-      updateProgressBar((curser / loopCount) * 100);
+      this.updateProgressBar(curser, loopCount);
 
       if (curser >= loopCount) break;
       await this.onPageClick(page, nextClickSelector);
