@@ -114,9 +114,7 @@ interface IDatabaseColumn {
   searchCount: Int!
 }
 
-"""
-Date custom scalar type
-"""
+"""Date custom scalar type"""
 scalar Date
 
 interface IPokemonDatabase {
