@@ -10,6 +10,11 @@ export class PokemonWikiResolver {
     this.pokemons = getJson<PokemonWiki[]>({ fileName: 'pokemonWiki.json' });
   }
 
+  @Query(() => [PokemonWiki])
+  public async getPokemonOfPokemonWiki(): Promise<PokemonWiki[]> {
+    return this.pokemonService.getPokemonOfPokemonWiki();
+  }
+
   @Mutation(() => [PokemonWiki], { nullable: true })
   public async addPokemonWiki(): Promise<PokemonWiki[] | null> {
     return this.pokemonService.addPokemonWiki(this.pokemons);
