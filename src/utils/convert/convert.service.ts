@@ -25,13 +25,12 @@ interface ObjectLiteral<T> {
 @Injectable()
 export class ConvertService {
   private replaceText = (text: string) => text.replace(/[^a-z0-9=><,]/gi, '');
+
   private equals = (value1: string, value2: string): boolean => {
     return new RegExp(`${this.replaceText(value1)}$`, 'gi').test(this.replaceText(value2));
   };
-  private convertToKorName = <T extends ObjectLiteral<string>>(
-    enums: T,
-    nameToConvert: string | string[],
-  ): string | string[] => {
+
+  private convertToKorName = <T extends ObjectLiteral<string>>(enums: T, nameToConvert: string | string[]): string | string[] => {
     const removeSpecialSymbol = (text: string) => text.replace(/[^a-z0-9]/gi, '');
     const findKorName = (name: string): string => {
       const [, result] = Object.entries(enums).find(([key]) => {
@@ -48,6 +47,7 @@ export class ConvertService {
       throw error;
     }
   };
+
   private convertToKorNameByEvolvingTo = <T extends ObjectLiteral<string>>(
     enums: T,
     key: keyof Omit<EvolvingToType, 'evolvingTo'>,
@@ -67,6 +67,7 @@ export class ConvertService {
 
     return result.map(to => ({ ...to, evolvingTo: convertToKorNameByEvolvingTo(to.evolvingTo) }));
   };
+
   public convertPokemonName = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
     const convertToKorName = (name: string): string => {
       return <string>this.convertToKorName(PokemonNames, name);
@@ -83,6 +84,7 @@ export class ConvertService {
       differentForm: differentForm?.map(convert),
     }));
   };
+
   public convertPokemonTypes = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
     const convertToKorName = (name: string): string => <string>this.convertToKorName(TypeNames, name);
     const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, TypeNames, 'types');
@@ -97,6 +99,7 @@ export class ConvertService {
       differentForm: differentForm?.map(convert),
     }));
   };
+
   public convertPokemonSpecies = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
     const convertToKorName = (name: string): string => <string>this.convertToKorName(SpeciesNames, name);
     const convert = ({ species, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
@@ -110,6 +113,7 @@ export class ConvertService {
       differentForm: differentForm?.map(convert),
     }));
   };
+
   public convertPokemonAbilities = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
     const convertToKorName = (name: string): string => <string>this.convertToKorName(AbilityNames, name);
     const convert = ({ abilities, hiddenAbility, ...pokemon }: PokemonDatabase) => ({
@@ -123,6 +127,7 @@ export class ConvertService {
       differentForm: differentForm?.map(convert),
     }));
   };
+
   public convertPokemonEggGroups = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
     const convertToKorName = (name: string): string => <string>this.convertToKorName(EggGroupNames, name);
     const convert = ({ eegGroups, ...pokemon }: PokemonDatabase) => ({
@@ -136,6 +141,7 @@ export class ConvertService {
       differentForm: differentForm?.map(convert),
     }));
   };
+
   public convertPokemonForm = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
     const convertToKorNameByEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, FormNames, 'form');
     const convert = ({ form, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
@@ -149,10 +155,12 @@ export class ConvertService {
       differentForm: differentForm?.map(convert),
     }));
   };
+
   private mergeAdditionalCondition = (condition1?: string, condition2?: string): string => {
     const additionalCondition = (condition1 && condition1) || (condition2 && condition2.concat(` ${condition1}`));
     return additionalCondition ?? '';
   };
+
   private getAdditionalCondition = (condition: string | undefined): string | undefined => {
     if (!condition) return undefined;
     if (/^outside|knowingFairymove|inGen8|inUltraSunMoon|400MeltanCandies/g) return undefined;
@@ -167,6 +175,7 @@ export class ConvertService {
 
     return result;
   };
+
   private getLevelCondition = (condition?: string): string[] | undefined => {
     if (!condition) return undefined;
 
@@ -181,6 +190,7 @@ export class ConvertService {
 
     return [levelCondition, additionalCondition].filter(c => c);
   };
+
   private getUseItemCondition = (condition?: string): string[] | undefined => {
     if (!condition) return undefined;
 
@@ -196,6 +206,7 @@ export class ConvertService {
 
     return [additionalCondition, useItemCondition].filter(c => c);
   };
+
   private getTradeCondition = (condition?: string): string[] | undefined => {
     if (!condition) return undefined;
 
@@ -211,6 +222,7 @@ export class ConvertService {
 
     return [additionalCondition, tradeCondition].filter(c => c);
   };
+
   private getFriendshipCondition = (condition?: string): string[] | undefined => {
     if (!condition) return undefined;
 
@@ -221,6 +233,7 @@ export class ConvertService {
 
     return [additionalCondition ?? '', friendshipText].filter(c => c);
   };
+
   private getOtherConditions = (condition?: string): string[] | undefined => {
     if (!condition) return undefined;
 
@@ -234,6 +247,7 @@ export class ConvertService {
 
     return [additionalCondition, otherCondition ?? ''].filter(c => c);
   };
+
   private getConditionType = (condition?: string): ConditionType | null => {
     if (!condition) return null;
 
@@ -245,6 +259,7 @@ export class ConvertService {
 
     return ConditionTypes[match.find(m => m)!];
   };
+
   private convertCondition = ({ condition, ...evolvingTo }: EvolvingToType): EvolvingToType => {
     const conditionType = this.getConditionType(condition);
     if (!conditionType) return evolvingTo;
@@ -262,6 +277,7 @@ export class ConvertService {
         return { ...evolvingTo, conditions: this.getOtherConditions(condition) };
     }
   };
+
   public convertPokemonEvolutionCondition(pokemons: PokemonDatabase[]): PokemonDatabase[] {
     const convertEvolvingTo = (evolvingTo?: EvolvingToType[]): EvolvingToType[] | undefined => {
       const result = evolvingTo?.map(({ evolvingTo, ...pokemon }) => ({
