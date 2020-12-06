@@ -109,5 +109,10 @@ describe('PokemonService', () => {
 
   describe('pokemonWiki Test', () => {
     const pokemonWiki = getJson<PokemonWiki[]>({ fileName: 'pokemonWiki.json' });
+
+    it('should return an array of crawlingPokemonWiki', async () => {
+      const pokemons = await service.crawlingPokemonWiki();
+      expect(pokemons).not.toHaveLength(0);
+    });
   });
 });
