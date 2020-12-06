@@ -45,13 +45,13 @@ export class PokemonService {
     return pokemonIconImages;
   };
 
-  public async crawlingPokemonImageOfSerebiiNet(): Promise<SerebiiNet[]> {
+  public crawlingPokemonImageOfSerebiiNet = async (): Promise<SerebiiNet[]> => {
     const { browser, page } = await this.puppeteerService.init('https://serebii.net/pokemon/bulbasaur');
     const pokemonImages = await this.crawlingService.crawlingPokemonImageOfSerebiiNet(page);
     await browser.close();
 
     return pokemonImages;
-  }
+  };
 
   public async addPokemonWiki(pokemons: PokemonWiki[] | null): Promise<PokemonWiki[] | null> {
     if (!pokemons) return null;
