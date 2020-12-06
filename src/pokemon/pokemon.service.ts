@@ -137,12 +137,12 @@ export class PokemonService {
     return updatePokemonImages(pokemons);
   };
 
-  public async updateIconImageOfPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
+  public updateIconImageOfPokemonDatabase = async (pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> => {
     if (!pokemons) return null;
 
     const { updatePokemonIconImages } = new ImageUtil();
     return updatePokemonIconImages(pokemons);
-  }
+  };
 
   public async updatePokemonName(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
