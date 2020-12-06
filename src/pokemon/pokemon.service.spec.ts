@@ -144,5 +144,10 @@ describe('PokemonService', () => {
       const pokemons = await service.downloadPokemonImageOfSerebiiNet(pokemonImageOfSerebiiNet);
       expect(pokemons).toEqual(true);
     });
+
+    it('should return an array of downloadPokemonIconImageOfSerebiiNet', async () => {
+      const pokemons = await service.downloadPokemonIconImageOfSerebiiNet(pokemonIconImageOfSerebiiNet);
+      expect(pokemons).toEqual(true);
+    });
   });
 });
