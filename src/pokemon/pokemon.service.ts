@@ -144,11 +144,11 @@ export class PokemonService {
     return updatePokemonIconImages(pokemons);
   };
 
-  public async updatePokemonName(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
+  public updatePokemonName = async (pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> => {
     if (!pokemons) return null;
 
     return this.convertService.convertPokemonName(pokemons);
-  }
+  };
 
   public async updatePokemonTypes(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
