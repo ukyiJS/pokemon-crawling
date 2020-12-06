@@ -41,6 +41,7 @@ export class ImageUtil {
         .on('error', error => Logger.error(error.message, error.stack, error.name));
     });
   };
+
   public getGenerationName = (no: number): string => {
     if (no < 152) return 'gen1';
     if (no < 252) return 'gen2';
@@ -51,12 +52,8 @@ export class ImageUtil {
     if (no < 810) return 'gen7';
     return 'gen8';
   };
-  public convertImageToDownload = (
-    images: SerebiiNet[],
-    dirName: string,
-    isGeneration = false,
-    extension = 'png',
-  ): DataToDownload[] => {
+
+  public convertImageToDownload = (images: SerebiiNet[], dirName: string, isGeneration = false, extension = 'png'): DataToDownload[] => {
     return images.reduce<DataToDownload[]>((acc, { no, image, differentForm }) => {
       const fileName = `${no}.${extension}`;
       const _dirName = isGeneration ? `${dirName}/${this.getGenerationName(+no)}` : dirName;
@@ -73,6 +70,7 @@ export class ImageUtil {
       return [...acc, downloadData, ...convertedDifferentForm];
     }, []);
   };
+
   public multiDownloads = async (imagesToDownload: DataToDownload[]): Promise<void> => {
     const { updateProgressBar } = new ProgressBar(imagesToDownload.length);
 
@@ -84,19 +82,23 @@ export class ImageUtil {
       updateProgressBar(cursor);
     }
   };
+
   private getImageUrl = (name: string): string => {
     return `https://raw.githubusercontent.com/ukyiJS/pokemon-crawling/image/${name}.png`;
   };
+
   private setImageUrl = (dirName: string, no: string, form?: string | null): string => {
     const fileName = form ? `${no}-${form}` : no;
     const imageUrl = this.getImageUrl(`${dirName}/${fileName}`);
     return imageUrl;
   };
+
   private updatePokemonImage = (no: string, form?: string | null): string => {
     const dirName = this.getGenerationName(+no);
     const image = this.setImageUrl(dirName, no, form);
     return image;
   };
+
   public updatePokemonImages = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
     const convertEvolvingToImage = (evolvingTo?: EvolvingToType[]): EvolvingToType[] | undefined => {
       if (!evolvingTo) return undefined;
@@ -125,6 +127,7 @@ export class ImageUtil {
       return { ...pokemon, no, image, evolvingTo: evolvingToImage, differentForm: differentFormImage };
     });
   };
+
   public updatePokemonIconImages = (pokemons: PokemonDatabase[]): PokemonDatabase[] => {
     return pokemons.map(({ no, ...pokemon }) => ({
       ...pokemon,
