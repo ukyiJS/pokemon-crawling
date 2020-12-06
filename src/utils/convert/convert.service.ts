@@ -299,7 +299,10 @@ export class ConvertService {
   }
 
   public convertPokemonEvYield(pokemons: PokemonDatabase[]): PokemonDatabase[] {
-    const convertToKorName = (name: string): string => <string>this.convertToKorName(StatNames, name);
+    const convertToKorName = (name: string): string => {
+      const [, no, statName] = name.match(/(\d\s)(.*)/)!;
+      return `${this.convertToKorName(StatNames, statName)} ${no}`;
+    };
     const convert = ({ evYield, ...pokemon }: PokemonDatabase) => ({
       ...pokemon,
       evYield: evYield && evYield.map(convertToKorName),
