@@ -99,5 +99,11 @@ describe('PokemonService', () => {
       expect(result).not.toBeNull();
       expect(result).not.toHaveLength(0);
     });
+
+    it('should return an array of updatePokemonTypes', async () => {
+      const result = await service.updatePokemonTypes(pokemonDatabase);
+      expect(result).not.toBeNull();
+      expect(result).not.toHaveLength(0);
+    });
   });
 });
