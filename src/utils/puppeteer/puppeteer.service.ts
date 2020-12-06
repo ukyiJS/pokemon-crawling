@@ -17,6 +17,7 @@ export class PuppeteerService {
 
     return { browser, page };
   };
+
   private initBrowser = async (options: LaunchOptions = {}): Promise<Browser> => {
     const width = 1920;
     const height = 1080;
@@ -43,6 +44,7 @@ export class PuppeteerService {
       args: [...args, windowSize],
     });
   };
+
   private initPage = async (url: string, browser: Browser): Promise<Page> => {
     const page = await browser.newPage();
     this.onPage(page);
@@ -50,6 +52,7 @@ export class PuppeteerService {
 
     return page;
   };
+
   private onPage = (page: Page): void => {
     page.once('domcontentloaded', () => Logger.log('✅ DOM is ready', 'DomcontentLoad'));
     page.once('load', () => Logger.log(`✅ Page is Loaded`, 'PageLoad'));
