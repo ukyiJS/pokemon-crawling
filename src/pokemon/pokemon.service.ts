@@ -84,11 +84,7 @@ export class PokemonService {
     return Promise.all(updatedResult);
   };
 
-  public async getPokemonOfPokemonWiki(): Promise<PokemonWiki[]> {
-    return this.pokemonWiKiRepository.find({
-      order: { no: 'ASC' },
-    });
-  }
+  public getPokemonOfPokemonWiki = async (): Promise<PokemonWiki[]> => this.pokemonWiKiRepository.find({ order: { no: 'ASC' } });
 
   public async getPokemonOfPokemonDatabase(): Promise<PokemonDatabase[]> {
     return this.pokemonDatabaseRepository.find({
