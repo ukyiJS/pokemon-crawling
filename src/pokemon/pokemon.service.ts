@@ -53,12 +53,12 @@ export class PokemonService {
     return pokemonImages;
   };
 
-  public async addPokemonWiki(pokemons: PokemonWiki[] | null): Promise<PokemonWiki[] | null> {
+  public addPokemonWiki = async (pokemons: PokemonWiki[] | null): Promise<PokemonWiki[] | null> => {
     if (!pokemons) return null;
 
     const savedPokemons = pokemons.map(pokemon => this.pokemonWiKiRepository.save(new PokemonWiki(pokemon)));
     return Promise.all(savedPokemons);
-  }
+  };
 
   public async addPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
