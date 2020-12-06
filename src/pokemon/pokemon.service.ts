@@ -180,9 +180,9 @@ export class PokemonService {
     return this.convertService.convertPokemonForm(pokemons);
   };
 
-  public async updatePokemonEvolutionCondition(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
+  public updatePokemonEvolutionCondition = async (pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> => {
     if (!pokemons) return null;
 
     return this.convertService.convertPokemonEvolutionCondition(pokemons);
-  }
+  };
 }
