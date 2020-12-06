@@ -1,3 +1,4 @@
+import { FormNames } from '@/pokemon/enums/formName.enum';
 import { PokemonDatabase } from '@/pokemon/model/pokemonDatabase.entity';
 import { SerebiiNet } from '@/pokemon/model/serebiiNet.entity';
 import { EvolvingToType } from '@/pokemon/types/evolvingTo.type';
@@ -61,12 +62,22 @@ export class ImageUtil {
 
       if (!differentForm?.length) return [...acc, downloadData];
 
-      const convertedDifferentForm = differentForm.map(({ image, form }) => ({
-        no,
-        url: image,
-        fileName: fileName.replace(/(\d+)(.png)/g, `$1-${form!.replace(/\s/g, '')}$2`),
-        dirName: _dirName,
-      }));
+      const convertedDifferentForm = differentForm.map(({ image, form }) => {
+        let key = '';
+        try {
+          [key] = Object.entries(FormNames).find(([, value]) => form === value)!;
+        } catch (error) {
+          Logger.error(`No matching ${form} found`, '', 'NoMatchingError');
+        }
+
+        const engForm = key.toLowerCase().replace(/_+(\w|$)/g, ($$, $1) => $1.toUpperCase());
+        return {
+          no,
+          url: image,
+          fileName: fileName.replace(/(\d+)(.png)/g, `$1-${engForm!.replace(/\s/g, '')}$2`),
+          dirName: _dirName,
+        };
+      });
       return [...acc, downloadData, ...convertedDifferentForm];
     }, []);
   };
