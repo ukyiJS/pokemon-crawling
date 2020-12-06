@@ -114,5 +114,10 @@ describe('PokemonService', () => {
       const pokemons = await service.crawlingPokemonWiki();
       expect(pokemons).not.toHaveLength(0);
     });
+
+    it('should return an array of getPokemonOfPokemonWiki', async () => {
+      const pokemons = await service.getPokemonOfPokemonWiki();
+      expect(pokemons).not.toHaveLength(0);
+    });
   });
 });
