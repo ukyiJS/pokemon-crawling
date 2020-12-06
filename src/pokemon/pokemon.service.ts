@@ -162,11 +162,11 @@ export class PokemonService {
     return this.convertService.convertPokemonSpecies(pokemons);
   };
 
-  public async updatePokemonAbilities(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
+  public updatePokemonAbilities = async (pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> => {
     if (!pokemons) return null;
 
     return this.convertService.convertPokemonAbilities(pokemons);
-  }
+  };
 
   public async updatePokemonEggGroups(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
