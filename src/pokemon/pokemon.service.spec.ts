@@ -28,4 +28,8 @@ describe('PokemonService', () => {
 
     service = await moduleRef.resolve(PokemonService);
   });
+
+  describe('pokemonDatabase Test', () => {
+    const pokemonDatabase = getJson<PokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
+  });
 });
