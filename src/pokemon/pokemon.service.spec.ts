@@ -57,5 +57,11 @@ describe('PokemonService', () => {
       expect(result).not.toBeNull();
       expect(result).not.toHaveLength(0);
     });
+
+    it('should return an array of updateIconImageOfPokemonDatabase', async () => {
+      const result = await service.updateIconImageOfPokemonDatabase(pokemonDatabase);
+      expect(result).not.toBeNull();
+      expect(result).not.toHaveLength(0);
+    });
   });
 });
