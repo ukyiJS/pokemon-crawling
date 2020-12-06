@@ -93,7 +93,7 @@ export class PokemonService {
     });
   }
 
-  public async downloadPokemonImageOfSerebiiNet(pokemonImages: SerebiiNet[] | null): Promise<boolean> {
+  public downloadPokemonImageOfSerebiiNet = async (pokemonImages: SerebiiNet[] | null): Promise<boolean> => {
     if (!pokemonImages) return false;
 
     const { convertImageToDownload, multiDownloads } = new ImageUtil();
@@ -101,7 +101,7 @@ export class PokemonService {
     await multiDownloads(imagesToDownload);
 
     return true;
-  }
+  };
 
   public async downloadPokemonIconImageOfSerebiiNet(pokemonImages: SerebiiNet[] | null): Promise<boolean> {
     if (!pokemonImages) return false;
