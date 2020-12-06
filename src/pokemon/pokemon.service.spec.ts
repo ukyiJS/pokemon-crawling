@@ -69,5 +69,11 @@ describe('PokemonService', () => {
       expect(result).not.toBeNull();
       expect(result).not.toHaveLength(0);
     });
+
+    it('should return an array of updatePokemonEggGroups', async () => {
+      const result = await service.updatePokemonEggGroups(pokemonDatabase);
+      expect(result).not.toBeNull();
+      expect(result).not.toHaveLength(0);
+    });
   });
 });
