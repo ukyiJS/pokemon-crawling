@@ -119,7 +119,9 @@ interface IDatabaseColumn {
   searchCount: Int!
 }
 
-"""Date custom scalar type"""
+"""
+Date custom scalar type
+"""
 scalar Date
 
 interface IPokemonDatabase {
@@ -201,6 +203,6 @@ type Mutation {
   updatePokemonEggGroups: [PokemonDatabase!]
   updatePokemonForm: [PokemonDatabase!]
   updatePokemonEvolutionCondition: [PokemonDatabase!]
-  updateEvYield: [PokemonDatabase!]
+  updatePokemonEvYield: [PokemonDatabase!]
   addPokemonWiki: [PokemonWiki!]
 }
