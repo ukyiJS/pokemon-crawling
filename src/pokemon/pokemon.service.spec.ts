@@ -119,5 +119,10 @@ describe('PokemonService', () => {
       const pokemons = await service.getPokemonOfPokemonWiki();
       expect(pokemons).not.toHaveLength(0);
     });
+
+    it('should return an array of downloadPokemonImageOfWiki', async () => {
+      const pokemons = await service.downloadPokemonImageOfWiki(pokemonWiki);
+      expect(pokemons).toEqual(true);
+    });
   });
 });
