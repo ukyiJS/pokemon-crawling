@@ -21,13 +21,13 @@ export class PokemonService {
   private readonly convertService: ConvertService;
   private readonly crawlingService: CrawlingService;
 
-  public async crawlingPokemonWiki(): Promise<IPokemonWiki[]> {
+  public crawlingPokemonWiki = async (): Promise<IPokemonWiki[]> => {
     const { browser, page } = await this.puppeteerService.init('https://pokemon.fandom.com/ko/wiki/이상해씨');
     const pokemons = await this.crawlingService.crawlingPokemonWiki(page);
     await browser.close();
 
     return pokemons;
-  }
+  };
 
   public async crawlingPokemonDatabase(): Promise<IPokemonDatabase[]> {
     const { browser, page } = await this.puppeteerService.init('https://pokemondb.net/pokedex/bulbasaur');
