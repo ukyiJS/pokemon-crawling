@@ -14,8 +14,10 @@ import { FormNames } from '@/pokemon/enums/formName.enum';
 import { PokemonNames } from '@/pokemon/enums/pokemonName.enum';
 import { TypeNames } from '@/pokemon/enums/pokemonType.enum';
 import { SpeciesNames } from '@/pokemon/enums/speciesName.enum';
+import { StatNames } from '@/pokemon/enums/statName.enum';
 import { PokemonDatabase } from '@/pokemon/model/pokemonDatabase.entity';
 import { EvolvingToType } from '@/pokemon/types/evolvingTo.type';
+import { PokemonDatabaseType } from '@/pokemon/types/pokemonDatabase.type';
 import { Injectable, Logger } from '@nestjs/common';
 
 interface ObjectLiteral<T> {
@@ -73,7 +75,7 @@ export class ConvertService {
       return <string>this.convertToKorName(PokemonNames, name);
     };
     const convertToNameOfEvolvingTo = this.convertToKorNameByEvolvingTo.bind(null, PokemonNames, 'name');
-    const convert = ({ name: { eng }, ...pokemon }: PokemonDatabase): PokemonDatabase => ({
+    const convert = ({ name: { eng }, ...pokemon }: PokemonDatabaseType): PokemonDatabaseType => ({
       ...pokemon,
       name: { eng, kor: convertToKorName(eng) },
     });
@@ -293,6 +295,20 @@ export class ConvertService {
     return pokemons.map(({ evolvingTo, ...pokemon }) => ({
       ...pokemon,
       evolvingTo: convertEvolvingTo(evolvingTo),
+    }));
+  }
+
+  public convertPokemonEvYield(pokemons: PokemonDatabase[]): PokemonDatabase[] {
+    const convertToKorName = (name: string): string => <string>this.convertToKorName(StatNames, name);
+    const convert = ({ evYield, ...pokemon }: PokemonDatabase) => ({
+      ...pokemon,
+      evYield: evYield && evYield.map(convertToKorName),
+    });
+
+    return pokemons.map(({ evYield, differentForm, ...pokemon }) => ({
+      ...pokemon,
+      evYield: evYield && evYield.map(convertToKorName),
+      differentForm: differentForm?.map(convert),
     }));
   }
 }
