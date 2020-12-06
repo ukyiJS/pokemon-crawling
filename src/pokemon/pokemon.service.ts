@@ -113,7 +113,7 @@ export class PokemonService {
     return true;
   };
 
-  public async downloadPokemonImageOfWiki(pokemons: PokemonWiki[] | null): Promise<boolean> {
+  public downloadPokemonImageOfWiki = async (pokemons: PokemonWiki[] | null): Promise<boolean> => {
     if (!pokemons) return false;
 
     const pokemonImages = <SerebiiNet[]>pokemons.map(({ no, name, image, form, differentForm }) => ({
@@ -128,7 +128,7 @@ export class PokemonService {
     await multiDownloads(imagesToDownload);
 
     return true;
-  }
+  };
 
   public async updateImageOfPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
     if (!pokemons) return null;
