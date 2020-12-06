@@ -93,5 +93,11 @@ describe('PokemonService', () => {
       expect(result).not.toBeNull();
       expect(result).not.toHaveLength(0);
     });
+
+    it('should return an array of updatePokemonSpecies', async () => {
+      const result = await service.updatePokemonSpecies(pokemonDatabase);
+      expect(result).not.toBeNull();
+      expect(result).not.toHaveLength(0);
+    });
   });
 });
