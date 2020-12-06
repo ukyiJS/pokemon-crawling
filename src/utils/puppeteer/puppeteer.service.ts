@@ -1,5 +1,5 @@
 import { PuppeteerEnv } from '@/config';
-import { Injectable, Logger, LogLevel } from '@nestjs/common';
+import { Inject, Injectable, Logger, LogLevel } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import puppeteer from 'puppeteer-extra';
 import adblocker from 'puppeteer-extra-plugin-adblocker';
@@ -7,6 +7,7 @@ import { Browser, LaunchOptions, Page } from 'puppeteer-extra/dist/puppeteer';
 
 @Injectable()
 export class PuppeteerService {
+  @Inject(ConfigService)
   private readonly configService: ConfigService;
 
   public init = async (url: string, options?: LaunchOptions): Promise<{ browser: Browser; page: Page }> => {
