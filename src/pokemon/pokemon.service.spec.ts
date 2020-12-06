@@ -125,4 +125,9 @@ describe('PokemonService', () => {
       expect(pokemons).toEqual(true);
     });
   });
+
+  describe('serebiiNet Test', () => {
+    const pokemonImageOfSerebiiNet = getJson<SerebiiNet[]>({ fileName: 'pokemonImageOfSerebiiNet.json' });
+    const pokemonIconImageOfSerebiiNet = getJson<SerebiiNet[]>({ fileName: 'pokemonIconImageOfSerebiiNet.json' });
+  });
 });
