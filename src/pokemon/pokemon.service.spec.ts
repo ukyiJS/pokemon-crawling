@@ -41,5 +41,10 @@ describe('PokemonService', () => {
       const pokemons = await service.getPokemonOfPokemonDatabase();
       expect(pokemons).not.toHaveLength(0);
     });
+
+    it('should return an array of updateImageOfPokemonDatabase', async () => {
+      const result = await service.downloadPokemonImageOfSerebiiNet(pokemonDatabase);
+      expect(result).toEqual(true);
+    });
   });
 });
