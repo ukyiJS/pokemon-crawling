@@ -1,7 +1,7 @@
 import { ImageUtil } from '@/utils';
 import { ConvertService } from '@/utils/convert/convert.service';
 import { PuppeteerService } from '@/utils/puppeteer/puppeteer.service';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MongoRepository } from 'typeorm';
 import { CrawlingService } from './crawling/crawling.service';
@@ -17,8 +17,11 @@ export class PokemonService {
   private readonly pokemonWiKiRepository: MongoRepository<PokemonWiki>;
   @InjectRepository(PokemonDatabase)
   private readonly pokemonDatabaseRepository: MongoRepository<PokemonDatabase>;
+  @Inject(PuppeteerService)
   private readonly puppeteerService: PuppeteerService;
+  @Inject(ConvertService)
   private readonly convertService: ConvertService;
+  @Inject(CrawlingService)
   private readonly crawlingService: CrawlingService;
 
   public crawlingPokemonWiki = async (): Promise<IPokemonWiki[]> => {
