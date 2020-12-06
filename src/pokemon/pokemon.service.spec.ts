@@ -106,4 +106,8 @@ describe('PokemonService', () => {
       expect(result).not.toHaveLength(0);
     });
   });
+
+  describe('pokemonWiki Test', () => {
+    const pokemonWiki = getJson<PokemonWiki[]>({ fileName: 'pokemonWiki.json' });
+  });
 });
