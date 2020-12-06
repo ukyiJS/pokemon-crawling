@@ -1,7 +1,9 @@
-import { TypeormService } from '@/config';
+import { envConfig, TypeormService } from '@/config';
+import { ConvertModule, PuppeteerModule, validationSchema } from '@/utils';
+import { ConfigModule } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { getMongoRepository, MongoRepository } from 'typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CrawlingModule } from './crawling/crawling.module';
 import { PokemonDatabase } from './model/pokemonDatabase.entity';
 import { PokemonWiki } from './model/pokemonWiki.entity';
 import { PokemonService } from './pokemon.service';
@@ -9,18 +11,27 @@ import { PokemonService } from './pokemon.service';
 jest.setTimeout(100000);
 describe('PokemonService', () => {
   let service: PokemonService;
-  let pokemonDatabaseRepository: MongoRepository<PokemonDatabase>;
-  let pokemonWikiRepository: MongoRepository<PokemonWiki>;
 
   beforeAll(async () => {
-    await Test.createTestingModule({
-      imports: [TypeOrmModule.forRootAsync({ useClass: TypeormService })],
-      providers: [PokemonService, { provide: getRepositoryToken(PokemonDatabase), useClass: MongoRepository }],
+    const moduleRef = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          envFilePath: process.env.NODE_ENV === 'development' ? '.env.dev' : '.env.prod',
+          load: [envConfig],
+          validationSchema,
+          validationOptions: { abortEarly: true },
+        }),
+        TypeOrmModule.forRootAsync({ useClass: TypeormService }),
+        TypeOrmModule.forFeature([PokemonWiki, PokemonDatabase]),
+        PuppeteerModule,
+        ConvertModule,
+        CrawlingModule,
+      ],
+      providers: [PokemonService],
     }).compile();
 
-    pokemonWikiRepository = getMongoRepository(PokemonWiki);
-    pokemonDatabaseRepository = getMongoRepository(PokemonDatabase);
-    service = new PokemonService();
+    service = await moduleRef.resolve(PokemonService);
   });
 
   it.only('Pokemons of Wiki Test', async () => {
