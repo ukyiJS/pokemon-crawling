@@ -1,4 +1,5 @@
 export enum StatNames {
+  HP = '체력',
   ATTACK = '공격',
   DEFENSE = '방어',
   SPECIAL_ATTACK = '특수공격',
