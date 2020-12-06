@@ -20,7 +20,7 @@ describe('PokemonService', () => {
 
     pokemonWikiRepository = getMongoRepository(PokemonWiki);
     pokemonDatabaseRepository = getMongoRepository(PokemonDatabase);
-    service = new PokemonService(pokemonWikiRepository, pokemonDatabaseRepository);
+    service = new PokemonService();
   });
 
   it.only('Pokemons of Wiki Test', async () => {
