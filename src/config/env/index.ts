@@ -1,3 +1,6 @@
+import { validationSchema } from '@/utils';
+import { ConfigModuleOptions } from '@nestjs/config/dist/interfaces';
+
 export interface DatabaseEnv {
   url: string;
 }
@@ -15,7 +18,7 @@ export interface Env {
   crawling: CrawlingEnv;
 }
 
-export const envConfig = (): Env => ({
+const envConfig = (): Env => ({
   port: +process.env.PORT!,
   database: {
     url: process.env.DATABASE_URL!,
@@ -28,3 +31,11 @@ export const envConfig = (): Env => ({
     loopCount: +process.env.LOOP_COUNT!,
   },
 });
+
+export const configOptions = <ConfigModuleOptions>{
+  isGlobal: true,
+  envFilePath: process.env.NODE_ENV === 'development' ? '.env.dev' : '.env.prod',
+  load: [envConfig],
+  validationSchema,
+  validationOptions: { abortEarly: true },
+};
