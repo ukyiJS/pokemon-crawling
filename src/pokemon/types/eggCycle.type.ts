@@ -4,6 +4,6 @@ import { Field, Int, ObjectType } from '@nestjs/graphql';
 export abstract class EggCycleType {
   @Field(() => Int)
   public value: number;
-  @Field(() => Int, { nullable: true })
-  public step: number[] | null;
+  @Field(() => [Int], { nullable: true })
+  public step: number[];
 }
