@@ -67,7 +67,11 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         return src.replace(/(rockruff)-own-tempo.png$/g, '$1.png');
       };
       private getFormName = (): string => {
-        const formName = of(this.$element).replaceText(/[^a-z0-9♂♀]/);
+        const formName = of(this.$element)
+          .getText()
+          .toLowerCase()
+          .replace(/\s+(\w|$)/g, ($$, $1) => $1.toUpperCase())
+          .replace(/[^a-z0-9♂♀]/, '');
         const regExp = /(mega).*x$|(mega).*y$|^(alola)n.*|^(galar)ian.*|^(mega).*|^(primal).*|(form)e$/gi;
 
         return formName.replace(regExp, (str, ...$$) => {
