@@ -77,7 +77,8 @@ export class PokemonService {
       .then(result => this.updatePokemonAbilities(result))
       .then(result => this.updatePokemonEggGroups(result))
       .then(result => this.updatePokemonForm(result))
-      .then(result => this.updatePokemonEvolutionCondition(result));
+      .then(result => this.updatePokemonEvolutionCondition(result))
+      .then(result => this.updatePokemonEvYield(result));
 
     const updatedResult = updatedPokemons!.map(({ no, ...pokemon }) => {
       return this.pokemonDatabaseRepository
@@ -187,5 +188,11 @@ export class PokemonService {
     if (!pokemons) return null;
 
     return this.convertService.convertPokemonEvolutionCondition(pokemons);
+  };
+
+  public updatePokemonEvYield = async (pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> => {
+    if (!pokemons) return null;
+
+    return this.convertService.convertPokemonEvYield(pokemons);
   };
 }
