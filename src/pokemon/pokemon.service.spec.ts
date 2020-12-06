@@ -36,5 +36,10 @@ describe('PokemonService', () => {
       const pokemons = await service.crawlingPokemonDatabase();
       expect(pokemons).not.toHaveLength(0);
     });
+
+    it('should return an array of getPokemonOfPokemonDatabase', async () => {
+      const pokemons = await service.getPokemonOfPokemonDatabase();
+      expect(pokemons).not.toHaveLength(0);
+    });
   });
 });
