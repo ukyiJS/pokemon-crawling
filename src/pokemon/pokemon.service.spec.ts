@@ -32,7 +32,7 @@ describe('PokemonService', () => {
   describe('pokemonDatabase Test', () => {
     const pokemonDatabase = getJson<PokemonDatabase[]>({ fileName: 'pokemonDatabase.json' });
 
-    it('should return an array of crawlingPokemonDatabase', async () => {
+    it.only('should return an array of crawlingPokemonDatabase', async () => {
       const pokemons = await service.crawlingPokemonDatabase();
       expect(pokemons).not.toHaveLength(0);
     });
