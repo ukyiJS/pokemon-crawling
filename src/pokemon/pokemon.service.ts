@@ -29,13 +29,13 @@ export class PokemonService {
     return pokemons;
   };
 
-  public async crawlingPokemonDatabase(): Promise<IPokemonDatabase[]> {
+  public crawlingPokemonDatabase = async (): Promise<IPokemonDatabase[]> => {
     const { browser, page } = await this.puppeteerService.init('https://pokemondb.net/pokedex/bulbasaur');
     const pokemons = await this.crawlingService.crawlingPokemonDatabase(page);
     await browser.close();
 
     return pokemons;
-  }
+  };
 
   public async crawlingPokemonIconImagOfSerebiiNet(): Promise<SerebiiNet[]> {
     const { browser, page } = await this.puppeteerService.init('https://serebii.net/pokemon/nationalpokedex.shtml');
