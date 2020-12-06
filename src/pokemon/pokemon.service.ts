@@ -60,7 +60,7 @@ export class PokemonService {
     return Promise.all(savedPokemons);
   };
 
-  public async addPokemonDatabase(pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> {
+  public addPokemonDatabase = async (pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> => {
     if (!pokemons) return null;
 
     const savedPokemons = pokemons.map(pokemon => this.pokemonDatabaseRepository.save(new PokemonDatabase(pokemon)));
@@ -82,7 +82,7 @@ export class PokemonService {
         .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
     });
     return Promise.all(updatedResult);
-  }
+  };
 
   public async getPokemonOfPokemonWiki(): Promise<PokemonWiki[]> {
     return this.pokemonWiKiRepository.find({
