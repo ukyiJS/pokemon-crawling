@@ -129,5 +129,10 @@ describe('PokemonService', () => {
   describe('serebiiNet Test', () => {
     const pokemonImageOfSerebiiNet = getJson<SerebiiNet[]>({ fileName: 'pokemonImageOfSerebiiNet.json' });
     const pokemonIconImageOfSerebiiNet = getJson<SerebiiNet[]>({ fileName: 'pokemonIconImageOfSerebiiNet.json' });
+
+    it('should return an array of crawlingPokemonImageOfSerebiiNet', async () => {
+      const pokemons = await service.crawlingPokemonImageOfSerebiiNet();
+      expect(pokemons).not.toHaveLength(0);
+    });
   });
 });
