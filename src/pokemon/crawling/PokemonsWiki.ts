@@ -98,6 +98,43 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
       public getEegGroups = (): string[] => {
         return of(this.getElement()?.querySelectorAll('a:not(:first-child)')).getTexts();
       };
+      public getFormName = (): string => {
+        const form = of(this.getElement()).getText();
+        const regExp = /(메가).*x$|(메가).*y$|^(알로라)|^(가라르)|^(메가).*|^(원시).*|(.*)모양$|^(거다이맥스).*/gi;
+        return form.replace(regExp, (str, ...$$) => {
+          const index = $$.findIndex(str => str);
+          const matchText = $$[index];
+          switch (index) {
+            case 0:
+              return `${matchText}진화X`;
+            case 1:
+              return `${matchText}진화Y`;
+            case 2:
+            case 3:
+              return `${matchText} 폼`;
+            case 4:
+              return `${matchText}진화`;
+            case 5:
+              return `${matchText}회귀`;
+            case 6:
+              return `${matchText}모습`;
+            case 7:
+              return matchText;
+            default:
+              return str;
+          }
+        });
+      };
+      public getFormNames = (): string[] => {
+        return this.getElements()
+          .filter(($el, i) => {
+            if (i > 0) return true;
+            const name = of($el.querySelector('.name-ko')).getText();
+            const form = of($el).getText();
+            return !/기존폼|평상시|^캐스퐁/.test(form) && form !== name;
+          })
+          .map($el => of($el).getFormName());
+      };
       public getPokemon = (): IPokemonWiki => {
         const $pokemon = this.getElement();
         const [$types, $species, $abilities, $hiddenAbility, , , , $color, $friendship, $height, $weight, $catchRate, $gender, $eegGroups] = of(
@@ -128,39 +165,7 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
     })();
 
     const [$pokemon, ...$differentForm] = of(document.querySelectorAll('.infobox-pokemon')).getElements();
-    const [formName, ...differentFormNames] = of(document.querySelectorAll('#pokemonToggle td'))
-      .getTexts()
-      .filter((form, i) => {
-        if (i > 0) return true;
-        const name = $pokemon?.querySelector('.name-ko')?.textContent?.trim();
-        return !/기존폼|평상시|^캐스퐁|^서쪽의|^봄의|/.test(form) && form !== name;
-      })
-      .map(form => {
-        const regExp = /(메가).*x$|(메가).*y$|^알로라|^가라르|^(메가).*|^(원시).*|.*(모양)$|^(거다이맥스).*/gi;
-        return form.replace(regExp, (str, ...$$) => {
-          const index = $$.findIndex(str => str);
-          const matchText = $$[index];
-          switch (index) {
-            case 0:
-              return `${matchText}진화X`;
-            case 1:
-              return `${matchText}진화Y`;
-            case 2:
-            case 3:
-              return `${matchText} 폼`;
-            case 4:
-              return `${matchText}진화`;
-            case 5:
-              return `${matchText}회귀`;
-            case 6:
-              return '모습';
-            case 7:
-              return matchText;
-            default:
-              return str;
-          }
-        });
-      });
+    const [formName, ...differentFormNames] = of(document.querySelectorAll('#pokemonToggle > tbody > tr > td')).getFormNames();
 
     const isForm = formName ? $differentForm.length === differentFormNames.length : false;
     const form = isForm ? formName : null;
