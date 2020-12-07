@@ -2,6 +2,7 @@ export enum FormNames {
   MEGA_X = '메가진화X',
   MEGA_Y = '메가진화Y',
   MEGA = '메가진화',
+  DYNAMAX = '거다이맥스',
   GALARIAN_STANDARD_MODE = '가라르 폼',
   GALARIAN_ZEN_MODE = '가라르 폼 달마모드',
   ALOLA_FORM = '알로라 폼',
@@ -79,5 +80,11 @@ export enum FormNames {
   OWN_TEMPO_ROCKRUFF = '마이페이스 암멍이',
   RED_STRIPED_FORM = '적색근의 모습',
   BLUE_STRIPED_FORM = '청색근의 모습',
+  WEST_FORM = '서쪽의 모습',
+  SPRING_FORM = '봄의 모습',
+  SUMMER_FORM = '여름의 모습',
+  AUTUMN_FORM = '가을의 모습',
+  WINTER_FORM = '겨울의 모습',
+  DADA = '아빠',
 }
 export type FormName = typeof FormNames[keyof typeof FormNames];
