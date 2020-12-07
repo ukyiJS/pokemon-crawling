@@ -100,22 +100,9 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
       };
       public getPokemon = (): IPokemonWiki => {
         const $pokemon = this.getElement();
-        const [
-          $types,
-          $species,
-          $abilities,
-          $hiddenAbility,
-          ,
-          ,
-          ,
-          $color,
-          $friendship,
-          $height,
-          $weight,
-          $catchRate,
-          $gender,
-          $eegGroups,
-        ] = of($pokemon).getContentsElements();
+        const [$types, $species, $abilities, $hiddenAbility, , , , $color, $friendship, $height, $weight, $catchRate, $gender, $eegGroups] = of(
+          $pokemon,
+        ).getContentsElements();
 
         const abilities = of($abilities).getAbilities();
         const hiddenAbility = of($hiddenAbility).getHiddenAbility();
@@ -146,15 +133,33 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
       .filter((form, i) => {
         if (i > 0) return true;
         const name = $pokemon?.querySelector('.name-ko')?.textContent?.trim();
-        return !/기존폼|평상시/.test(form) && form !== name;
+        return !/기존폼|평상시|^캐스퐁|^서쪽의|^봄의|/.test(form) && form !== name;
       })
       .map(form => {
-        return form
-          .replace(/(^알로라|^가라르).*/, '$1 폼')
-          .replace(/(^메가).*X$/, '$1진화X')
-          .replace(/(^메가).*Y$/, '$1진화Y')
-          .replace(/(^메가).*/, '$1진화')
-          .replace(/(^거다이맥스).*/, '$1');
+        const regExp = /(메가).*x$|(메가).*y$|^알로라|^가라르|^(메가).*|^(원시).*|.*(모양)$|^(거다이맥스).*/gi;
+        return form.replace(regExp, (str, ...$$) => {
+          const index = $$.findIndex(str => str);
+          const matchText = $$[index];
+          switch (index) {
+            case 0:
+              return `${matchText}진화X`;
+            case 1:
+              return `${matchText}진화Y`;
+            case 2:
+            case 3:
+              return `${matchText} 폼`;
+            case 4:
+              return `${matchText}진화`;
+            case 5:
+              return `${matchText}회귀`;
+            case 6:
+              return '모습';
+            case 7:
+              return matchText;
+            default:
+              return str;
+          }
+        });
       });
 
     const isForm = formName ? $differentForm.length === differentFormNames.length : false;
