@@ -2,24 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-interface IPokemon {
-  no: String!
-  name: LanguageType!
-  image: String!
-  color: ColorType
-  types: [String!]!
-  species: String!
-  height: String!
-  weight: String!
-  abilities: [String]!
-  hiddenAbility: String
-  catchRate: Int!
-  friendship: Int!
-  eegGroups: [String!]!
-  gender: [GenderType!]!
-  form: String
-}
-
 type ColorType {
   name: String!
   code: String!
@@ -37,7 +19,7 @@ type LanguageType {
 
 type EggCycleType {
   value: Int!
-  step: Int
+  step: [Int!]
 }
 
 type EvolvingToType {
@@ -119,10 +101,26 @@ interface IDatabaseColumn {
   searchCount: Int!
 }
 
-"""
-Date custom scalar type
-"""
+"""Date custom scalar type"""
 scalar Date
+
+interface IPokemon {
+  no: String!
+  name: LanguageType!
+  image: String!
+  color: ColorType
+  types: [String!]!
+  species: String!
+  height: String!
+  weight: String!
+  abilities: [String]!
+  hiddenAbility: String
+  catchRate: Int!
+  friendship: Int!
+  eegGroups: [String!]!
+  gender: [GenderType!]!
+  form: String
+}
 
 interface IPokemonDatabase {
   icon: String
@@ -140,6 +138,25 @@ type SerebiiNetType {
   name: LanguageType!
   image: String!
   form: String
+}
+
+type PokemonWikiType {
+  no: String!
+  name: LanguageType!
+  image: String!
+  color: ColorType
+  types: [String!]!
+  species: String!
+  height: String!
+  weight: String!
+  abilities: [String]!
+  hiddenAbility: String
+  catchRate: Int!
+  friendship: Int!
+  eegGroups: [String!]!
+  gender: [GenderType!]!
+  form: String
+  differentForm: [PokemonWikiType!]
 }
 
 type PokemonWiki implements IDatabaseColumn & IPokemon & IPokemonWiki {
@@ -161,26 +178,11 @@ type PokemonWiki implements IDatabaseColumn & IPokemon & IPokemonWiki {
   eegGroups: [String!]!
   gender: [GenderType!]!
   form: String
-  differentForm: [IPokemon!]!
+  differentForm: [PokemonWikiType!]
 }
 
 interface IPokemonWiki {
-  no: String!
-  name: LanguageType!
-  image: String!
-  color: ColorType
-  types: [String!]!
-  species: String!
-  height: String!
-  weight: String!
-  abilities: [String]!
-  hiddenAbility: String
-  catchRate: Int!
-  friendship: Int!
-  eegGroups: [String!]!
-  gender: [GenderType!]!
-  form: String
-  differentForm: [IPokemon!]!
+  differentForm: [PokemonWikiType!]
 }
 
 type Query {
@@ -194,6 +196,7 @@ type Query {
 
 type Mutation {
   addPokemonOfDatabase: [PokemonDatabase!]
+  addPokemonColorOfPokemonDatabase: [PokemonDatabase!]
   updateImageOfPokemonDatabase: [PokemonDatabase!]
   updateIconImageOfPokemonDatabase: [PokemonDatabase!]
   updatePokemonName: [PokemonDatabase!]
