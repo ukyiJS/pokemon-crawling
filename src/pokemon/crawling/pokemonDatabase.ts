@@ -301,7 +301,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
       };
     })();
     const replaceText = (text: string): string => text.replace(/[^a-z]/gi, '');
-    const regExp = (text: string): RegExp => RegExp(text, 'gi');
+    const regExp = (text: string): RegExp => RegExp(`${text}$`, 'gi');
     const $tabsPanel = $main.querySelectorAll('.tabset-basics > .tabs-panel-list > .tabs-panel');
     const $pokemons = of($tabsPanel).getPokemonElements();
     const $formNames = $main.querySelectorAll('.tabset-basics > .tabs-tab-list > .tabs-tab');
