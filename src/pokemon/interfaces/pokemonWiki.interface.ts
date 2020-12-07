@@ -1,8 +1,8 @@
 import { Field, InterfaceType } from '@nestjs/graphql';
-import { IPokemon } from './pokemon.interface';
+import { PokemonWikiType } from '../types/pokemonWiki.type';
 
 @InterfaceType()
-export abstract class IPokemonWiki extends IPokemon {
-  @Field(() => [IPokemon])
-  public differentForm?: IPokemon[];
+export abstract class IPokemonWiki extends PokemonWikiType {
+  @Field(() => [PokemonWikiType], { nullable: true })
+  public differentForm?: PokemonWikiType[];
 }
