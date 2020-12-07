@@ -65,7 +65,9 @@ export class ImageUtil {
       const convertedDifferentForm = differentForm.map(({ image, form }) => {
         let key = '';
         try {
-          [key] = Object.entries(FormNames).find(([, value]) => form === value)!;
+          [key] = Object.entries(FormNames).find(([, value]) => {
+            return RegExp(`^${value.replace(/\s/g, '')}`, 'gi').test(form!.replace(/\s/g, ''));
+          })!;
         } catch (error) {
           Logger.error(`No matching ${form} found`, '', 'NoMatchingError');
         }
