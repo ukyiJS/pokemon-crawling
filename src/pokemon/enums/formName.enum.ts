@@ -66,7 +66,7 @@ export enum FormNames {
   LOW_KEY_FORM = '로우한 모습',
   AMPED_FORM = '하이한 모습',
   ICE_FACE = '아이스 페이스',
-  NOICE_FACE = '노아이스 페이스',
+  NOICE_FACE = '나이스 페이스',
   FULL_BELLY_MODE = '배부른 모습',
   HANGRY_MODE = '배고픈 모습',
   HERO_OF_MANY_BATTLES = '역전의 용사',
@@ -81,10 +81,13 @@ export enum FormNames {
   RED_STRIPED_FORM = '적색근의 모습',
   BLUE_STRIPED_FORM = '청색근의 모습',
   WEST_FORM = '서쪽의 모습',
+  EAST_FORM = '동쪽의 모습',
   SPRING_FORM = '봄의 모습',
   SUMMER_FORM = '여름의 모습',
   AUTUMN_FORM = '가을의 모습',
   WINTER_FORM = '겨울의 모습',
+  NEGATIVE_FORM = '네거티브 폼',
+  POSITIVE_FORM = '포지티브 폼',
   DADA = '아빠',
 }
 export type FormName = typeof FormNames[keyof typeof FormNames];
