@@ -300,6 +300,8 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         return pokemon;
       };
     })();
+    const replaceText = (text: string): string => text.replace(/[^a-z]/gi, '');
+    const regExp = (text: string): RegExp => RegExp(text, 'gi');
     const $tabsPanel = $main.querySelectorAll('.tabset-basics > .tabs-panel-list > .tabs-panel');
     const $pokemons = of($tabsPanel).getPokemonElements();
     const $formNames = $main.querySelectorAll('.tabset-basics > .tabs-tab-list > .tabs-tab');
@@ -308,7 +310,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
     const [pokemon, ...pokemons] = $pokemons.map($pokemon => of($pokemon).getPokemon());
     const [formName, ...formNames] = of($formNames).getFormNames();
     const evolvingTo = of($evolvingTo).getEvolvingTo();
-    const isForm = formName.replace(/[^a-z]/gi, '') === pokemon.name.eng.replace(/[^a-z]/gi, '') ? null : true;
+    const isForm = regExp(replaceText(formName)).test(replaceText(pokemon.name.eng)) ? null : true;
     const form = isForm && formName;
     const result = { ...pokemon, evolvingTo, form };
 
