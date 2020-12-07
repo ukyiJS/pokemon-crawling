@@ -22,6 +22,6 @@ export class PokemonWikiResolver {
 
   @Query(() => Boolean)
   public downloadPokemonImageOfPokemonWiki(): Promise<boolean> {
-    return this.pokemonService.downloadPokemonImageOfWiki(this.pokemons);
+    return this.pokemonService.downloadPokemonImageOfPokemonWiki(this.pokemons);
   }
 }
