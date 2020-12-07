@@ -127,9 +127,9 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
       };
       public getFormNames = (): string[] => {
         return this.getElements()
-          .filter(($el, i) => {
-            if (i > 0) return true;
-            const name = of($el.querySelector('.name-ko')).getText();
+          .filter((_, i) => i > 0)
+          .filter($el => {
+            const name = of(document.querySelector('.name-ko')).getText();
             const form = of($el).getText();
             return !/기존폼|평상시|^캐스퐁/.test(form) && form !== name;
           })
