@@ -70,7 +70,7 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
         const formName = of(this.$element)
           .getText()
           .toLowerCase()
-          .replace(/\s+(\w|$)/g, ($$, $1) => $1.toUpperCase())
+          .replace(/\s+(\w|$)/g, (_, $1) => $1.toUpperCase())
           .replace(/[^a-z0-9♂♀]/, '');
         const regExp = /(mega).*x$|(mega).*y$|^(alola)n.*|^(galar)ian.*|^(mega).*|^(primal).*|(form)e$/gi;
 
