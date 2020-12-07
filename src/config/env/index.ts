@@ -34,7 +34,7 @@ const envConfig = (): Env => ({
 
 export const configOptions = <ConfigModuleOptions>{
   isGlobal: true,
-  envFilePath: process.env.NODE_ENV === 'development' ? '.env.dev' : '.env.prod',
+  envFilePath: process.env.NODE_ENV === 'production' ? '.env.prod' : '.env.dev',
   load: [envConfig],
   validationSchema,
   validationOptions: { abortEarly: true },
