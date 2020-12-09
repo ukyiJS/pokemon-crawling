@@ -33,7 +33,7 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
       private $element: Element | null;
       private $elements: Element[];
 
-      public of = ($element?: Element | Element[] | NodeListOf<Element> | null): this => {
+      public of = <T extends Element>($element?: T | T[] | NodeListOf<T> | null): this => {
         if (!$element) this.$element = null;
         else if ($element instanceof Element) this.$element = $element;
         else this.$elements = Array.from($element);
