@@ -63,6 +63,15 @@ export class ImageUtil {
       if (!differentForm?.length) return [...acc, downloadData];
 
       const convertedDifferentForm = differentForm.map(({ image, form }) => {
+        const isEng = /[a-z]$/gi.test(form!);
+        if (isEng) {
+          return {
+            no,
+            url: image,
+            fileName: fileName.replace(/(\d+)(.png)/g, `$1-${form}$2`),
+            dirName: _dirName,
+          };
+        }
         let key = '';
         try {
           [key] = Object.entries(FormNames).find(([, value]) => {
