@@ -40,14 +40,12 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
 
         return this;
       };
-      public getElement = (): Element | null => this.$element;
-      public getElements = (): Element[] => this.$elements;
       public getText = (): string => {
-        const text = this.getElement()?.textContent;
+        const text = this.$element?.textContent;
         return text ? text.trim().replace(/é/gi, 'e') : '';
       };
       public getTexts = (): string[] => {
-        return this.getElements().reduce<string[]>((acc, $element) => {
+        return this.$elements.reduce<string[]>((acc, $element) => {
           const text = of($element).getText();
           return text ? [...acc, text] : acc;
         }, []);
@@ -56,36 +54,36 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
         return this.getText().replace(new RegExp(searchValue, 'gi'), replaceValue);
       };
       public getContentsElements = (): Element[] => {
-        return Array.from(this.getElement()?.querySelectorAll('.body > tbody > tr > td:not(.nostyle)') ?? []);
+        return Array.from(this.$element?.querySelectorAll('.body > tbody > tr > td:not(.nostyle)') ?? []);
       };
-      public getNo = (): string => of(this.getElement()?.querySelector('.index')).replaceText(/\D/);
+      public getNo = (): string => of(this.$element?.querySelector('.index')).replaceText(/\D/);
       public getNames = (): LanguageType => {
-        const [kor, , eng] = of(this.getElement()?.querySelectorAll(`div[class^='name-']`) ?? []).getTexts();
+        const [kor, , eng] = of(this.$element?.querySelectorAll(`div[class^='name-']`) ?? []).getTexts();
         return { kor, eng };
       };
       public getImage = (): string => {
-        const href = (<HTMLAnchorElement>this.getElement()?.querySelector('a'))?.href ?? '';
-        const src = (<HTMLImageElement>this.getElement()?.querySelector('img'))?.src ?? '';
+        const href = (<HTMLAnchorElement>this.$element?.querySelector('a'))?.href ?? '';
+        const src = (<HTMLImageElement>this.$element?.querySelector('img'))?.src ?? '';
         return href || src;
       };
-      public getTypes = (): string[] => of(this.getElement()?.querySelectorAll('a span')).getTexts();
+      public getTypes = (): string[] => of(this.$element?.querySelectorAll('a span')).getTexts();
       public getHiddenAbility = (): string | null => {
-        const hiddenAbility = of(this.getElement()?.querySelector('a')).getText() || null;
+        const hiddenAbility = of(this.$element?.querySelector('a')).getText() || null;
         return hiddenAbility && /없음/g.test(hiddenAbility) ? null : hiddenAbility;
       };
       public getAbilities = (): (string | null)[] => {
-        const [ability1, ability2 = null] = of(this.getElement()?.querySelectorAll('a span')).getTexts();
+        const [ability1, ability2 = null] = of(this.$element?.querySelectorAll('a span')).getTexts();
         return [ability1, ability2];
       };
       public getColors = (): ColorType => {
-        const $code = this.getElement()?.querySelector('span');
-        const name = of(this.getElement()).getText();
+        const $code = this.$element?.querySelector('span');
+        const name = of(this.$element).getText();
         const code = $code?.getAttribute('style')?.replace(/background:/, '') ?? '';
         return { name, code };
       };
       public getGender = (): GenderType[] => {
         const genderless = [{ name: '무성', ratio: 100 }];
-        const match = of(this.getElement())
+        const match = of(this.$element)
           .getText()
           .match(/(\d.*)(?=%).*(?<=:)(\d.*)(?=%)/);
         if (!match) return genderless;
@@ -96,10 +94,10 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
         ];
       };
       public getEegGroups = (): string[] => {
-        return of(this.getElement()?.querySelectorAll('a:not(:first-child)')).getTexts();
+        return of(this.$element?.querySelectorAll('a:not(:first-child)')).getTexts();
       };
       public getFormName = (): string => {
-        const form = of(this.getElement()).getText();
+        const form = of(this.$element).getText();
         const regExp = /(메가).*x$|(메가).*y$|^(알로라)|^(가라르)|^(메가).*|^(원시).*|(.*)모양$|^(거다이맥스).*/gi;
         return form.replace(regExp, (str, ...$$) => {
           const index = $$.findIndex(str => str);
@@ -126,7 +124,7 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
         });
       };
       public getFormNames = (): string[] => {
-        return this.getElements()
+        return this.$elements
           .filter((_, i) => i > 0)
           .filter($el => {
             const name = of(document.querySelector('.name-ko')).getText();
@@ -136,7 +134,7 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
           .map($el => of($el).getFormName());
       };
       public getPokemon = (): IPokemonWiki => {
-        const $pokemon = this.getElement();
+        const $pokemon = this.$element;
         const [$types, $species, $abilities, $hiddenAbility, , , , $color, $friendship, $height, $weight, $catchRate, $gender, $eegGroups] = of(
           $pokemon,
         ).getContentsElements();
@@ -164,7 +162,7 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
       };
     })();
 
-    const [$pokemon, ...$differentForm] = of(document.querySelectorAll('.infobox-pokemon')).getElements();
+    const [$pokemon, ...$differentForm] = Array.from(document.querySelectorAll('.infobox-pokemon'));
     const [formName, ...differentFormNames] = of(document.querySelectorAll('#pokemonToggle > tbody > tr > td')).getFormNames();
 
     const isForm = formName ? $differentForm.length === differentFormNames.length : false;
