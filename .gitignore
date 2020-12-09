@@ -43,7 +43,7 @@ yarn.lock
 env*.json
 
 # json file
-**/json/*.json
+**/assets/json/*.json
 
 # download files
 **/download
