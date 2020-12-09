@@ -70,7 +70,7 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
       };
       public getTypes = (): string[] => of(this.getElement()?.querySelectorAll('a span')).getTexts();
       public getHiddenAbility = (): string | null => {
-        const hiddenAbility = of(this.getElement()).getText() || null;
+        const hiddenAbility = of(this.getElement()?.querySelector('a')).getText() || null;
         return hiddenAbility && /없음/g.test(hiddenAbility) ? null : hiddenAbility;
       };
       public getAbilities = (): (string | null)[] => {
