@@ -97,7 +97,7 @@ export class ImageUtil {
   };
 
   private getImageUrl = (name: string): string => {
-    return `https://raw.githubusercontent.com/ukyiJS/pokemon-crawling/image/${name}.png`;
+    return `https://raw.githubusercontent.com/ukyiJS/pokemon-crawling/image/wiki/${name}.png`;
   };
 
   private setImageUrl = (dirName: string, no: string, form?: string | null): string => {
