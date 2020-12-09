@@ -36,7 +36,7 @@ export class ConvertService {
     const removeSpecialSymbol = (text: string) => text.replace(/[^a-z0-9]/gi, '');
     const findKorName = (name: string): string => {
       const [, result] = Object.entries(enums).find(([key]) => {
-        return RegExp(`${removeSpecialSymbol(key)}$`, 'gi').test(removeSpecialSymbol(name));
+        return RegExp(`^${removeSpecialSymbol(key)}+$`, 'gi').test(removeSpecialSymbol(name));
       })!;
       return result;
     };
