@@ -88,6 +88,19 @@ export class PokemonService {
     return Promise.all(updatedResult);
   };
 
+  public addPokemonColorOfPokemonDatabase = async (): Promise<PokemonDatabase[] | null> => {
+    const pokemons = await this.getPokemonOfPokemonWiki();
+    if (!pokemons.length) return null;
+
+    const updatedResult = pokemons.map(({ no, color }) => {
+      return this.pokemonDatabaseRepository
+        .findOneAndUpdate({ no }, { $set: { color } }, { returnOriginal: false })
+        .then(({ value: pokemon }) => <PokemonDatabase>pokemon);
+    });
+
+    return Promise.all(updatedResult);
+  };
+
   public getPokemonOfPokemonWiki = async (): Promise<PokemonWiki[]> => this.pokemonWiKiRepository.find({ order: { no: 'ASC' } });
 
   public async getPokemonOfPokemonDatabase(): Promise<PokemonDatabase[]> {
@@ -117,7 +130,7 @@ export class PokemonService {
     return true;
   };
 
-  public downloadPokemonImageOfWiki = async (pokemons: PokemonWiki[] | null): Promise<boolean> => {
+  public downloadPokemonImageOfPokemonWiki = async (pokemons: PokemonWiki[] | null): Promise<boolean> => {
     if (!pokemons) return false;
 
     const pokemonImages = <SerebiiNet[]>pokemons.map(({ no, name, image, form, differentForm }) => ({
