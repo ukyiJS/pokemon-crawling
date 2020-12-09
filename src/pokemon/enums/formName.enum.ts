@@ -86,8 +86,8 @@ export enum FormNames {
   SUMMER_FORM = '여름의 모습',
   AUTUMN_FORM = '가을의 모습',
   WINTER_FORM = '겨울의 모습',
-  OVERCAST_FORM = '네거티브 폼',
-  SUNSHINE_FORM = '포지티브 폼',
+  OVERCAST_FORM = '네거 폼',
+  SUNSHINE_FORM = '포지 폼',
   ORIGINAL_COLOR = '500년전의 색',
   DADA = '아빠',
 }
