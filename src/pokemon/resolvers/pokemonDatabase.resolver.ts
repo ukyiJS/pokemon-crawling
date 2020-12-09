@@ -23,6 +23,11 @@ export class PokemonDatabaseResolver {
   }
 
   @Mutation(() => [PokemonDatabase], { nullable: true })
+  public async addPokemonColorOfPokemonDatabase(): Promise<PokemonDatabase[] | null> {
+    return this.pokemonService.addPokemonColorOfPokemonDatabase();
+  }
+
+  @Mutation(() => [PokemonDatabase], { nullable: true })
   public async updateImageOfPokemonDatabase(): Promise<PokemonDatabase[] | null> {
     return this.pokemonService.updateImageOfPokemonDatabase(this.pokemons);
   }
