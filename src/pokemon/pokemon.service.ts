@@ -113,6 +113,7 @@ export class PokemonService {
     return pokemons.map(p => {
       const dynamax = pokemonWiki.find(({ no, differentForm }) => p.no === no && differentForm?.some(p => p.form === '거다이맥스'));
       if (!dynamax?.no) return p;
+
       const image = getImageUrl(`${getGenerationName(+p.no)}/${p.no}-dynamax`);
       const { stats, types, typeDefenses, species, evYield, eggCycle, eegGroups, catchRate, exp, friendship, abilities, hiddenAbility } = p;
       const pokemon = { stats, types, typeDefenses, species, evYield, eggCycle, eegGroups, catchRate, exp, friendship, abilities, hiddenAbility };
