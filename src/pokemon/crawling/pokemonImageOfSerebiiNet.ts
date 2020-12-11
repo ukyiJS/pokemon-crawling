@@ -6,9 +6,6 @@ import { LanguageType } from '../types/language.type';
 import { SerebiiNetType } from '../types/serebiiNet.type';
 import { CrawlingUtil } from './crawlingUtil';
 
-type Column = [Element, Element[], Element, Element[], SerebiiNetType[], SerebiiNetType[]];
-type ImageAndForm = Omit<Omit<ISerebiiNet, 'no'>, 'name'>;
-
 export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
   public crawling = async (page: Page, loopCount: number): Promise<ISerebiiNet[]> => {
     let curser = 0;
@@ -33,115 +30,130 @@ export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
   };
 
   private getPokemonOfSerebiiNet = (): ISerebiiNet => {
-    const { of, getExceptionalPokemon } = new (class {
-      private $element: Element | Element[] | null;
+    const { of } = new (class {
+      private $element: Element | null;
+      private $elements: Element[];
+      private no: string;
+      private name: LanguageType;
+      private image: string;
 
-      public of = <T>($element: T): this => {
+      public of = <T extends Element>($element?: T | T[] | NodeListOf<T> | null): this => {
         if (!$element) this.$element = null;
-        else this.$element = $element instanceof Element ? $element : Array.from(<T & NodeListOf<Element>>$element);
+        else if ($element instanceof Element) this.$element = $element;
+        else this.$elements = Array.from($element);
 
         return this;
       };
-      public getColumn = (): Column => {
-        const [$image, _$name, _$no] = this.getChildren().filter((_, i) => i < 3);
+      public getColumn = (): Element[][] => {
+        const [_$image, _$name, _$no] = this.getChildren().filter((_, i) => i < 3);
         const $no = _$no.querySelector('tr > td:last-child')!;
-        const $name = of(_$name.querySelectorAll('tr:nth-child(4n + 1) > td:last-child')).getElements();
-        const $table = of(document.querySelectorAll('#content > main > table.dextable')).getElements();
+        const $image = _$image.querySelector('img')!;
+        const $name = Array.from(_$name.querySelectorAll('tr:nth-child(4n + 1) > td:last-child'));
+        const $table = Array.from(document.querySelectorAll('#content > main > table.dextable'));
+        const hasTitle = ($element: Element, regExp: RegExp): boolean => {
+          const title = of($element.querySelector('td')).getText();
+          return RegExp(regExp, 'gi').test(title);
+        };
 
-        const $differentFormTable = $table.find(e => /^alternate/gi.test(e.querySelector('td')?.textContent ?? ''));
-        const $megaEvolutionTable = $table.find(e => /^mega/gi.test(e.querySelector('td')?.textContent ?? ''));
-        const $gigantamaxTable = $table.find(e => /^gigantamax/gi.test(e.querySelector('td')?.textContent ?? ''));
+        const $differentFormTable = $table.find(e => hasTitle(e, /^alternate/));
+        const $megaEvolutionTable = $table.find(e => hasTitle(e, /^mega/));
+        const $dynamaxTable = $table.find(e => hasTitle(e, /^gigantamax/));
 
-        const $differentForms = of($differentFormTable).getDifferentFormElements();
-        const $megaEvolution = <SerebiiNetType[]>of($megaEvolutionTable).getDifferentEvolution();
-        const $gigantamax = <SerebiiNetType[]>of($gigantamaxTable).getDifferentEvolution();
+        const $differentForm = Array.from($differentFormTable?.querySelectorAll('tr:last-child tr:nth-child(2) > td > img') ?? []);
+        const $megaEvolution = Array.from($megaEvolutionTable?.querySelectorAll('td > img') ?? []);
+        const $gigantamax = Array.from($dynamaxTable?.querySelectorAll('td > img') ?? []);
 
-        return [$no, $name, $image, $differentForms, $megaEvolution, $gigantamax];
+        return [[$no], $name, [$image], $differentForm, $megaEvolution, $gigantamax];
       };
-      public getElement = (): Element | null => <Element | null>this.$element;
-      public getElements = (): Element[] => <Element[]>this.$element;
       public getText = (): string => (<Element | null>this.$element)?.textContent?.trim().replace(/é/gi, 'e') ?? '';
       public getTexts = (): string[] => {
-        return this.getElements().reduce<string[]>((acc, $element) => {
-          const text = $element.textContent?.trim().replace(/é/gi, 'e') ?? '';
+        return this.$elements.reduce<string[]>((acc, $element) => {
+          const text = of($element).getText().replace(/é/gi, 'e') ?? '';
           return text ? [...acc, text] : acc;
         }, []);
       };
       public replaceText = (searchValue: string | RegExp, replaceValue = ''): string => {
         return this.getText().replace(new RegExp(searchValue, 'gi'), replaceValue);
       };
-      private getChildren = () => Array.from(this.getElement()?.children ?? []);
-      private getImageAndForm = (): ImageAndForm | null => {
-        const $image = this.getElement()?.querySelector('img');
-        if (!$image) return null;
-
-        const { src: image, alt } = <HTMLImageElement>$image;
-        const form = (() => {
-          const camelCaseForm = `${alt.substr(0, 1).toLowerCase()}${alt.substr(1, alt.length)}`;
-          const form = camelCaseForm
-            .replace(/unovan form|unovan|artwork|[^a-z]/gi, '')
-            .replace(/galarianform/gi, 'galar')
-            .replace(/alolaform/gi, 'alola');
-          return form;
-        })();
-        return { image, form };
+      private getChildren = () => Array.from(this.$element?.children ?? []);
+      private toCamelCase = (text: string): string => {
+        return text
+          .toLowerCase()
+          .replace(/\s+(\w|$)/g, (_, $1) => $1.toUpperCase())
+          .replace(/[^a-z0-9♂♀]/gi, '');
       };
-      private getImageAndForms = (): ImageAndForm[] => {
-        return this.getElements().reduce<ImageAndForm[]>((acc, $element) => {
-          const images = of($element).getImageAndForm();
-          return images ? [...acc, images] : acc;
-        }, []);
-      };
-      private getDifferentFormElements = (): Element[] => {
-        const $differentForm = this.getElement();
-        if (!$differentForm) return [];
+      public getPokemon = (): ISerebiiNet => {
+        const [[$no], $name, [$image], $differentForm, $megaEvolution, $dynamax] = of(this.$element).getColumn();
+        const [eng, kor] = of($name).getTexts();
 
-        return Array.from($differentForm.querySelectorAll('tr:last-child tr:nth-child(2) > td'));
-      };
-      private getDifferentEvolution = (): ImageAndForm[] => {
-        const $differentEvolution = this.getElement();
-        if (!$differentEvolution) return [];
+        this.no = of($no).replaceText(/#/);
+        this.name = { eng, kor };
+        this.image = of($image).getSrc();
 
-        return Array.from($differentEvolution.querySelectorAll('td > img')).map($element => {
-          const { src: image, alt } = <HTMLImageElement>$element;
-          const form = (() => {
-            const camelCaseForm = `${alt.substr(0, 1).toLowerCase()}${alt.substr(1, alt.length)}`;
-            const form = camelCaseForm.replace(/unovan form|unovan|artwork|[^a-z]/gi, '');
-            if (/^gigantamax/gi.test(form)) return 'dynamax';
-            if (/^mega.*x$/gi.test(form)) return 'megaX';
-            if (/^mega.*y$/gi.test(form)) return 'megaY';
-            if (/^mega/gi.test(form)) return 'mega';
-            return form;
-          })();
-          return { image, form };
-        });
-      };
-      public getSrc = (): string => this.getElement()?.querySelector('img')?.src ?? '';
-      public getHref = (regExp?: RegExp): string => {
-        const href = (<HTMLAnchorElement>this.getElement())?.href;
-        return (regExp ? href?.match(regExp)?.[1] : href) ?? '';
-      };
-      public getDifferentForm = (): ISerebiiNet => {
-        const [$differentForm, ...$differentForms] = this.getElements();
-        const { image, form } = of($differentForm).getImageAndForm()!;
-
-        const differentForm = of($differentForms).getImageAndForms();
-
-        const pokemon = <ISerebiiNet>{ image, form, differentForm };
-
-        if (/^originalcap/gi.test(form ?? '')) {
-          const basicImage = document.querySelector<HTMLImageElement>('#sprite-regular')?.src ?? '';
-          return {
-            ...pokemon,
-            image: basicImage,
-            form: null,
-            differentForm: <SerebiiNetType[]>[...differentForm, { image, form }],
-          };
+        const exceptionalPokemon = this.getExceptionalPokemon(eng);
+        if (exceptionalPokemon) {
+          const { no, name } = exceptionalPokemon;
+          this.no = no;
+          this.name = name;
         }
 
-        return pokemon;
+        const { no, name, image } = this;
+        const differentForm = of($differentForm).getDifferentForm();
+        const megaEvolution = of($megaEvolution).getDifferentEvolution();
+        const dynamax = of($dynamax).getDifferentEvolution();
+
+        return { no, name, image, form: null, differentForm: differentForm.concat(megaEvolution, dynamax) };
       };
-      public getExceptionalPokemon = (eng: string): { no: string; name: LanguageType } | null => {
+      private getForm = (): string => {
+        const alt = of(this.$element).getAlt();
+
+        const form = this.toCamelCase(alt);
+        const regExp = /(mega).*x$|(mega).*y$|^(galar)ian.*|^(gigantamax).*|^(primal).*|^(mega).*|(form)e$/gi;
+        return form.replace(regExp, (str, ...$$) => {
+          const index = $$.findIndex(str => str);
+          const matchText = $$[index];
+          switch (index) {
+            case 0:
+              return `${matchText}X`;
+            case 1:
+              return `${matchText}Y`;
+            case 2:
+              return `${matchText}Form`;
+            case 3:
+              return 'dynamax';
+            case 4:
+            case 5:
+            case 6:
+              return matchText;
+            default:
+              return str;
+          }
+        });
+      };
+      private getDifferentForm = (): SerebiiNetType[] => {
+        return this.$elements.map(e => {
+          const { no, name } = this;
+          const image = of(e).getSrc();
+          const form = of(e).getForm();
+          return { no, name, image, form };
+        });
+      };
+      private getDifferentEvolution = (): SerebiiNetType[] => {
+        return this.$elements.map(e => {
+          const { no, name } = this;
+          const image = of(e).getSrc();
+          const form = of(e).getForm();
+          return { no, name, image, form };
+        });
+      };
+      private getSrc = (): string => (<HTMLImageElement>this.$element)?.src ?? '';
+      private getAlt = (): string => {
+        const alt = (<HTMLImageElement>this.$element)?.alt;
+        if (!alt) return '';
+
+        return alt.replace(/Unovan Form (Standard Mode)$|Unovan (Zen Mode)$/gi, '$1$2').replace(/artwork/gi, '') ?? '';
+      };
+      private getExceptionalPokemon = (eng: string): { no: string; name: LanguageType } | null => {
         const exceptionalPokemons = [
           { eng: 'Kubfu', kor: '치고마' },
           { eng: 'Urshifu', kor: '우라오스' },
@@ -159,31 +171,7 @@ export class CrawlingPokemonImageOfSerebiiNet extends CrawlingUtil {
       };
     })();
 
-    const [$no, $name, $image, $differentForm, $megaEvolution, $dynamax] = of(
-      document.querySelector('#content > main > div > table.dextable > tbody > tr:nth-of-type(2)'),
-    ).getColumn();
-
-    const [eng, kor] = of($name).getTexts();
-    const no = of($no).replaceText(/#/);
-    const pokemon = { no, name: { eng, kor } };
-    const megaEvolution = $megaEvolution.map(mega => ({ ...pokemon, ...mega }));
-    const dynamax = $dynamax.map(dynamax => ({ ...pokemon, ...dynamax }));
-
-    let pokemons = <Required<ISerebiiNet>>{
-      ...pokemon,
-      image: of($image).getSrc(),
-      form: null,
-      differentForm: megaEvolution.concat(dynamax),
-    };
-
-    const exceptionalPokemon = getExceptionalPokemon(eng);
-    if (exceptionalPokemon) pokemons = { ...pokemons, ...exceptionalPokemon };
-
-    if ($differentForm.length) {
-      const { image, form, differentForm: _differentForm } = of($differentForm).getDifferentForm();
-      const differentForm = pokemons.differentForm.concat(_differentForm!.map(d => ({ ...pokemon, ...d })));
-      return { ...pokemons, image, form, differentForm };
-    }
-    return pokemons;
+    const $main = document.querySelector('#content > main > div > table.dextable > tbody > tr:nth-of-type(2)');
+    return of($main).getPokemon();
   };
 }

@@ -9,19 +9,17 @@ export class CrawlingPokemonIconImageOfSerebiiNet {
         private $element: Element | null;
         private $elements: Element[];
 
-        public of = ($element?: Element | Element[] | NodeListOf<Element> | null): this => {
+        public of = <T extends Element>($element?: T | T[] | NodeListOf<T> | null): this => {
           if (!$element) this.$element = null;
           else if ($element instanceof Element) this.$element = $element;
           else this.$elements = Array.from($element);
 
           return this;
         };
-        public getElement = (): Element | null => this.$element;
-        public getElements = (): Element[] => this.$elements;
         public getText = (): string => (<Element | null>this.$element)?.textContent?.trim().replace(/é/gi, 'e') ?? '';
         public getTexts = (): string[] => {
           return this.$elements.reduce<string[]>((acc, $element) => {
-            const text = $element.textContent?.trim().replace(/é/gi, 'e') ?? '';
+            const text = of($element).getText().replace(/é/gi, 'e') ?? '';
             return text ? [...acc, text] : acc;
           }, []);
         };
@@ -32,10 +30,10 @@ export class CrawlingPokemonIconImageOfSerebiiNet {
         public getColumn = (): Element[][] => {
           return this.$elements.map(e => Array.from(e.querySelectorAll('td.fooinfo:nth-child(-n + 3)')));
         };
-        public getSrc = (): string => this.$element?.querySelector('img')?.src ?? '';
+        public getSrc = (): string => (<HTMLImageElement>this.$element)?.src ?? '';
         public getHref = (regExp?: RegExp): string => {
-          const href = (<HTMLAnchorElement>this.$element)?.href;
-          return (regExp ? href?.match(regExp)?.[1] : href) ?? '';
+          const href = (<HTMLAnchorElement>this.$element)?.href ?? '';
+          return (regExp ? href.match(regExp)?.[1] : href) ?? '';
         };
       })();
 
@@ -43,7 +41,7 @@ export class CrawlingPokemonIconImageOfSerebiiNet {
         .getColumn()
         .map(([$no, $image, $name]) => {
           const no = of($no).replaceText(/\D/);
-          const image = of($image).getSrc();
+          const image = of($image.querySelector('img')).getSrc();
           const name = { eng: of($name).getText(), kor: '' };
           return { no, name, image };
         });

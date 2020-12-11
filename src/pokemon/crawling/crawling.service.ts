@@ -7,7 +7,7 @@ import { ISerebiiNet } from '../interfaces/serebiiNet.interface';
 import { CrawlingPokemonDatabase } from './pokemonDatabase';
 import { CrawlingPokemonIconImageOfSerebiiNet } from './pokemonIconImageOfSerebiiNet';
 import { CrawlingPokemonImageOfSerebiiNet } from './pokemonImageOfSerebiiNet';
-import { CrawlingPokemonWiki } from './PokemonsWiki';
+import { CrawlingPokemonWiki } from './PokemonWiki';
 
 @Injectable()
 export class CrawlingService {
