@@ -139,18 +139,20 @@ export class CrawlingPokemonWiki extends CrawlingUtil {
           $pokemon,
         ).getContentsElements();
 
+        const no = of($pokemon).getNo();
         const abilities = of($abilities).getAbilities();
         const hiddenAbility = of($hiddenAbility).getHiddenAbility();
+        const color = no === '006' ? { name: '파랑', code: '#3088f0' } : of($color).getColors();
 
         return {
-          no: of($pokemon).getNo(),
+          no,
           name: of($pokemon).getNames(),
           image: of($pokemon).getImage(),
           species: of($species).getText(),
           types: of($types).getTypes(),
           abilities: abilities.concat(hiddenAbility),
           hiddenAbility,
-          color: of($color).getColors(),
+          color,
           friendship: +of($friendship).getText(),
           height: of($height).getText(),
           weight: of($weight).getText(),
