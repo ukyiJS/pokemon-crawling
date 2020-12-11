@@ -78,7 +78,11 @@ export class PokemonService {
       .then(result => this.updatePokemonEggGroups(result))
       .then(result => this.updatePokemonForm(result))
       .then(result => this.updatePokemonEvolutionCondition(result))
-      .then(result => this.updatePokemonEvYield(result));
+      .then(result => this.updatePokemonEvYield(result))
+      .then(result => {
+        this.addPokemonColorOfPokemonDatabase();
+        return result;
+      });
 
     const updatedResult = updatedPokemons!.map(({ no, ...pokemon }) => {
       return this.pokemonDatabaseRepository
