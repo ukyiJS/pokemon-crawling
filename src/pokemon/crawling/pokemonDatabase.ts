@@ -4,6 +4,7 @@ import { IPokemonDatabase } from '../interfaces/pokemonDatabase.interface';
 import { EggCycleType } from '../types/eggCycle.type';
 import { EvolvingToType } from '../types/evolvingTo.type';
 import { GenderType } from '../types/gender.type';
+import { PokemonDatabaseType } from '../types/pokemonDatabase.type';
 import { StatType } from '../types/stat.type';
 import { TypeDefenseType } from '../types/typeDefense.type';
 import { CrawlingUtil } from './crawlingUtil';
@@ -316,13 +317,16 @@ export class CrawlingPokemonDatabase extends CrawlingUtil {
 
     if (!pokemons.length) return result;
 
-    const differentForm = pokemons.map((differentForm, i) => {
+    const differentForm = pokemons.reduce<PokemonDatabaseType[]>((acc, differentForm, i) => {
       const form = formNames[i];
+      if (!form) return acc;
+
       const { evYield, catchRate, friendship, eegGroups, gender, eggCycle } = pokemon;
       const commonInfo = { evYield, catchRate, friendship, eegGroups, gender, eggCycle };
       if (/^GalarianZenMode/gi.test(form)) commonInfo.evYield = ['2 SpecialAttack'];
-      return { ...differentForm, ...commonInfo, form };
-    });
+
+      return [...acc, { ...differentForm, ...commonInfo, form }];
+    }, []);
 
     return { ...result, differentForm };
   };
