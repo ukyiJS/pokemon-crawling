@@ -197,6 +197,7 @@ type Query {
 type Mutation {
   addPokemonOfDatabase: [PokemonDatabase!]
   addPokemonColorOfPokemonDatabase: [PokemonDatabase!]
+  addPokemonDynamax: [PokemonDatabase!]
   updateImageOfPokemonDatabase: [PokemonDatabase!]
   updateIconImageOfPokemonDatabase: [PokemonDatabase!]
   updatePokemonName: [PokemonDatabase!]
