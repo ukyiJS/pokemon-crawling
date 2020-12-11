@@ -81,7 +81,7 @@ export class PokemonService {
       .then(result => this.updatePokemonEvYield(result))
       .then(result => {
         this.addPokemonColorOfPokemonDatabase();
-        return result;
+        return this.addPokemonDynamax(result);
       });
 
     const updatedResult = updatedPokemons!.map(({ no, ...pokemon }) => {
@@ -103,6 +103,21 @@ export class PokemonService {
     });
 
     return Promise.all(updatedResult);
+  };
+
+  public addPokemonDynamax = async (pokemons: PokemonDatabase[] | null): Promise<PokemonDatabase[] | null> => {
+    if (!pokemons?.length) return null;
+
+    const pokemonWiki = await this.getPokemonOfPokemonWiki();
+    const { getGenerationName, getImageUrl } = new ImageUtil();
+    return pokemons.map(p => {
+      const dynamax = pokemonWiki.find(({ no, differentForm }) => p.no === no && differentForm?.some(p => p.form === '거다이맥스'));
+      if (!dynamax?.no) return p;
+      const image = getImageUrl(`${getGenerationName(+p.no)}/${p.no}-dynamax`);
+      const { stats, types, typeDefenses, species, evYield, eggCycle, eegGroups, catchRate, exp, friendship, abilities, hiddenAbility } = p;
+      const pokemon = { stats, types, typeDefenses, species, evYield, eggCycle, eegGroups, catchRate, exp, friendship, abilities, hiddenAbility };
+      return { ...p, differentForm: [...(p.differentForm ?? []), { ...dynamax, ...pokemon, image, form: '거다이맥스' }] };
+    });
   };
 
   public getPokemonOfPokemonWiki = async (): Promise<PokemonWiki[]> => this.pokemonWiKiRepository.find({ order: { no: 'ASC' } });
